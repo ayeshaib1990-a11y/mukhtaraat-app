@@ -2732,7 +2732,7 @@ function stripTags(s) {
   return s.replace(/<[^>]+>/g, '');
 }
 
-function tokenizeArabic(arabic, words) {
+function tokenizeArabic(arabic, words, dedupeOnce) {
   var diac = '[\\u064B-\\u065F\\u0670\\u0640]*';
   var hits = [];
   for (var i = 0; i < words.length; i++) {
@@ -2747,10 +2747,13 @@ function tokenizeArabic(arabic, words) {
   }
   hits.sort(function(a, b) { return a.s - b.s || b.e - a.e; });
   var filtered = [];
+  var usedWords = dedupeOnce ? {} : null;
   for (var j = 0; j < hits.length; j++) {
     var h = hits[j];
+    if (usedWords && usedWords[h.item.w]) continue;
     if (filtered.length === 0 || h.s >= filtered[filtered.length - 1].e) {
       filtered.push(h);
+      if (usedWords) usedWords[h.item.w] = true;
     }
   }
   var result = '';
@@ -2786,7 +2789,7 @@ function renderChapter(idx) {
       if (ch.words && ch.words.length) {
         const plain = stripTags(sec.arabic);
         if (plain === sec.arabic) {
-          arabicHtml = tokenizeArabic(sec.arabic, ch.words);
+          arabicHtml = tokenizeArabic(sec.arabic, ch.words, idx === 7);
         }
       }
       html += '<div class="passage-card">';
