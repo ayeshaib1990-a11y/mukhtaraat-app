@@ -5475,12 +5475,24 @@ function buildTahqeeqLookup() {
   }
   return map;
 }
-/* Entry for this exact whole word, or null. Never a fragment, never a relative. */
+/* Entry for this exact whole word, or null. Never a fragment, never a relative.
+   Ordinary finite verb forms (ماضی / مضارع / امر) are NOT tahqeeq words - they
+   are the commonest words in any passage, so highlighting them buried the
+   difficult vocabulary (that's why whole chapters looked noisy). They are
+   skipped here. Any finite verb that IS a difficulty word can be listed in
+   TAHQEEQ_KEEP to bring it back. */
+var TAHQEEQ_KEEP = [];
+function isFiniteVerb(it) {
+  if (TAHQEEQ_KEEP.indexOf(normalize(it.w)) >= 0) return false;
+  return /^\u0641\u0639\u0644/.test(String(it.qism || '')) || /^\u0641\u0639\u0644/.test(String(it.bahas || ''));
+}
 function lookupTahqeeq(word) {
   if (!TAHQEEQ_LOOKUP) TAHQEEQ_LOOKUP = buildTahqeeqLookup();
   var base = normalize(word);
   if (!base) return null;
-  return TAHQEEQ_LOOKUP[base] || null;
+  var it = TAHQEEQ_LOOKUP[base] || null;
+  if (it && isFiniteVerb(it)) return null;
+  return it;
 }
 /* Wrap every whole Arabic word that has a known tahqeeq. Matching is done on
    complete words only, so a word is never broken into pieces when rendered. */
