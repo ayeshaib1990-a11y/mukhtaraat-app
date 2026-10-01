@@ -1,0 +1,543 @@
+BAAB CANDIDATES - derived from BAB_CATALOGUE.md, NOT yet applied
+======================================================================
+
+The 6 triliteral (مجرد) abwab reproduce the proofreaders' own triples on
+12/16 of the entries that already have one. The 4 failures were:
+  يَكَدُّ , يَحُلُّ  -> doubled radical (مضاعف)
+  صَعُبَتْ       -> masdar is صُعُوبَةً (مصدر سماعي), not the regular pattern
+  بَلَاهَةُ       -> bracket holds two masdars, not a triple
+So the rule is sound but not safe to run unattended. Please confirm or
+correct each line below; only confirmed lines get written.
+
+--- A. SAFE BY RULE (43) ========================================
+
+  1. جَعَلَ
+     root  ج - ع - ل
+     bاب    باب فتح (فعل ماضی)
+     PROPOSED  جَعَلَ - يَجْعَلُ - جْعْلًا
+
+  2. اصْرِفْ
+     root  ص - ر - ف
+     bاب    باب ضرب (فعل امر)
+     PROPOSED  صَرَفَ - يَصْرِفُ - صْرْفًا
+
+  3. يَقْتُلُونَ
+     root  ق - ت - ل
+     bاب    باب نصر (فعل مضارع)
+     PROPOSED  قَتَلَ - يَقْتُلُ - قْتْلًا
+
+  4. يَفْعَلْ
+     root  ف - ع - ل
+     bاب    باب فتح (فعل مضارع مجزوم)
+     PROPOSED  فَعَلَ - يَفْعَلُ - فْعْلًا
+
+  5. يَخْلُدْ
+     root  خ - ل - د
+     bاب    باب نصر (فعل مضارع)
+     PROPOSED  خَلَدَ - يَخْلُدُ - خْلْدًا
+
+  6. يَشْهَدُونَ
+     root  ش - ه - د
+     bاب    باب سمع (فعل مضارع)
+     PROPOSED  شَهِدَ - يَشْهَدُ - شْهْدًا
+
+  7. اجْعَلْنَا
+     root  ج - ع - ل
+     bاب    باب فتح (فعل امر)
+     PROPOSED  جَعَلَ - يَجْعَلُ - جْعْلًا
+
+  8. صَبَرُوا
+     root  ص - ب - ر
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  صَبَرَ - يَصْبِرُ - صْبْرًا
+
+  9. يَعْبَأُ
+     root  ع - ب - أ
+     bاب    باب فتح (فعل مضارع)
+     PROPOSED  عَبَأَ - يَعْبَأُ - عْبْأًا
+
+ 10. أَعْقِلْ
+     root  ع - ق - ل
+     bاب    باب ضرب (فعل مضارع)
+     PROPOSED  عَقَلَ - يَعْقِلُ - عْقْلًا
+
+ 11. تَكْسِبُ
+     root  ك - س - ب
+     bاب    باب ضرب (فعل مضارع)
+     PROPOSED  كَسَبَ - يَكْسِبُ - كْسْبًا
+
+ 12. يَفْتِنَ
+     root  ف - ت - ن
+     bاب    باب ضرب (فعل مضارع)
+     PROPOSED  فَتَنَ - يَفْتِنُ - فْتْنًا
+
+ 13. يَمْلِكُ
+     root  م - ل - ك
+     bاب    باب ضرب (فعل مضارع)
+     PROPOSED  مَلَكَ - يَمْلِكُ - مْلْكًا
+
+ 14. عَلَفَ
+     root  ع - ل - ف
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  عَلَفَ - يَعْلِفُ - عْلْفًا
+
+ 15. فَكَمَنَا
+     root  ك - م - ن
+     bاب    باب نصر (فعل ماضی)
+     PROPOSED  كَمَنَ - يَكْمُنُ - كْمْنًا
+
+ 16. يَنْعِقَ
+     root  ن - ع - ق
+     bاب    باب ضرب (فعل مضارع)
+     PROPOSED  نَعَقَ - يَنْعِقُ - نْعْقًا
+
+ 17. غَمَسَ
+     root  غ - م - س
+     bاب    باب نصر (فعل ماضی)
+     PROPOSED  غَمَسَ - يَغْمُسُ - غْمْسًا
+
+ 18. أَسِرَهُ
+     root  أ - س - ر
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  أَسَرَ - يَأْسِرُ - أْسْرًا
+
+ 19. خَفَضْتُ
+     root  خ - ف - ض
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  خَفَضَ - يَخْفِضُ - خْفْضًا
+
+ 20. فَعَثَرَتْ
+     root  ع - ث - ر
+     bاب    باب نصر (فعل ماضی)
+     PROPOSED  عَثَرَ - يَعْثُرُ - عْثْرًا
+
+ 21. يَرْزَأْنِي
+     root  ر - ز - أ
+     bاب    باب فتح (فعل مضارع)
+     PROPOSED  رَزَأَ - يَرْزَأُ - رْزْأًا
+
+ 22. عَدَلَ
+     root  ع - د - ل
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  عَدَلَ - يَعْدِلُ - عْدْلًا
+
+ 23. فَطَفِقْتُ
+     root  ط - ف - ق
+     bاب    باب سمع (فعل ماضی)
+     PROPOSED  طَفِقَ - يَطْفَقُ - طْفْقًا
+
+ 24. سَجَرْتُهُ
+     root  س - ج - ر
+     bاب    باب نصر (فعل ماضی)
+     PROPOSED  سَجَرَ - يَسْجُرُ - سْجْرًا
+
+ 25. قَتَلْنَا
+     root  ق - ت - ل
+     bاب    باب نصر (فعل ماضی)
+     PROPOSED  قَتَلَ - يَقْتُلُ - قْتْلًا
+
+ 26. فَعَدَلْتَ
+     root  ع - د - ل
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  عَدَلَ - يَعْدِلُ - عْدْلًا
+
+ 27. فَحَسَبُوهُ
+     root  ح - س - ب
+     bاب    باب ضرب (فعل ماضی)
+     PROPOSED  حَسَبَ - يَحْسِبُ - حْسْبًا
+
+ 28. يُدْفَنَ
+     root  د - ف - ن
+     bاب    باب ضرب (فعل مضارع مجهول)
+     PROPOSED  دَفَنَ - يَدْفِنُ - دْفْنًا
+
+ 29. قُبِضْتُ
+     root  ق - ب - ض
+     bاب    باب ضرب (فعل ماضی مجہول)
+     PROPOSED  قَبَضَ - يَقْبِضُ - قْبْضًا
+
+ 30. يَشْهَدُكُمْ
+     root  ش - ه - د
+     bاب    باب سمع (فعل مضارع)
+     PROPOSED  شَهِدَ - يَشْهَدُ - شْهْدًا
+
+ 31. أَعْزِلْهُ
+     root  ع - ز - ل
+     bاب    باب ضرب (فعل مضارع مجزوم)
+     PROPOSED  عَزَلَ - يَعْزِلُ - عْزْلًا
+
+ 32. يُقْبَلَ
+     root  ق - ب - ل
+     bاب    باب سمع (فعل مضارع مجہول)
+     PROPOSED  قَبِلَ - يَقْبَلُ - قْبْلًا
+
+ 33. تَعْجَبُوْنَ
+     root  ع - ج - ب
+     bاب    باب سمع يسمع (فعل مضارع معروف)
+     PROPOSED  عَجِبَ - يَعْجَبُ - عْجْبًا
+
+ 34. ظَفَرْتَ
+     root  ظ - ف - ر
+     bاب    باب سمع يسمع (فعل ماضی معروف)
+     PROPOSED  ظَفِرَ - يَظْفَرُ - ظْفْرًا
+
+ 35. قُهْتَ
+     root  ف - ق - ه
+     bاب    باب كرم يكرم (فعل ماضی معروف)
+     PROPOSED  فَقُهَ - يَفْقُهُ - فْقْهًا
+
+ 36. خَرِسْتَ
+     root  خ - ر - س
+     bاب    باب سمع يسمع (فعل ماضی معروف)
+     PROPOSED  خَرِسَ - يَخْرَسُ - خْرْسًا
+
+ 37. عَزَلْتَ
+     root  ع - ز - ل
+     bاب    باب ضرب يضرب (فعل ماضی معروف)
+     PROPOSED  عَزَلَ - يَعْزِلُ - عْزْلًا
+
+ 38. بَرِأْتُ
+     root  ب - ر - أ
+     bاب    باب سمع يسمع (فعل ماضی معروف)
+     PROPOSED  بَرِأَ - يَبْرَأُ - بْرْأًا
+
+ 39. أَنَسُوْا
+     root  أ - ن - س
+     bاب    باب سمع / نصر (فعل ماضی معروف)
+     PROPOSED  أَنِسَ - يَأْنَسُ - أْنْسًا
+
+ 40. يَقْلَعْهَا
+     root  ق - ل - ع
+     bاب    باب فتح يفتح (فعل مضارع معروف)
+     PROPOSED  قَلَعَ - يَقْلَعُ - قْلْعًا
+
+ 41. ضَعُفَتْ
+     root  ض - ع - ف
+     bاب    باب كرم (فعل ماضی مونث)
+     PROPOSED  ضَعُفَ - يَضْعُفُ - ضْعْفًا
+
+ 42. نَهَبَ
+     root  ن - هـ - ب
+     bاب    باب فتح (فعل ماضی)
+     PROPOSED  نَهَبَ - يَنْهَبُ - نْهْبًا
+
+ 43. تَزْهَقُ
+     root  ز - هـ - ق
+     bاب    باب فتح (فعل مضارع)
+     PROPOSED  زَهَقَ - يَزْهَقُ - زْهْقًا
+
+
+--- B. NEEDS A RULING (104) ======================================
+
+  1. تَبَارَكَ   root ب - ر - ك   باب تفاعل (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+  2. لِمَنْ أَرَادَ   root ر - و - د   باب إفعال (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+  3. يَذَّكَّرَ   root ذ - ك - ر   باب تفعل (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+  4. يَمْشُونَ   root م - ش - ي   باب ضرب (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling
+
+  5. خَاطَبَهُمُ   root خ - ط - ب   باب مفاعلة (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+  6. يَبِيتُونَ   root ب - ي - ت   باب ضرب (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling
+
+  7. سَاءَتْ   root س - و - ء   باب نصر (فعل ماضی مونث)
+     why: root has و/ي/ا - defective, needs a ruling
+
+  8. أَنْفَقُوا   root ن - ف - ق   باب إفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+  9. يُسْرِفُوا   root س - ر - ف   باب إفعال (فعل مضارع مجزوم)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 10. يَقْتُرُوا   root ق - ت - ر   باب إفعال (فعل مضارع مجزوم)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 11. حَرَّمَ   root ح - ر - م   باب تفعيل (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 12. يَزْنُونَ   root ز - ن - ي   باب ضرب (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 13. يَلْقَ   root ل - ق - ي   باب سمع (فعل مضارع مجزوم)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 14. يُضَاعَفْ   root ض - ع - ف   باب مفاعلة (فعل مضارع مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 15. يُبَدِّلُ   root ب - د - ل   باب تفعيل (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 16. مَرُّوا   root م - ر - ر   باب نصر (فعل ماضی)
+     why: مضاعف: radicals ر/ر are one doubled letter
+
+ 17. ذُكِّرُوا   root ذ - ك - ر   باب تفعيل (فعل ماضی مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 18. يَخِرُّوا   root خ - ر - ر   باب ضرب (فعل مضارع مجزوم)
+     why: مضاعف: radicals ر/ر are one doubled letter
+
+ 19. هَبْ   root و - ه - ب   باب فتح (فعل امر)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 20. يُجْزَوْنَ   root ج - ز - ي   باب ضرب (فعل مضارع مجہول)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 21. يُلَقَّوْنَ   root ل - ق - ي   باب تفعيل (فعل مضارع مجہول)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 22. قُلْ   root ق - و - ل   باب نصر (فعل امر)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 23. كَذَّبْتُمْ   root ك - ذ - ب   باب تفعيل (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 24. يَدِينَانِ   root د - ي - ن   باب ضرب (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 25. ابْتُلِيَ   root ب - ل - و   باب إفتعال (فعل ماضی مجہول)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 26. أَسِيحَ   root س - ي - ح   باب ضرب (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 27. أَجَرْنَا   root أ - ج - ر   باب إفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 28. يَسْتَعْلِنْ   root ع - ل - ن   باب إستفعال (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 29. أَرَادَ   root ر - و - د   باب إفعال (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 30. يَتَقَذَّفُ   root ق - ذ - ف   باب تفعل (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 31. أَفْزَعَ   root ف - ز - ع   باب إفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 32. يَقْتَصِرَ   root ق - ص - ر   باب إفتعال (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 33. عَاقَدْتُ   root ع - ق - د   باب مفاعلة (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 34. أُخْفِرْتُ   root خ - ف - ر   باب إفعال (فعل ماضی مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 35. تَجَهَّزَ   root ج - هـ - ز   باب تفعل (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 36. يُدْلِجُ   root د - ل - ج   باب إفعال (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 37. يُكْتَادَانِ   root ك - ي - د   باب إفتعال (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 38. وَعَاهُ   root و - ع - ي   باب ضرب (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 39. فَخَطَطْتُ   root خ - ط - ط   باب نصر (فعل ماضی)
+     why: مضاعف: radicals ط/ط are one doubled letter
+
+ 40. تُقَرِّبُ   root ق - ر - ب   باب تفعيل (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 41. فَخَرَرْتُ   root خ - ر - ر   باب ضرب (فعل ماضی)
+     why: مضاعف: radicals ر/ر are one doubled letter
+
+ 42. أَهْوَيْتُ   root هـ - و - ي   باب إفعال (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 43. اسْتَقْسَمْتُ   root ق - س - م   باب إستفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 44. سَاخَتْ   root س - و - خ   باب نصر (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 45. فَكَسَا   root ك - س - و   باب نصر (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 46. أَوْفَى   root و - ف - ي   باب إفعال (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 47. فَثَارَ   root ث - و - ر   باب نصر (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 48. أَتَخَلَّفْ   root خ - ل - ف   باب تفعل (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 49. يُعَاتَبْ   root ع - ت - ب   باب مفاعلة (فعل مضارع مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 50. تَوَاثَقْنَا   root و - ث - ق   باب تفاعل (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 51. تَبَسَّمَ   root ب - س - م   باب تفعل (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 52. فَاجْتَنَبَنَا   root ج - ن - ب   باب إفتعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 53. تَنَكَّرَتْ   root ن - ك - ر   باب تفعل (فعل ماضی مونث)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 54. تَسَوَّرْتُ   root س - و - ر   باب تفعل (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 55. تَعْتَزِلَ   root ع - ز - ل   باب إفتعال (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 56. أَبْشِرْ   root ب - ش - ر   باب إفعال (فعل أمر)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 57. اسْتَنَارَ   root ن - و - ر   باب إستفعال (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 58. أُصِيبَ   root أ - ص - ب   باب إفعال (فعل ماضی مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 59. اسْتَوُوا   root س - و - ي   باب استفعال (فعل امر)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 60. تَقَدَّمَ   root ق - د - م   باب تفعل (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 61. يَجْتَمِعَ   root ج - م - ع   باب افتعال (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 62. تَنَاوَلَ   root ن - و - ل   باب تفاعل (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 63. انْصَرَفُوا   root ص - ر - ف   باب انفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 64. قَاتَلَهُ   root ق - ت - ل   باب مفاعلة (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 65. تُحِبَّانِ   root ح - ب - ب   باب إفعال (فعل مضارع)
+     why: مضاعف: radicals ب/ب are one doubled letter; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 66. تُصِبْهُمْ   root أ - ص - ب   باب إفعال (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 67. انْطَلِقْ   root ط - ل - ق   باب انفعال (فعل امر)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 68. فَانْطَلَقْنَا   root ط - ل - ق   باب انفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 69. اسْتَخْلِفْ   root خ - ل - ف   باب استفعال (فعل امر)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 70. تُوُفِّيَ   root و - ف - ي   باب تفعل (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 71. فَلْيَسْتَعِنْ   root ع - و - ن   باب استفعال (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 72. تَبَوَّءُوا   root ب - و - أ   باب تفعل (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 73. يُعْفَى   root ع - ف - و   باب نصر (فعل مضارع مجہول)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 74. يُقَاتَلَ   root ق - ت - ل   باب مفاعلة (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 75. يُكَلَّفُوا   root ك - ل - ف   باب تفعیل (فعل مضارع)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 76. تَعَجَّلُوْا   root ع - ج - ل   باب تفعل (فعل ماضی معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 77. أَغْشَى   root غ - ش - ي   باب إفعال (فعل ماضی معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 78. إِسْتَوْحَشَ   root و - ح - ش   باب استفعال (فعل ماضی معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 79. أَلْزَمْتَ   root ل - ز - م   باب إفعال (فعل ماضی معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 80. قَوَّمْتَهَا   root ق - و - م   باب تفعيل (فعل ماضی معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 81. أَهَنْتَهَا   root ه - و - ن   باب إفعال (فعل ماضی معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 82. أَجَعْتَهَا   root ج - و - ع   باب إفعال (فعل ماضی معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 83. أَظْمَأْتَهَا   root ظ - م - أ   باب إفعال (فعل ماضی معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 84. خَشَّنْتَ   root خ - ش - ن   باب تفعيل (فعل ماضی معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 85. قَبَّرْتَهَا   root ق - ب - ر   باب تفعيل (فعل ماضی معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 86. تُعَيِّبُ   root ع - ي - ب   باب تفعيل (فعل مضارع معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 87. اصْطَبَغْتَ   root ص - ب - غ   باب افتعال (فعل ماضی معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 88. تَشْتَهِي   root ش - ه - و   باب افتعال (فعل مضارع معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 89. حَكَى   root ح - ك - ي   باب ضرب يضرب (فعل ماضی معروف)
+     why: root has و/ي/ا - defective, needs a ruling
+
+ 90. يَتَفَقَّدُ   root ف - ق - د   باب تفعل (فعل مضارع معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 91. يَتَعَاهَدُهُمْ   root ع - ه - د   باب تفاعل (فعل مضارع معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 92. أُمْتُحِنْتُ   root م - ح - ن   باب افتعال (فعل ماضی مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 93. سَأَسْتَخْبِرُ   root خ - ب - ر   باب استفعال (فعل مضارع معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 94. يَتَفَاخَرُوْنَ   root ف - خ - ر   باب تفاعل (فعل مضارع معروف)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 95. يُبَطُّ   root ب - ط - ط   باب نصر ينصر (فعل مضارع مجہول)
+     why: مضاعف: radicals ط/ط are one doubled letter
+
+ 96. فَقَصَصْتُ   root ق - ص - ص   باب نصر ينصر (فعل ماضی معروف)
+     why: مضاعف: radicals ص/ص are one doubled letter
+
+ 97. اِسْتَخِرِ   root خ - ي - ر   باب استفعال (فعل امر معروف)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+ 98. بَطَطْتُّهٗ   root ب - ط - ط   باب نصر ينصر (فعل ماضی معروف)
+     why: مضاعف: radicals ط/ط are one doubled letter
+
+ 99. أُحْدِرْتُ   root ح - د - ر   باب إفعال (فعل ماضی مجہول)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+100. إِشْتَدَّ   root ش - د - د   باب إفتعال (فعل ماضی)
+     why: مضاعف: radicals د/د are one doubled letter; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+101. يُفِيقُ   root ف - و - ق   باب إفعال (فعل مضارع)
+     why: root has و/ي/ا - defective, needs a ruling; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+102. انْتَقَلَ   root ن - ق - ل   باب إنفعال (فعل ماضی)
+     why: بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+103. تَهَلَّلَ   root هـ - ل - ل   باب تفعل (فعل ماضی)
+     why: مضاعف: radicals ل/ل are one doubled letter; بَاب is one of the 10 مزید patterns - needs that pattern’s own rule
+
+104. غَشِيَ   root غ - ش - و   باب سمع (فعل ماضی)
+     why: root has و/ي/ا - defective, needs a ruling
+
