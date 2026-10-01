@@ -5583,44 +5583,58 @@ function stripTags(s) {
   return s.replace(/<[^>]+>/g, '');
 }
 
+function tahqeeqSpan(it, word) {
+  var attrs = 'data-word="' + word + '" data-root="' + (it.root||'') + '" data-seegha="' + (it.seegha||'') + '" data-bab="' + (it.bab||'') + '" data-meaning="' + (it.meaning||'') + '"';
+  if (it.qism)  attrs += ' data-qism="'  + it.qism  + '"';
+  if (it.bahas) attrs += ' data-bahas="' + it.bahas + '"';
+  if (it.shash) attrs += ' data-shash="' + it.shash + '"';
+  if (it.haft)  attrs += ' data-haft="'  + it.haft  + '"';
+  if (it.extra) attrs += ' data-extra="' + it.extra + '"';
+  return '<span class="word-token" ' + attrs + '>' + word + '</span>';
+}
+
+/* Attached prefixes that may sit before a known word. */
+var AR_PREFIXES = ['وال','فال','بال','كال','ولل','فلل','بلل','ال','لل','و','ف','ب','ل','ك'];
+
+var TAHQEEQ_LOOKUP = null;
+function buildTahqeeqLookup() {
+  var map = {};
+  for (var i = 0; i < GLOBAL_TAHQEEQ.length; i++) {
+    var it = GLOBAL_TAHQEEQ[i];
+    var k = normalize(it.w);
+    if (k && !map[k]) map[k] = it;
+  }
+  return map;
+}
+
+/* Entry for a WHOLE orthographic word: exact match first, then the word with a
+   standard attached prefix removed. Never matches a fragment inside a word. */
+function lookupTahqeeq(word) {
+  if (!TAHQEEQ_LOOKUP) TAHQEEQ_LOOKUP = buildTahqeeqLookup();
+  var base = normalize(word);
+  if (!base) return null;
+  if (TAHQEEQ_LOOKUP[base]) return TAHQEEQ_LOOKUP[base];
+  for (var i = 0; i < AR_PREFIXES.length; i++) {
+    var p = AR_PREFIXES[i];
+    if (base.length > p.length && base.indexOf(p) === 0) {
+      var rest = base.slice(p.length);
+      if (TAHQEEQ_LOOKUP[rest]) return TAHQEEQ_LOOKUP[rest];
+    }
+  }
+  return null;
+}
+
+/* Wrap every whole Arabic word that has a known tahqeeq. Matching is done on
+   complete words only, so a word is never broken into pieces when rendered. */
 function tokenizeArabic(arabic, words, dedupeOnce, sharedUsed) {
-  var diac = '[\\u064B-\\u065F\\u0670\\u0640]*';
-  var hits = [];
-  for (var i = 0; i < words.length; i++) {
-    var item = words[i];
-    var letters = normalize(item.w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').split('');
-    var pattern = letters.join(diac) + diac;
-    var re = new RegExp(pattern, 'g');
-    var m;
-    while ((m = re.exec(arabic)) !== null) {
-      hits.push({ s: m.index, e: m.index + m[0].length, item: item, text: m[0] });
-    }
-  }
-  hits.sort(function(a, b) { return a.s - b.s || b.e - a.e; });
-  var filtered = [];
-  var usedWords = dedupeOnce ? (sharedUsed || {}) : null;
-  for (var j = 0; j < hits.length; j++) {
-    var h = hits[j];
-    if (usedWords && usedWords[h.item.w]) continue;
-    if (filtered.length === 0 || h.s >= filtered[filtered.length - 1].e) {
-      filtered.push(h);
-      if (usedWords) usedWords[h.item.w] = true;
-    }
-  }
-  var result = '';
-  var pos = 0;
-  for (var k = 0; k < filtered.length; k++) {
-    var hit = filtered[k];
-    result += arabic.substring(pos, hit.s);
-    var it = hit.item;
-    var attrs = 'data-word="' + it.w + '" data-root="' + it.root + '" data-seegha="' + (it.seegha||'') + '" data-bab="' + it.bab + '" data-meaning="' + it.meaning + '"';
-    if (it.qism) attrs += ' data-qism="' + it.qism + '"';
-    if (it.bahas) attrs += ' data-bahas="' + it.bahas + '"';
-    if (it.shash) attrs += ' data-shash="' + it.shash + '"';
-    if (it.haft) attrs += ' data-haft="' + it.haft + '"';
-    if (it.extra) attrs += ' data-extra="' + it.extra + '"';
-    result += '<span class="word-token" ' + attrs + '>' + hit.text + '</span>';
-    pos = hit.e;
+  var wordRe = /[\u0621-\u065F\u0670\u0640\u0671-\u06D3]+/g;
+  var result = '', pos = 0, m;
+  while ((m = wordRe.exec(arabic)) !== null) {
+    result += arabic.substring(pos, m.index);
+    var word = m[0];
+    var it = lookupTahqeeq(word);
+    result += it ? tahqeeqSpan(it, word) : word;
+    pos = m.index + word.length;
   }
   result += arabic.substring(pos);
   return result;
