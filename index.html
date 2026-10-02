@@ -5484,7 +5484,13 @@ function lookupTahqeeq(word) {
   return TAHQEEQ_LOOKUP[base] || null;
 }
 /* Wrap every whole Arabic word that has a known tahqeeq. Matching is done on
-   complete words only, so a word is never broken into pieces when rendered. */
+   complete words only, so a word is never broken into pieces when rendered.
+   ONE WORD ONE TIME PER CHAPTER: `sharedUsed` is a Set carried across every
+   section of one chapter. The first occurrence of a word gets the tahqeeq
+   span; every later occurrence of the SAME word in that chapter is emitted as
+   plain text, so proofreaders never see the same word flagged twice.
+   The skip only removes the <span> wrapper - the characters are copied through
+   byte-for-byte, so no word can be broken, split, joined or altered. */
 function tokenizeArabic(arabic, words, dedupeOnce, sharedUsed) {
   var wordRe = /[\u0621-\u065F\u0670\u0640\u0671-\u06D3]+/g;
   var result = '', pos = 0, m;
@@ -5492,7 +5498,21 @@ function tokenizeArabic(arabic, words, dedupeOnce, sharedUsed) {
     result += arabic.substring(pos, m.index);
     var word = m[0];
     var it = lookupTahqeeq(word);
-    result += it ? tahqeeqSpan(it, word) : word;
+    if (it) {
+      if (sharedUsed) {
+        /* Key on the NORMALIZED form, because that is what lookupTahqeeq
+           matches on. Keying on the raw spelling would let a second
+           diacritic spelling of the same word slip through as a "first"
+           occurrence and get flagged twice. */
+        var key = normalize(word);
+        if (sharedUsed.has(key)) { result += word; }
+        else { sharedUsed.add(key); result += tahqeeqSpan(it, word); }
+      } else {
+        result += tahqeeqSpan(it, word);
+      }
+    } else {
+      result += word;
+    }
     pos = m.index + word.length;
   }
   result += arabic.substring(pos);
@@ -5545,10 +5565,11 @@ function renderChapter(idx) {
   if (ch.placeholder) {
     html += '<div class="placeholder">📖 یہ باب ابھی شامل کیا جانا باقی ہے۔<br><span style="font-size:1rem;">اگر آپ کے پاس اس باب کا متن ہے تو فراہم کریں، جلد شامل کر دیا جائے گا۔</span></div>';
   } else {
+    var chapterUsed = new Set();
     for (const sec of ch.sections) {
       let arabicHtml = stripTags(sec.arabic);
       if (GLOBAL_TAHQEEQ.length) {
-        arabicHtml = tokenizeArabic(arabicHtml, GLOBAL_TAHQEEQ, false, null);
+        arabicHtml = tokenizeArabic(arabicHtml, GLOBAL_TAHQEEQ, false, chapterUsed);
       }
       html += '<div class="passage-card">';
       html += '<span class="page-badge">' + sec.label + '</span>';
