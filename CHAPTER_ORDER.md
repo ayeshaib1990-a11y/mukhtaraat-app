@@ -64,20 +64,30 @@ Arabic and Urdu glued together with no separator, so each paragraph was split at
 its last harakah (Arabic here is fully vocalised, Urdu is not) and consecutive
 chunks were merged; the resulting 78 pairs lose no text.
 
-Three tahqeeq rows do not light up, by the proofreader's explicit ruling to
-import the tool verbatim: اسْتَوْحَشْنَا, انْقَلَبْنَا, اطَّلَعُوْا. The DOCX writes
-them attached to وَ (وَاسْتَوْحَشْنَا …) and the app matches whole words only, so
-the standalone entries can never match. Not "fixed" by altering either the text
-or the data.
+Three tahqeeq rows needed a lookup key that matches the source: the DOCX writes
+اسْتَوْحَشْنَا, انْقَلَبْنَا and اطَّلَعُوْا attached to وَ (وَاسْتَوْحَشْنَا …), and the
+app matches whole words only, so the standalone spelling can never match. Their
+`w` key was re-spelled to the word exactly as the source writes it —
+وَاسْتَوْحَشْنَا, وَانْقَلَبْنَا, وَاطَّلَعُوْا — so all 14 rows light up. The key was
+copied verbatim out of the chapter text, never typed. All 7 data fields of those
+three rows are byte-identical to the tool's (verified field by field); only the
+matching key differs, and no visible character was altered.
 
-Three rows keep a بَاب that disagrees with their own triple, also imported
-as-is per the same ruling, awaiting a proofreader: نَزُوْرَ and طَالَ (both labelled
+Three rows keep a بَاب that disagrees with their own triple, imported as-is per
+the proofreader's ruling, awaiting a proofreader: نَزُوْرَ and طَالَ (both labelled
 `نَصَرَ` but the triple given is `فَتَحَ`) and تَكْشِفَ (labelled `ضَرَبَ` with the
 triple of `كَشَفَ`, not of the marked word).
 
-The visible modal label قِسْم is now rendered as سہ اقسام. Only the label text
-changed; the `qism` data key and the `['Qism','qism']` element-id map are
-untouched, so 788 entries with a blank قِسْم still hide that row as before.
+All 8 visible modal labels now use the proofreader's exact wording and order:
+سِہ اَقْسَام · مَادَّہ (حروفِ اصلیہ) · صِّیغَہ · بَحْث · شَش اَقْسَام · بَاب کَا نَام ·
+هَفْت اَقْسَام · مَعْنٰی (لغوی) معنی. Only the label text changed; the `qism`
+data key and the `['Qism','qism']` element-id map are untouched, so entries with
+a blank قِسْم still hide that row as before.
+
+The chapter's `urduTitle` was the attribution (ابو حيان التوحيدي رحمه الله), and
+the main menu prints `urduTitle`, so the menu showed the attribution instead of
+the chapter name. It is now حديث الناس, matching `title`; the attribution is
+recorded here instead.
 
 Bab 23 (سيد التابعين سعيد بن المسيب) is filled: 60 sections (one Arabic
 paragraph + its Urdu translation each), 33 tahqeeq words, all carrying the
