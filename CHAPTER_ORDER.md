@@ -46,15 +46,73 @@ remaining ones are `placeholder: true` entries that render the
 "یہ باب ابھی شامل کیا جانا باقی ہے" notice. Because the app numbers by array
 position, displayed "باب N" now matches this table exactly.
 
-Full text present (28 of 33) — all in correct canonical position:
-1–13, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31
+Full text present (29 of 33) — all in correct canonical position:
+1–19, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31
 
-Placeholders in place, awaiting text (5):
-- Bab 14 القميص الأحمر
+Placeholders in place, awaiting text (4):
 - Bab 20 في سبيل السعادة واليقين
 - Bab 24 النبوة المحمدية وآياتها
 - Bab 32 سالم مولى أبي حذيفة رضي الله عنه
 - Bab 33 الفردوس الإسلامي في قارة آسيا
+
+Bab 14 (القميص الأحمر) is filled: 50 sections (one Arabic text + its
+translation each), 14 tahqeeq rows imported verbatim from the proofreader's
+HTML tool. Source of truth was
+`لْقَمِيْصُ الْأَحْمَرُ (سرخ قمیض)(rectified).docx`; all 10,948 non-space
+characters of the DOCX are reproduced in the app — nothing lost, nothing added
+(verified by character multiset, and by both columns reproducing the DOCX word
+order as two subsequences).
+
+**This DOCX must not be split the way Bab 19 was.** It has no title and no
+page-marker paragraph, and it does not keep one Arabic block then one Urdu
+block per paragraph: Arabic and Urdu *alternate inside the same paragraph* —
+58 Arabic runs and 58 Urdu runs, and 8 paragraphs (2, 3, 12, 26, 28, 29, 33,
+36) switch language more than once. Splitting each paragraph at its last
+harakah, as Bab 19 requires, strands whole Urdu sentences inside the `arabic`
+column. What holds for this file instead, and was checked before anything was
+built: Arabic is fully vocalised, Urdu never is, and **no Arabic word appears
+bare**, so a word's language is decided exactly by whether it carries a
+harakah. Words are classified individually; whitespace goes with the following
+word and punctuation with the preceding one, so an Arabic comma never migrates
+into the Urdu column. Paragraph 30 is Arabic-only and paragraph 31 is its
+Urdu-only translation, so those two were merged into one section — 51 paragraphs
+become 50 sections, and no column is left empty. Verified afterwards: zero bare
+words in the `arabic` column, zero vocalised words in the `urdu` column, every
+DOCX word in exactly one column, both columns in document order.
+
+This tool's سِہ اَقْسَام field is spelled `seh` in its `dictionary` records
+(`{ word, seh, mada, segha, bahas, shash, baab, haft, meaning }`); it maps to
+the app's `qism` as `seh → qism`. All 14 rows carry a real value there — ten
+`فعل` and four `اسم (…مصدر/اسم فاعل)` — so the قِسْم row is populated on every
+row, which no earlier chapter managed.
+
+Six rows needed a lookup key that matches the source, for the same reason as
+Bab 19: the DOCX writes the word attached to the preceding ب or ف or وَ, and the
+app matches whole words only, so the tool's standalone spelling can never match.
+Their `w` key was re-spelled to the word exactly as the source writes it —
+فَجَزَعَ, وَأَرْسَلَ, وَاسْتَلَمَ, بِجَمْعِ, وَاقْتَصَرْتُ, وَاهْتَمَمْتَ — so all 14
+rows light up (verified through the app's own `tokenizeArabic`). Keys were
+extracted programmatically out of the chapter text, never typed, and only a
+leading Arabic clitic (ب و ف ك ل) is accepted as the attachment: a plain
+"ends with" test would also match تَجْمَعُ ("you gather") against جَمْعِ, a
+different word. All 8 data fields of all 14 rows are byte-identical to the
+tool's. No visible character was altered.
+
+Five rows keep a بَاب that disagrees with their own triple, imported as-is per
+the proofreader's ruling, awaiting a proofreader: أَشْكُوْ, يَدْخُلُنِي and غَافِلٌ
+(all labelled `نَصَرَ` with a triple of another verb) and جَزَعَ, اَطَّمْعُ (both
+labelled `سَمِعَ` with a triple of another verb). Rows whose قِسْم is a masdar
+(ظُهُورَ, جَمْعِ, اَطَّمْعُ) carry `-` for صِّیغَہ and بَحْث, kept exactly as the
+tool shows them.
+
+All 8 visible modal labels now use the proofreader's exact wording and order:
+سِہ اَقْسَام · مَادَّہ (حروفِ اصلیہ) · صِّیغَہ · بَحْث · شَش اَقْسَام · بَاب کَا نَام ·
+هَفْت اَقْسَام · مَعْنٰی (لغوی معنی). Only the label text changed; the `qism`
+data key and the `['Qism','qism']` element-id map are untouched, so entries with
+a blank قِسْم still hide that row as before. (Three of these labels — سِہ اَقْسَام,
+شَش اَقْسَام, هَفْت اَقْسَام — had been committed missing the alif of اقسام, and
+مَعْنٰی had the parentheses in the wrong place. Corrected and re-verified
+character by character.)
 
 Bab 19 (حديث الناس) is filled: 78 sections (one Arabic text + its translation
 each), 14 tahqeeq rows imported verbatim from the proofreader's HTML tool.
@@ -111,6 +169,9 @@ Replace the whole placeholder object at its canonical index with a normal
 chapter object (`title`, `urduTitle`, `sections`, `words`) and drop
 `placeholder: true`. Do not append — position is the chapter number.
 
-Note: `index.html` special-cases `idx === 7` for tahqeeq de-duplication
-(مقتل عمر بن الخطاب). Never insert anything before index 7, or that fix breaks.
+Note: tahqeeq de-duplication is per chapter — `renderChapter()` creates a fresh
+`chapterUsed = new Set()` for each chapter and threads it through
+`tokenizeArabic()`, so a word is flagged on its first occurrence in every
+chapter and never twice in the same one. No array index is special-cased, so a
+chapter may be filled at any canonical position.
 
