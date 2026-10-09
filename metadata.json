@@ -1,0 +1,6 @@
+{
+  "name": "مختارات من أدب العرب — تيسير وفهم مع صرفی و لغوی تحقیق",
+  "description": "جامع تعلیمی و تدریسی ایپ برائے مختارات من أدب العرب مع بااعراب متن، سلیس اردو ترجمہ، اور تفصیلی صرفی و لغوی تحقیق",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

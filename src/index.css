@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-arabic {
+    font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+    font-feature-settings: "cv01", "cv02", "ss01";
+  }
+  .font-naskh {
+    font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+  }
+  .font-scheherazade {
+    font-family: 'Scheherazade New', 'Amiri', serif;
+  }
+  .font-urdu {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    line-height: 2.3;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: #C59B27;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0C4A38;
+}
+
+/* Word token interaction - Exactly matching user's app style */
+.word-token {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  padding: 0 6px;
+  margin: 0 1px;
+  border-radius: 4px;
+  background-color: rgba(212, 175, 55, 0.18);
+  border-bottom: 2px dashed #0C4A38;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.word-token:hover {
+  background-color: #0C4A38;
+  color: #ffffff !important;
+  border-bottom: 2px solid #C59B27;
+  transform: translateY(-1px);
+}
+
+.word-token:active {
+  transform: translateY(0);
+}
+
+/* Info rows matching user's app style */
+.info-row {
+  display: flex;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.95rem;
+}
+
+.info-label {
+  width: 120px;
+  flex-shrink: 0;
+  font-weight: 700;
+  color: #0C4A38;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #1e293b;
+  flex: 1;
+}
+
+/* Active audio reading highlight */
+.reading-active {
+  background-color: rgba(197, 155, 39, 0.2) !important;
+  box-shadow: 0 0 0 2px rgba(197, 155, 39, 0.5);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+/* Pulse animation for active sound */
+@keyframes audio-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+.animate-audio-wave {
+  animation: audio-pulse 1.2s infinite ease-in-out;
+}
+
+/* Print styling for students */
+@media print {
+  header, footer, nav, button, .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .card-print {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+}
