@@ -897,32 +897,45 @@ export default function App() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] font-urdu font-bold px-2 py-0.5 rounded-full bg-emerald-700 text-white">
-                  تازہ ترین اضافہ (سبق 1)
+                  مکمل تحقیق شدہ اسباق (۱ تا ۵)
                 </span>
                 <span className="font-arabic font-bold text-sm text-emerald-900 dark:text-emerald-200">
-                  عِبَادُ الرَّحْمٰنِ — سورۃ الفرقان (آیات ۶۳ تا ۷۷)
+                  سبق ۵: فِي بَنِي سَعْدٍ • سبق ۴: الْخُطْبَةُ الْمُعْجِزَةُ • سبق ۱ تا ۳
                 </span>
               </div>
               <p className="font-urdu text-xs opacity-80 mt-0.5">
-                تمام ۱۸ آیات مع سلیس بامحاورہ اردو ترجمہ اور ۷۰ کلمات کی مکمل صرفی و نحوی تحقیق و صوتی تلفظ دستیاب ہے۔
+                تمام اسباق مکمل اعراب، سلیس بامحاورہ اردو ترجمہ اور تفصیلی صرفی و نحوی تحقیق کے ساتھ لائیو ہیں۔
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
-            {selectedChapterIndex !== 0 ? (
-              <button
-                onClick={() => handleSelectChapter(0)}
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-urdu font-bold shadow-xs transition cursor-pointer flex items-center gap-1.5"
-              >
-                <span>یہ سبق کھولیں</span>
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <span className="px-3 py-1 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-urdu font-bold border border-emerald-300">
-                ✓ آپ اس وقت یہی سبق دیکھ رہے ہیں
-              </span>
-            )}
+          <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end flex-wrap">
+            <button
+              onClick={() => handleSelectChapter(4)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-arabic font-bold shadow-xs transition cursor-pointer flex items-center gap-1 border ${
+                selectedChapterIndex === 4
+                  ? 'bg-emerald-800 text-white border-emerald-900'
+                  : 'bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-600'
+              }`}
+              title="سبق 5: فِي بَنِي سَعْدٍ کھولیں"
+            >
+              <span>سبق ۵: فِي بَنِي سَعْدٍ</span>
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => handleSelectChapter(3)}
+              className="px-2.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-arabic font-bold shadow-xs transition cursor-pointer flex items-center gap-1"
+              title="سبق 4: الْخُطْبَةُ الْمُعْجِزَةُ کھولیں"
+            >
+              <span>سبق ۴</span>
+            </button>
+            <button
+              onClick={() => handleSelectChapter(0)}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-arabic font-bold shadow-xs transition cursor-pointer flex items-center gap-1"
+              title="سبق 1: عِبَادُ الرَّحْمٰنِ کھولیں"
+            >
+              <span>سبق ۱</span>
+            </button>
           </div>
         </div>
 
@@ -941,9 +954,9 @@ export default function App() {
 
           <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
             {[
-              { idx: 0, label: 'سبق 1: عِبَادُ الرَّحْمٰنِ', badge: 'جدید ترین اپڈیٹ', isLatest: true },
+              { idx: 4, label: 'سبق 5: فِي بَنِي سَعْدٍ', badge: 'بنو سعد' },
               { idx: 3, label: 'سبق 4: الْخُطْبَةُ الْمُعْجِزَةُ', badge: 'معجزانہ خطاب' },
-              { idx: 4, label: 'سبق 5: فِي بَنِي سَعْدٍ' },
+              { idx: 0, label: 'سبق 1: عِبَادُ الرَّحْمٰنِ' },
               { idx: 1, label: 'سبق 2: سَيِّدُنَا مُوسَىٰ' },
               { idx: 2, label: 'سبق 3: جَوَامِعُ الْكَلِمِ' },
             ].map(item => {
