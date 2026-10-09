@@ -228,8 +228,8 @@ function tokenizeArabic(
   return result;
 }
 
-const LATEST_UPDATED_CHAPTER_INDEX = 0; // سبق 1: عِبَادُ الرَّحْمٰنِ (رحمن کے برگزیدہ بندے - سورۃ الفرقان: آیات ۶۳ تا ۷۷)
-const APP_DATA_VERSION = 'v11_ibadur_rahman_furqan_confirmed';
+const LATEST_UPDATED_CHAPTER_INDEX = 4; // سبق 5: فِي بَنِي سَعْدٍ (بنو سعد میں بچپن اور رضاعت کے ایام)
+const APP_DATA_VERSION = 'v12_chapter_5_bani_saad_default';
 
 export default function App() {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(() => {
@@ -2277,27 +2277,27 @@ export default function App() {
                 />
               </div>
 
-              {/* Latest Updated Chapter Quick Card */}
+              {/* Latest Updated Chapters Quick Cards */}
               {!searchQuery && (
                 <div className="mt-3 space-y-1.5">
                   <div 
-                    onClick={() => handleSelectChapter(0)}
+                    onClick={() => handleSelectChapter(4)}
                     className="p-2.5 rounded-xl border border-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                        1
+                        5
                       </span>
                       <div className="truncate text-right">
                         <div className="flex items-center gap-1.5 justify-end">
                           <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-700 text-white font-urdu font-bold">
-                            جدید ترین اپڈیٹ
+                            جدید ترین سبق
                           </span>
                           <p className="font-arabic font-bold text-xs text-emerald-950 dark:text-emerald-200 truncate">
-                            عِبَادُ الرَّحْمٰنِ
+                            فِي بَنِي سَعْدٍ
                           </p>
                         </div>
-                        <p className="font-urdu text-[11px] opacity-75 truncate">سورۃ الفرقان: ۶۳ تا ۷۷ (۱۸ آیات، ۷۰ کلمات)</p>
+                        <p className="font-urdu text-[11px] opacity-75 truncate">بنو سعد میں بچپن اور رضاعت کے ایام (۵۵ پیراگراف، ۲۵ کلمات)</p>
                       </div>
                     </div>
                     <ChevronLeft className="w-4 h-4 text-emerald-700 shrink-0" />
@@ -2320,10 +2320,33 @@ export default function App() {
                             الْخُطْبَةُ الْمُعْجِزَةُ
                           </p>
                         </div>
-                        <p className="font-urdu text-[10px] opacity-75 truncate">غزوہ حنین کے موقع پر انصار سے خطاب</p>
+                        <p className="font-urdu text-[10px] opacity-75 truncate">غزوہ حنین کے موقع پر انصار سے خطاب (۴۰ پیراگراف)</p>
                       </div>
                     </div>
                     <ChevronLeft className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                  </div>
+
+                  <div 
+                    onClick={() => handleSelectChapter(0)}
+                    className="p-2 rounded-xl border border-slate-300/80 bg-slate-500/10 hover:bg-slate-500/20 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="w-5 h-5 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                        1
+                      </span>
+                      <div className="truncate text-right">
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-700 text-white font-urdu font-bold">
+                            سورۃ الفرقان
+                          </span>
+                          <p className="font-arabic font-bold text-xs truncate">
+                            عِبَادُ الرَّحْمٰنِ
+                          </p>
+                        </div>
+                        <p className="font-urdu text-[10px] opacity-75 truncate">رحمن کے برگزیدہ بندے (۱۸ آیات، ۷۰ کلمات)</p>
+                      </div>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-700 shrink-0" />
                   </div>
                 </div>
               )}
@@ -2366,15 +2389,15 @@ export default function App() {
                         </span>
                         <div className="truncate text-right">
                           <div className="flex items-center gap-1.5 justify-end">
-                            {(ch.originalIndex === 0 || ch.originalIndex === 3 || ch.originalIndex === 4 || ch.originalIndex === 1 || ch.originalIndex === 2) && (
+                            {(ch.originalIndex === 4 || ch.originalIndex === 3 || ch.originalIndex === 0 || ch.originalIndex === 1 || ch.originalIndex === 2) && (
                               <span className={`text-[10px] px-1.5 py-0.5 rounded font-urdu font-bold border ${
-                                ch.originalIndex === 0
+                                ch.originalIndex === 4
                                   ? 'bg-emerald-100 text-emerald-900 border-emerald-400 font-extrabold shadow-2xs'
                                   : ch.originalIndex === 3
                                   ? 'bg-amber-100 text-amber-900 border-amber-400 font-bold'
                                   : 'bg-slate-100 text-slate-800 border-slate-300'
                               }`}>
-                                {ch.originalIndex === 0 ? 'جدید ترین اپڈیٹ' : ch.originalIndex === 3 ? 'معجزانہ خطاب' : 'مکمل تحقیق'}
+                                {ch.originalIndex === 4 ? 'جدید ترین سبق' : ch.originalIndex === 3 ? 'معجزانہ خطاب' : ch.originalIndex === 0 ? 'سورۃ الفرقان' : 'مکمل تحقیق'}
                               </span>
                             )}
                             <p className="font-arabic text-sm truncate leading-snug">{ch.title}</p>
