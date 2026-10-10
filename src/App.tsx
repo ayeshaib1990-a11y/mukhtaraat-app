@@ -228,8 +228,8 @@ function tokenizeArabic(
   return result;
 }
 
-const LATEST_UPDATED_CHAPTER_INDEX = 25; // سبق 26: الْمَدِينَةُ الْعَجِيبَةُ عِنْدَ بَعْثَةِ الرَّسُولِ (43 کلمات کی مکمل صرفی و لغوی تحقیق، 42 پیراگراف)
-const APP_DATA_VERSION = 'v17_chapter_26_madina_ajeeba_verified';
+const LATEST_UPDATED_CHAPTER_INDEX = 24; // سبق 25: الظلم مؤذن بخراب العمران (40 کلمات کی مکمل صرفی و لغوی تحقیق، 44 پیراگراف)
+const APP_DATA_VERSION = 'v18_chapter_25_zulm_kharab_umran_verified';
 
 export default function App() {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(() => {
@@ -2304,12 +2304,12 @@ export default function App() {
               {!searchQuery && (
                 <div className="mt-3 space-y-1.5">
                   <div 
-                    onClick={() => handleSelectChapter(25)}
+                    onClick={() => handleSelectChapter(24)}
                     className="p-2.5 rounded-xl border border-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                        26
+                        25
                       </span>
                       <div className="truncate text-right">
                         <div className="flex items-center gap-1.5 justify-end">
@@ -2317,13 +2317,36 @@ export default function App() {
                             جدید ترین سبق
                           </span>
                           <p className="font-arabic font-bold text-xs text-emerald-950 dark:text-emerald-200 truncate">
-                            الْمَدِينَةُ الْعَجِيبَةُ عِنْدَ بَعْثَةِ الرَّسُولِ
+                            اَلظُّلْمُ مُؤْذِنٌ بِخَرَابِ الْعُمْرَانِ
                           </p>
                         </div>
-                        <p className="font-urdu text-[11px] opacity-75 truncate">۴۳ کلمات کی جامع صرفی تحقیق (۴۲ پیراگراف)</p>
+                        <p className="font-urdu text-[11px] opacity-75 truncate">۴۰ کلمات کی تحقیق (علامہ ابن خلدون)</p>
                       </div>
                     </div>
                     <ChevronLeft className="w-4 h-4 text-emerald-700 shrink-0" />
+                  </div>
+
+                  <div 
+                    onClick={() => handleSelectChapter(25)}
+                    className="p-2 rounded-xl border border-slate-300/80 bg-slate-500/10 hover:bg-slate-500/20 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="w-5 h-5 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                        26
+                      </span>
+                      <div className="truncate text-right">
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-700 text-white font-urdu font-bold">
+                            سبق ۲۶
+                          </span>
+                          <p className="font-arabic font-bold text-xs truncate">
+                            الْمَدِينَةُ الْعَجِيبَةُ
+                          </p>
+                        </div>
+                        <p className="font-urdu text-[10px] opacity-75 truncate">۴۳ کلمات کی تحقیق</p>
+                      </div>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-700 shrink-0" />
                   </div>
 
                   <div 
