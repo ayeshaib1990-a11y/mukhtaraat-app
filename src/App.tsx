@@ -229,7 +229,7 @@ function tokenizeArabic(
 }
 
 const LATEST_UPDATED_CHAPTER_INDEX = 32; // سبق 33: الْفِرْدَوْسُ الْإِسْلَامِيُّ فِي قَارَّةِ آسِيَا (53 کلمات کی مکمل صرفی و لغوی تحقیق)
-const APP_DATA_VERSION = 'v14_firdous_asia_53_words_verified';
+const APP_DATA_VERSION = 'v15_proofreading_words_default_live';
 
 export default function App() {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(() => {
@@ -278,10 +278,25 @@ export default function App() {
         // ignore
       }
     }
-    // Default directly to Chapter 1 (index 0: عِبَادُ الرَّحْمٰنِ)
+    // Default directly to latest updated chapter
     return LATEST_UPDATED_CHAPTER_INDEX;
   });
-  const [activeTab, setActiveTab] = useState<'text' | 'words' | 'dictionary' | 'bookmarks'>('text');
+  const [activeTab, setActiveTab] = useState<'text' | 'words' | 'dictionary' | 'bookmarks'>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const t = params.get('tab');
+        if (t === 'text') return 'text';
+        if (t === 'words' || t === 'tahqeeq' || t === 'sarf') return 'words';
+        if (t === 'dictionary') return 'dictionary';
+        if (t === 'bookmarks') return 'bookmarks';
+      } catch {
+        // ignore
+      }
+    }
+    // Default directly to 'words' so the proofreader immediately sees all Sarfi Tahqeeq cards!
+    return 'words';
+  });
   const [modalViewTab, setModalViewTab] = useState<'sarf' | 'dictionary'>('sarf');
   const [dictionarySearchQuery, setDictionarySearchQuery] = useState<string>('');
   const [theme, setTheme] = useState<Theme>(() => {
