@@ -228,8 +228,8 @@ function tokenizeArabic(
   return result;
 }
 
-const LATEST_UPDATED_CHAPTER_INDEX = 4; // سبق 5: فِي بَنِي سَعْدٍ (بنو سعد میں بچپن اور رضاعت کے ایام)
-const APP_DATA_VERSION = 'v12_chapter_5_bani_saad_default';
+const LATEST_UPDATED_CHAPTER_INDEX = 32; // سبق 33: الْفِرْدَوْسُ الْإِسْلَامِيُّ فِي قَارَّةِ آسِيَا (53 کلمات کی مکمل صرفی و لغوی تحقیق)
+const APP_DATA_VERSION = 'v14_firdous_asia_53_words_verified';
 
 export default function App() {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(() => {
@@ -897,37 +897,37 @@ export default function App() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] font-urdu font-bold px-2 py-0.5 rounded-full bg-emerald-700 text-white">
-                  مکمل تحقیق شدہ اسباق (۱ تا ۵)
+                  جدید ترین اپڈیٹ (سبق 33)
                 </span>
                 <span className="font-arabic font-bold text-sm text-emerald-900 dark:text-emerald-200">
-                  سبق ۵: فِي بَنِي سَعْدٍ • سبق ۴: الْخُطْبَةُ الْمُعْجِزَةُ • سبق ۱ تا ۳
+                  الْفِرْدَوْسُ الْإِسْلَامِيُّ فِي قَارَّةِ آسِيَا
                 </span>
               </div>
               <p className="font-urdu text-xs opacity-80 mt-0.5">
-                تمام اسباق مکمل اعراب، سلیس بامحاورہ اردو ترجمہ اور تفصیلی صرفی و نحوی تحقیق کے ساتھ لائیو ہیں۔
+                مکمل ۵۳ کلمات کی جامع صرفی و لغوی تحقیق، مستند اوزان، ابواب، مادے اور بامحاورہ اردو ترجمہ کے ساتھ لائیو ہے۔
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end flex-wrap">
             <button
-              onClick={() => handleSelectChapter(4)}
+              onClick={() => handleSelectChapter(32)}
               className={`px-3 py-1.5 rounded-xl text-xs font-arabic font-bold shadow-xs transition cursor-pointer flex items-center gap-1 border ${
-                selectedChapterIndex === 4
+                selectedChapterIndex === 32
                   ? 'bg-emerald-800 text-white border-emerald-900'
                   : 'bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-600'
               }`}
-              title="سبق 5: فِي بَنِي سَعْدٍ کھولیں"
+              title="سبق 33: الْفِرْدَوْسُ الْإِسْلَامِيُّ فِي قَارَّةِ آسِيَا کھولیں"
             >
-              <span>سبق ۵: فِي بَنِي سَعْدٍ</span>
+              <span>سبق ۳۳: الفردوس الإسلامي</span>
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => handleSelectChapter(3)}
+              onClick={() => handleSelectChapter(4)}
               className="px-2.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-arabic font-bold shadow-xs transition cursor-pointer flex items-center gap-1"
-              title="سبق 4: الْخُطْبَةُ الْمُعْجِزَةُ کھولیں"
+              title="سبق 5: فِي بَنِي سَعْدٍ کھولیں"
             >
-              <span>سبق ۴</span>
+              <span>سبق ۵</span>
             </button>
             <button
               onClick={() => handleSelectChapter(0)}
@@ -954,11 +954,11 @@ export default function App() {
 
           <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
             {[
-              { idx: 4, label: 'سبق 5: فِي بَنِي سَعْدٍ', badge: 'بنو سعد' },
-              { idx: 3, label: 'سبق 4: الْخُطْبَةُ الْمُعْجِزَةُ', badge: 'معجزانہ خطاب' },
+              { idx: 32, label: 'سبق 33: الفردوس الإسلامي', badge: 'جدید (53 کلمات)' },
+              { idx: 4, label: 'سبق 5: فِي بَنِي سَعْدٍ' },
+              { idx: 3, label: 'سبق 4: الْخُطْبَةُ الْمُعْجِزَةُ' },
               { idx: 0, label: 'سبق 1: عِبَادُ الرَّحْمٰنِ' },
               { idx: 1, label: 'سبق 2: سَيِّدُنَا مُوسَىٰ' },
-              { idx: 2, label: 'سبق 3: جَوَامِعُ الْكَلِمِ' },
             ].map(item => {
               const isCur = selectedChapterIndex === item.idx;
               return (
@@ -2281,46 +2281,46 @@ export default function App() {
               {!searchQuery && (
                 <div className="mt-3 space-y-1.5">
                   <div 
-                    onClick={() => handleSelectChapter(4)}
+                    onClick={() => handleSelectChapter(32)}
                     className="p-2.5 rounded-xl border border-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                        5
+                        33
                       </span>
                       <div className="truncate text-right">
                         <div className="flex items-center gap-1.5 justify-end">
                           <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-700 text-white font-urdu font-bold">
-                            جدید ترین سبق
+                            جدید ترین تحقیق
                           </span>
                           <p className="font-arabic font-bold text-xs text-emerald-950 dark:text-emerald-200 truncate">
-                            فِي بَنِي سَعْدٍ
+                            الْفِرْدَوْسُ الْإِسْلَامِيُّ فِي قَارَّةِ آسِيَا
                           </p>
                         </div>
-                        <p className="font-urdu text-[11px] opacity-75 truncate">بنو سعد میں بچپن اور رضاعت کے ایام (۵۵ پیراگراف، ۲۵ کلمات)</p>
+                        <p className="font-urdu text-[11px] opacity-75 truncate">۵۳ کلمات کی جامع صرفی و لغوی تحقیق (۱۱۶ پیراگراف)</p>
                       </div>
                     </div>
                     <ChevronLeft className="w-4 h-4 text-emerald-700 shrink-0" />
                   </div>
 
                   <div 
-                    onClick={() => handleSelectChapter(3)}
+                    onClick={() => handleSelectChapter(4)}
                     className="p-2 rounded-xl border border-amber-300/80 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span className="w-5 h-5 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                        4
+                        5
                       </span>
                       <div className="truncate text-right">
                         <div className="flex items-center gap-1.5 justify-end">
                           <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-600 text-white font-urdu font-bold">
-                            معجزانہ خطاب
+                            بنو سعد
                           </span>
                           <p className="font-arabic font-bold text-xs truncate">
-                            الْخُطْبَةُ الْمُعْجِزَةُ
+                            فِي بَنِي سَعْدٍ
                           </p>
                         </div>
-                        <p className="font-urdu text-[10px] opacity-75 truncate">غزوہ حنین کے موقع پر انصار سے خطاب (۴۰ پیراگراف)</p>
+                        <p className="font-urdu text-[10px] opacity-75 truncate">بنو سعد میں بچپن اور رضاعت کے ایام</p>
                       </div>
                     </div>
                     <ChevronLeft className="w-3.5 h-3.5 text-amber-700 shrink-0" />
@@ -2389,15 +2389,15 @@ export default function App() {
                         </span>
                         <div className="truncate text-right">
                           <div className="flex items-center gap-1.5 justify-end">
-                            {(ch.originalIndex === 4 || ch.originalIndex === 3 || ch.originalIndex === 0 || ch.originalIndex === 1 || ch.originalIndex === 2) && (
+                            {(ch.originalIndex === 32 || ch.originalIndex === 4 || ch.originalIndex === 3 || ch.originalIndex === 0 || ch.originalIndex === 1 || ch.originalIndex === 2) && (
                               <span className={`text-[10px] px-1.5 py-0.5 rounded font-urdu font-bold border ${
-                                ch.originalIndex === 4
+                                ch.originalIndex === 32
                                   ? 'bg-emerald-100 text-emerald-900 border-emerald-400 font-extrabold shadow-2xs'
-                                  : ch.originalIndex === 3
+                                  : ch.originalIndex === 4
                                   ? 'bg-amber-100 text-amber-900 border-amber-400 font-bold'
                                   : 'bg-slate-100 text-slate-800 border-slate-300'
                               }`}>
-                                {ch.originalIndex === 4 ? 'جدید ترین سبق' : ch.originalIndex === 3 ? 'معجزانہ خطاب' : ch.originalIndex === 0 ? 'سورۃ الفرقان' : 'مکمل تحقیق'}
+                                {ch.originalIndex === 32 ? 'جدید ترین (53 کلمات)' : ch.originalIndex === 4 ? 'سبق ۵' : ch.originalIndex === 3 ? 'معجزانہ خطاب' : ch.originalIndex === 0 ? 'سورۃ الفرقان' : 'مکمل تحقیق'}
                               </span>
                             )}
                             <p className="font-arabic text-sm truncate leading-snug">{ch.title}</p>
