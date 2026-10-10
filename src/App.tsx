@@ -229,7 +229,7 @@ function tokenizeArabic(
 }
 
 const LATEST_UPDATED_CHAPTER_INDEX = 32; // سبق 33: الْفِرْدَوْسُ الْإِسْلَامِيُّ فِي قَارَّةِ آسِيَا (53 کلمات کی مکمل صرفی و لغوی تحقیق)
-const APP_DATA_VERSION = 'v15_proofreading_words_default_live';
+const APP_DATA_VERSION = 'v16_isme_jamid_no_wazn_live';
 
 export default function App() {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState<number>(() => {
@@ -616,8 +616,10 @@ export default function App() {
     if (w.bahas) out += `بَحْث: ${w.bahas}\n`;
     if (w.shash) out += `شُشَّ اِقْسَام: ${w.shash}\n`;
     if (w.bab) out += `بَاب: ${w.bab}\n`;
-    if (w.haft) out += `ہَفْتِ اِقْسَام: ${w.haft}\n`;
-    out += `وزن: ${w.wazn || '-------'}\n`;
+    const isJamid = (w.qism || '').includes('جامد') || (w.bahas || '').includes('جامد');
+    if (!isJamid && (w.wazn || !isJamid)) {
+      if (w.wazn) out += `وزن: ${w.wazn}\n`;
+    }
     out += `معنی: ${w.meaning || '---'}\n`;
     if (w.extra) out += `فائدہ: ${w.extra}\n`;
     return out;
@@ -1596,13 +1598,15 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* وزن - EXPLICITLY SHOWN AS REQUESTED */}
-                          <div className="info-row">
-                            <span className="info-label font-bold text-amber-800">وزن:</span>
-                            <span className="info-value font-medium font-arabic text-base">
-                              {word.wazn || '-------'}
-                            </span>
-                          </div>
+                          {/* وزن - Only shown for non-jamid words */}
+                          {!((word.qism || '').includes('جامد') || (word.bahas || '').includes('جامد')) && (
+                            <div className="info-row">
+                              <span className="info-label font-bold text-amber-800">وزن:</span>
+                              <span className="info-value font-medium font-arabic text-base">
+                                {word.wazn || '-------'}
+                              </span>
+                            </div>
+                          )}
 
                           {/* معنی */}
                           <div className="info-row !border-b-0">
@@ -1731,7 +1735,9 @@ export default function App() {
                         {word.bahas && <div className="info-row"><span className="info-label">بَحْث:</span><span className="info-value">{word.bahas}</span></div>}
                         {word.bab && <div className="info-row"><span className="info-label">بَاب:</span><span className="info-value">{word.bab}</span></div>}
                         {word.haft && <div className="info-row"><span className="info-label">ہَفْتِ اِقْسَام:</span><span className="info-value">{word.haft}</span></div>}
-                        <div className="info-row"><span className="info-label">وزن:</span><span className="info-value">{word.wazn || '-------'}</span></div>
+                        {!((word.qism || '').includes('جامد') || (word.bahas || '').includes('جامد')) && (
+                          <div className="info-row"><span className="info-label">وزن:</span><span className="info-value">{word.wazn || '-------'}</span></div>
+                        )}
                         <div className="info-row !border-b-0"><span className="info-label">معنی:</span><span className="info-value font-urdu text-base">{word.meaning || '---'}</span></div>
                       </div>
                     </div>
@@ -2151,13 +2157,15 @@ export default function App() {
                 </div>
               )}
 
-              {/* وَزْن - EXPLICITLY SHOWN HEADING AS REQUESTED */}
-              <div className="info-row">
-                <span className="info-label font-bold text-amber-800">وزن:</span>
-                <span className="info-value font-medium text-base">
-                  {activeWord.wazn || '-------'}
-                </span>
-              </div>
+              {/* وَزْن - Only shown for non-jamid words */}
+              {!((activeWord.qism || '').includes('جامد') || (activeWord.bahas || '').includes('جامد')) && (
+                <div className="info-row">
+                  <span className="info-label font-bold text-amber-800">وزن:</span>
+                  <span className="info-value font-medium text-base">
+                    {activeWord.wazn || '-------'}
+                  </span>
+                </div>
+              )}
 
               {/* مَعْنٰی (لغوی معنی) */}
               <div className="info-row !border-b-0">
