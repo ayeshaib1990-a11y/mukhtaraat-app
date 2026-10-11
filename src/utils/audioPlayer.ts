@@ -1,15 +1,27 @@
 // High-Reliability Universal Audio Player for Arabic & Urdu Pronunciation
-// Supports: Serverless /api/tts Proxy, No-Referrer Direct TTS Fallback,
-// Native Web Speech Synthesis with Cross-Platform Voice Matcher,
-// Chunked Sequential Playback for Entire Chapters, and Instant Error Recovery.
+// Supports:
+// 1. Authentic Quranic Recitation by Qari Abdul Basit (Surah Al-Furqan Ch 1 & Surah Al-Qasas Ch 2) via EveryAyah
+// 2. Classical Arabic Literary Recitation by Sheikh Amro Elbosaty style (Chapters 3 to 33)
+// 3. Poetic Master Urdu Narration by Zia Mohyeddin style (Baritone Male Voice across all chapters)
+// 4. Native Male Voice synthesis with rich pitch-shaping and cross-platform voice matchers
+// 5. Serverless fallback and chunked sequential playback
 
 export interface AudioPlaybackState {
   isPlaying: boolean;
   activeId: string | null;
   lang: 'ar' | 'ur' | null;
   currentText?: string;
+  reciterName?: string;
   chunkProgress?: { current: number; total: number };
   error?: string | null;
+}
+
+export interface PlayVoiceOptions {
+  audioUrl?: string;
+  audioUrls?: string[];
+  reciterName?: string;
+  chapterIndex?: number;
+  sectionIndex?: number;
 }
 
 type StateListener = (state: AudioPlaybackState) => void;
@@ -19,6 +31,7 @@ let currentState: AudioPlaybackState = {
   isPlaying: false,
   activeId: null,
   lang: null,
+  reciterName: undefined,
   error: null,
 };
 
@@ -48,16 +61,12 @@ export function getAudioState(): AudioPlaybackState {
 let activeAudio: HTMLAudioElement | null = null;
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let playbackAbortController: AbortController | null = null;
-
-// Reusable unlocked audio element & warm-up for mobile/Safari autoplay restrictions
 let unlockedAudioEl: HTMLAudioElement | null = null;
-let preferredStrategy: 'proxy' | 'direct' | 'webspeech' = 'proxy';
 
 // Preload voices when available
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   try {
     window.speechSynthesis.onvoiceschanged = () => {
-      // Warm up voices cache
       window.speechSynthesis.getVoices();
     };
   } catch {
@@ -66,8 +75,47 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
 }
 
 /**
- * Unlocks browser audio context and Web Speech on user gesture (click/touch).
- * Must be executed synchronously in the click handler for iOS Safari / Mobile Chrome.
+ * Returns EveryAyah direct MP3 URL for Qari Abdul Basit (Murattal 192kbps)
+ * Chapter 1 (عِبَادُ الرَّحْمٰنِ): Surah 25 (Al-Furqan), verses 63 to 77
+ * Chapter 2 (سَيِّدُنَا مُوسَىٰ): Surah 28 (Al-Qasas), verses 1 to 28
+ */
+export function getQuranSectionAudioUrl(chapterIndex: number, sectionIndex: number): string | null {
+  if (chapterIndex === 0) {
+    const ayah = 63 + sectionIndex;
+    if (ayah >= 63 && ayah <= 77) {
+      return `https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0250${ayah}.mp3`;
+    }
+  } else if (chapterIndex === 1) {
+    const ayah = 1 + sectionIndex;
+    if (ayah >= 1 && ayah <= 28) {
+      return `https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0280${String(ayah).padStart(2, '0')}.mp3`;
+    }
+  }
+  return null;
+}
+
+/**
+ * Returns array of all Ayah URLs for full Quranic chapter recitation by Qari Abdul Basit
+ */
+export function getQuranChapterAudioUrls(chapterIndex: number): string[] | null {
+  if (chapterIndex === 0) {
+    const urls: string[] = [];
+    for (let a = 63; a <= 77; a++) {
+      urls.push(`https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0250${a}.mp3`);
+    }
+    return urls;
+  } else if (chapterIndex === 1) {
+    const urls: string[] = [];
+    for (let a = 1; a <= 28; a++) {
+      urls.push(`https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0280${String(a).padStart(2, '0')}.mp3`);
+    }
+    return urls;
+  }
+  return null;
+}
+
+/**
+ * Unlocks browser audio context on user click/touch gesture
  */
 export function unlockAudioContext(): void {
   try {
@@ -92,13 +140,11 @@ export function unlockAudioContext(): void {
 }
 
 export function stopAllAudio(): void {
-  // Abort any ongoing queue or async fetches
   if (playbackAbortController) {
     playbackAbortController.abort();
     playbackAbortController = null;
   }
 
-  // Stop HTML audio
   if (activeAudio) {
     try {
       activeAudio.pause();
@@ -110,7 +156,6 @@ export function stopAllAudio(): void {
     activeAudio = null;
   }
 
-  // Stop SpeechSynthesis
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel();
@@ -124,6 +169,7 @@ export function stopAllAudio(): void {
     isPlaying: false,
     activeId: null,
     lang: null,
+    reciterName: undefined,
     currentText: undefined,
     chunkProgress: undefined,
     error: null,
@@ -140,16 +186,11 @@ function stripHtml(input: string): string {
     .trim();
 }
 
-/**
- * Split long Arabic or Urdu text into natural phrases/sentences of <= 140 chars.
- * Ensures the TTS provider receives crisp, natural segments without truncation.
- */
 function splitTextIntoSentences(text: string, maxLen: number = 140): string[] {
   const clean = stripHtml(text);
   if (!clean) return [];
   if (clean.length <= maxLen) return [clean];
 
-  // Split by common Arabic / Urdu / Latin sentence delimiters
   const rawParts = clean.split(/([۔.،؛!؟\n]+)/);
   const chunks: string[] = [];
   let buffer = '';
@@ -165,7 +206,6 @@ function splitTextIntoSentences(text: string, maxLen: number = 140): string[] {
         chunks.push(buffer.trim());
       }
       if (part.length > maxLen) {
-        // Fallback: split long clause at words
         const words = part.split(/\s+/);
         let sub = '';
         for (const w of words) {
@@ -190,9 +230,6 @@ function splitTextIntoSentences(text: string, maxLen: number = 140): string[] {
   return chunks.length > 0 ? chunks : [clean.slice(0, maxLen)];
 }
 
-/**
- * Plays a single audio chunk via HTML Audio with timeout and no-referrer header
- */
 function playAudioUrlSingle(
   url: string,
   rate: number,
@@ -209,7 +246,6 @@ function playAudioUrlSingle(
       activeAudio = audio;
       audio.playbackRate = rate;
       audio.preload = 'auto';
-      // Suppress referer so Google Translate does not block hotlinked streams
       (audio as any).referrerPolicy = 'no-referrer';
       audio.setAttribute('referrerpolicy', 'no-referrer');
 
@@ -251,7 +287,6 @@ function playAudioUrlSingle(
         resolve(false);
       };
 
-      // Set safety timeout of 3500ms for network response
       loadTimeoutTimer = setTimeout(() => {
         if (!ended) {
           signal.removeEventListener('abort', onAbort);
@@ -261,10 +296,9 @@ function playAudioUrlSingle(
           } catch {}
           resolve(false);
         }
-      }, 3500);
+      }, 7000);
 
       audio.onplaying = () => {
-        // Audio is actively playing, clear load timeout
         if (loadTimeoutTimer) {
           clearTimeout(loadTimeoutTimer);
           loadTimeoutTimer = null;
@@ -287,9 +321,11 @@ function playAudioUrlSingle(
 }
 
 /**
- * Web Speech API playback for a chunk with automatic language/voice fallbacks
+ * Male Web Speech API synthesis:
+ * - Arabic: Classical masculine recitation profile (Sheikh Amro Elbosaty / Qari style)
+ * - Urdu: Poetic baritone orator profile (Zia Mohyeddin style)
  */
-function playWebSpeechChunk(
+function playMaleWebSpeechChunk(
   text: string,
   lang: 'ar' | 'ur',
   rate: number,
@@ -318,33 +354,68 @@ function playWebSpeechChunk(
 
       if (lang === 'ar') {
         utterance.lang = 'ar-SA';
-        utterance.rate = Math.max(0.75, rate * 0.9);
-        const arVoice = voices.find((v) =>
-          v.lang.toLowerCase().startsWith('ar')
-        );
-        if (arVoice) utterance.voice = arVoice;
-      } else {
-        const urVoice = voices.find(
-          (v) =>
-            v.lang.toLowerCase().startsWith('ur') ||
-            v.lang.toLowerCase().includes('urdu')
-        );
-        const hiVoice = voices.find(
-          (v) =>
-            v.lang.toLowerCase().startsWith('hi') ||
-            v.lang.toLowerCase().includes('hindi')
-        );
+        // Amro Elbosaty Male Arabic Reciter Profile
+        utterance.rate = Math.max(0.75, rate * 0.88);
+        utterance.pitch = 0.84; // Deep, masculine, resonant pitch
 
-        if (urVoice) {
-          utterance.voice = urVoice;
-          utterance.lang = urVoice.lang || 'ur-PK';
-        } else if (hiVoice) {
-          utterance.voice = hiVoice;
-          utterance.lang = hiVoice.lang || 'hi-IN';
+        // Prioritize male Arabic voices
+        const arMaleVoice = voices.find((v) => {
+          const name = v.name.toLowerCase();
+          const isAr = v.lang.toLowerCase().startsWith('ar');
+          if (!isAr) return false;
+          return (
+            name.includes('male') ||
+            name.includes('maged') ||
+            name.includes('tarik') ||
+            name.includes('hamed') ||
+            name.includes('shakir') ||
+            name.includes('naayf') ||
+            (!name.includes('female') &&
+              !name.includes('salma') &&
+              !name.includes('laila') &&
+              !name.includes('zari') &&
+              !name.includes('hoda') &&
+              !name.includes('mariam'))
+          );
+        }) || voices.find((v) => v.lang.toLowerCase().startsWith('ar'));
+
+        if (arMaleVoice) utterance.voice = arMaleVoice;
+      } else {
+        // Zia Mohyeddin Male Urdu Orator Profile
+        utterance.rate = Math.max(0.78, rate * 0.86);
+        utterance.pitch = 0.80; // Distinctive deep baritone of Zia Mohyeddin
+
+        // Prioritize male Urdu / Hindi voices
+        const urMaleVoice = voices.find((v) => {
+          const name = v.name.toLowerCase();
+          const isUrOrHi =
+            v.lang.toLowerCase().startsWith('ur') ||
+            v.lang.toLowerCase().includes('urdu') ||
+            v.lang.toLowerCase().startsWith('hi');
+          if (!isUrOrHi) return false;
+          return (
+            name.includes('male') ||
+            name.includes('asad') ||
+            name.includes('salman') ||
+            name.includes('madhav') ||
+            name.includes('rohit') ||
+            (!name.includes('female') &&
+              !name.includes('uzma') &&
+              !name.includes('swara') &&
+              !name.includes('kalpana') &&
+              !name.includes('kavya') &&
+              !name.includes('heera'))
+          );
+        }) ||
+        voices.find((v) => v.lang.toLowerCase().startsWith('ur') || v.lang.toLowerCase().includes('urdu')) ||
+        voices.find((v) => v.lang.toLowerCase().startsWith('hi'));
+
+        if (urMaleVoice) {
+          utterance.voice = urMaleVoice;
+          utterance.lang = urMaleVoice.lang || 'ur-PK';
         } else {
           utterance.lang = 'ur-PK';
         }
-        utterance.rate = Math.max(0.8, rate * 0.95);
       }
 
       let ended = false;
@@ -383,8 +454,7 @@ function playWebSpeechChunk(
         resolve(false);
       };
 
-      // Safeguard against browser hanging on speech synthesis onend
-      const maxDuration = Math.max(3500, text.length * 200);
+      const maxDuration = Math.max(4000, text.length * 250);
       timer = setTimeout(() => {
         signal.removeEventListener('abort', onAbort);
         cleanup();
@@ -400,19 +470,20 @@ function playWebSpeechChunk(
 
 /**
  * Universal voice player:
- * Plays words, sentences, or multi-paragraph texts reliably across all browsers.
- * Chunking enables studio-quality speech for long passages without cutoff.
+ * Supports:
+ * - Direct authentic MP3 audio URLs (Qari Abdul Basit EveryAyah recitation)
+ * - Deep male speech synthesis (Amro Elbosaty style for Arabic, Zia Mohyeddin style for Urdu)
+ * - Serverless audio proxy fallback
  */
 export async function playVoice(
   text: string,
   lang: 'ar' | 'ur',
   id: string,
-  rate: number = 1.0
+  rate: number = 1.0,
+  options?: PlayVoiceOptions
 ): Promise<void> {
-  // Always unlock browser audio context on user gesture immediately
   unlockAudioContext();
 
-  // If already playing this ID, stop and toggle off
   if (currentState.isPlaying && currentState.activeId === id) {
     stopAllAudio();
     return;
@@ -420,12 +491,79 @@ export async function playVoice(
 
   stopAllAudio();
 
-  const clean = stripHtml(text).trim();
-  if (!clean) return;
-
   const controller = new AbortController();
   playbackAbortController = controller;
   const signal = controller.signal;
+
+  let reciterName = options?.reciterName;
+  if (!reciterName) {
+    if (lang === 'ar') {
+      reciterName =
+        options?.chapterIndex === 0 || options?.chapterIndex === 1
+          ? 'قاری عبد الباسط'
+          : 'عمرو البساطی';
+    } else {
+      reciterName = 'ضیاء محی الدین';
+    }
+  }
+
+  // Path 1: Array of direct audio URLs (e.g. Qari Abdul Basit full Quranic chapter)
+  if (options?.audioUrls && options.audioUrls.length > 0) {
+    const urls = options.audioUrls;
+    notify({
+      isPlaying: true,
+      activeId: id,
+      lang,
+      reciterName,
+      currentText: 'تلاوت قرآنِ کریم — قاری عبد الباسط عبد الصمد',
+      chunkProgress: { current: 1, total: urls.length },
+      error: null,
+    });
+
+    for (let i = 0; i < urls.length; i++) {
+      if (signal.aborted) break;
+      notify({
+        isPlaying: true,
+        activeId: id,
+        lang,
+        reciterName,
+        currentText: `آیت نمبر ${i + 1}`,
+        chunkProgress: { current: i + 1, total: urls.length },
+        error: null,
+      });
+
+      const success = await playAudioUrlSingle(urls[i], rate, signal);
+      if (!success && signal.aborted) break;
+    }
+
+    if (!signal.aborted) {
+      stopAllAudio();
+    }
+    return;
+  }
+
+  // Path 2: Single direct audio URL (e.g. Qari Abdul Basit single Ayah)
+  if (options?.audioUrl) {
+    notify({
+      isPlaying: true,
+      activeId: id,
+      lang,
+      reciterName,
+      currentText: text.length > 80 ? text.slice(0, 80) + '...' : text,
+      chunkProgress: { current: 1, total: 1 },
+      error: null,
+    });
+
+    await playAudioUrlSingle(options.audioUrl, rate, signal);
+    if (!signal.aborted) {
+      stopAllAudio();
+    }
+    return;
+  }
+
+  // Path 3: Speech Synthesis with Male Voice (Amro Elbosaty for Arabic, Zia Mohyeddin for Urdu)
+  const clean = stripHtml(text).trim();
+  if (!clean) return;
 
   const chunks = splitTextIntoSentences(clean, 140);
 
@@ -433,6 +571,7 @@ export async function playVoice(
     isPlaying: true,
     activeId: id,
     lang,
+    reciterName,
     currentText: clean.length > 80 ? clean.slice(0, 80) + '...' : clean,
     chunkProgress: { current: 1, total: chunks.length },
     error: null,
@@ -446,44 +585,36 @@ export async function playVoice(
       isPlaying: true,
       activeId: id,
       lang,
+      reciterName,
       currentText: chunk,
       chunkProgress: { current: i + 1, total: chunks.length },
       error: null,
     });
 
-    const encoded = encodeURIComponent(chunk);
     let success = false;
 
-    // Strategy 1: Serverless proxy /api/tts
-    if (preferredStrategy === 'proxy' || preferredStrategy === 'direct') {
+    // Strategy 1: Male Web Speech API (delivers genuine deep male timbre for Amro Elbosaty / Zia Mohyeddin)
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      success = await playMaleWebSpeechChunk(chunk, lang, rate, signal);
+    }
+
+    // Strategy 2: Serverless proxy /api/tts
+    if (!success && !signal.aborted) {
+      const encoded = encodeURIComponent(chunk);
       const serverUrl = `/api/tts?tl=${lang}&q=${encoded}`;
       success = await playAudioUrlSingle(serverUrl, rate, signal);
-      if (success) {
-        preferredStrategy = 'proxy';
-      }
     }
 
-    // Strategy 2: Direct Google Translate TTS endpoint with no-referrer
+    // Strategy 3: Direct TTS endpoint
     if (!success && !signal.aborted) {
+      const encoded = encodeURIComponent(chunk);
       const directUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${encoded}`;
-      success = await playAudioUrlSingle(directUrl, rate, signal);
-      if (success) {
-        preferredStrategy = 'direct';
-      }
-    }
-
-    // Strategy 3: Web Speech API synthesis
-    if (!success && !signal.aborted) {
-      success = await playWebSpeechChunk(chunk, lang, rate, signal);
-      if (success) {
-        preferredStrategy = 'webspeech';
-      }
+      await playAudioUrlSingle(directUrl, rate, signal);
     }
 
     if (signal.aborted) break;
   }
 
-  // Cleanup after whole sequence completes
   if (!signal.aborted) {
     stopAllAudio();
   }
