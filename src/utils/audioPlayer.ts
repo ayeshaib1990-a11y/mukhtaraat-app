@@ -1,10 +1,12 @@
 // High-Reliability Universal Audio Player for Arabic & Urdu Pronunciation
 // Supports:
 // 1. Authentic Quranic Recitation by Qari Abdul Basit (Surah Al-Furqan Ch 1 & Surah Al-Qasas Ch 2) via EveryAyah
-// 2. Classical Arabic Literary Recitation by Sheikh Amro Elbosaty style (Chapters 3 to 33)
-// 3. Poetic Master Urdu Narration by Zia Mohyeddin style (Baritone Male Voice across all chapters)
-// 4. Native Male Voice synthesis with rich pitch-shaping and cross-platform voice matchers
-// 5. Serverless fallback and chunked sequential playback
+// 2. Classical Arabic Literary Recitation (Amro Elbosaty male style)
+// 3. Poetic Master Urdu Narration (Zia Mohyeddin male style)
+// 4. Multi-layer robust fallbacks:
+//    - High-quality audio URLs (EveryAyah & Google TTS via serverless proxy / direct)
+//    - Web Speech API with male voice prioritisation and low pitch
+//    - Shared singleton HTMLAudioElement with user-gesture unlocking
 
 export interface AudioPlaybackState {
   isPlaying: boolean;
@@ -58,10 +60,26 @@ export function getAudioState(): AudioPlaybackState {
   return currentState;
 }
 
-let activeAudio: HTMLAudioElement | null = null;
+// Global singleton audio element & abort controller
+let globalAudio: HTMLAudioElement | null = null;
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let playbackAbortController: AbortController | null = null;
-let unlockedAudioEl: HTMLAudioElement | null = null;
+let preferredStrategy: 'audioUrl' | 'speechSynthesis' = 'audioUrl';
+
+function getOrCreateAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+  if (!globalAudio) {
+    try {
+      globalAudio = new Audio();
+      globalAudio.preload = 'auto';
+      (globalAudio as any).referrerPolicy = 'no-referrer';
+      globalAudio.setAttribute('referrerpolicy', 'no-referrer');
+    } catch {
+      // ignore
+    }
+  }
+  return globalAudio;
+}
 
 // Preload voices when available
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -69,6 +87,7 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = () => {
       window.speechSynthesis.getVoices();
     };
+    window.speechSynthesis.getVoices();
   } catch {
     // ignore
   }
@@ -115,24 +134,25 @@ export function getQuranChapterAudioUrls(chapterIndex: number): string[] | null 
 }
 
 /**
- * Unlocks browser audio context on user click/touch gesture
+ * Synchronous Audio unlocker executed directly on user touch/click gesture.
+ * Crucial for iOS Safari, Android Chrome, and modern desktop browser autoplay policies.
  */
 export function unlockAudioContext(): void {
   try {
-    if (typeof window !== 'undefined') {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.resume();
-        const silent = new SpeechSynthesisUtterance(' ');
-        silent.volume = 0.01;
-        window.speechSynthesis.speak(silent);
+    const audio = getOrCreateAudio();
+    if (audio) {
+      // Warm up singleton audio element with a tiny silent data URI
+      if (!audio.src || audio.src === '' || audio.paused) {
+        audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
+        const p = audio.play();
+        if (p !== undefined) {
+          p.catch(() => {});
+        }
       }
-      if (!unlockedAudioEl && typeof Audio !== 'undefined') {
-        unlockedAudioEl = new Audio();
-        unlockedAudioEl.preload = 'auto';
-        unlockedAudioEl.src =
-          'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
-        unlockedAudioEl.play().catch(() => {});
-      }
+    }
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.resume();
     }
   } catch {
     // ignore
@@ -145,15 +165,15 @@ export function stopAllAudio(): void {
     playbackAbortController = null;
   }
 
-  if (activeAudio) {
+  if (globalAudio) {
     try {
-      activeAudio.pause();
-      activeAudio.currentTime = 0;
-      activeAudio.src = '';
+      globalAudio.pause();
+      globalAudio.currentTime = 0;
+      globalAudio.removeAttribute('src');
+      globalAudio.load();
     } catch {
       // ignore
     }
-    activeAudio = null;
   }
 
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -230,6 +250,10 @@ function splitTextIntoSentences(text: string, maxLen: number = 140): string[] {
   return chunks.length > 0 ? chunks : [clean.slice(0, maxLen)];
 }
 
+/**
+ * Plays an audio URL using the singleton HTMLAudioElement.
+ * Includes timeout safeguards, user abort handlers, and error catching.
+ */
 function playAudioUrlSingle(
   url: string,
   rate: number,
@@ -241,13 +265,15 @@ function playAudioUrlSingle(
       return;
     }
 
+    const audio = getOrCreateAudio();
+    if (!audio) {
+      resolve(false);
+      return;
+    }
+
     try {
-      const audio = new Audio();
-      activeAudio = audio;
       audio.playbackRate = rate;
-      audio.preload = 'auto';
-      (audio as any).referrerPolicy = 'no-referrer';
-      audio.setAttribute('referrerpolicy', 'no-referrer');
+      audio.src = url;
 
       let ended = false;
       let loadTimeoutTimer: any = null;
@@ -255,7 +281,10 @@ function playAudioUrlSingle(
       const cleanup = () => {
         if (!ended) {
           ended = true;
-          if (loadTimeoutTimer) clearTimeout(loadTimeoutTimer);
+          if (loadTimeoutTimer) {
+            clearTimeout(loadTimeoutTimer);
+            loadTimeoutTimer = null;
+          }
           audio.onended = null;
           audio.onerror = null;
           audio.onplaying = null;
@@ -266,7 +295,8 @@ function playAudioUrlSingle(
         cleanup();
         try {
           audio.pause();
-          audio.src = '';
+          audio.removeAttribute('src');
+          audio.load();
         } catch {
           // ignore
         }
@@ -287,17 +317,6 @@ function playAudioUrlSingle(
         resolve(false);
       };
 
-      loadTimeoutTimer = setTimeout(() => {
-        if (!ended) {
-          signal.removeEventListener('abort', onAbort);
-          cleanup();
-          try {
-            audio.pause();
-          } catch {}
-          resolve(false);
-        }
-      }, 7000);
-
       audio.onplaying = () => {
         if (loadTimeoutTimer) {
           clearTimeout(loadTimeoutTimer);
@@ -305,10 +324,23 @@ function playAudioUrlSingle(
         }
       };
 
-      audio.src = url;
+      // 6 second timeout to avoid indefinite hanging on slow network or broken proxy
+      loadTimeoutTimer = setTimeout(() => {
+        if (!ended) {
+          signal.removeEventListener('abort', onAbort);
+          cleanup();
+          try {
+            audio.pause();
+          } catch {
+            // ignore
+          }
+          resolve(false);
+        }
+      }, 6000);
+
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
+        playPromise.catch((err) => {
           signal.removeEventListener('abort', onAbort);
           cleanup();
           resolve(false);
@@ -347,16 +379,13 @@ function playMaleWebSpeechChunk(
 
       const utterance = new SpeechSynthesisUtterance(text);
       activeUtterance = utterance;
-      (window as unknown as { __activeUtterance: SpeechSynthesisUtterance }).__activeUtterance =
-        utterance;
 
       const voices = window.speechSynthesis.getVoices() || [];
 
       if (lang === 'ar') {
         utterance.lang = 'ar-SA';
-        // Amro Elbosaty Male Arabic Reciter Profile
-        utterance.rate = Math.max(0.75, rate * 0.88);
-        utterance.pitch = 0.84; // Deep, masculine, resonant pitch
+        utterance.rate = Math.max(0.75, rate * 0.9);
+        utterance.pitch = 0.82; // Deep, masculine, resonant baritone pitch
 
         // Prioritize male Arabic voices
         const arMaleVoice = voices.find((v) => {
@@ -381,9 +410,10 @@ function playMaleWebSpeechChunk(
 
         if (arMaleVoice) utterance.voice = arMaleVoice;
       } else {
+        utterance.lang = 'ur-PK';
         // Zia Mohyeddin Male Urdu Orator Profile
-        utterance.rate = Math.max(0.78, rate * 0.86);
-        utterance.pitch = 0.80; // Distinctive deep baritone of Zia Mohyeddin
+        utterance.rate = Math.max(0.78, rate * 0.88);
+        utterance.pitch = 0.78; // Distinctive deep orator baritone of Zia Mohyeddin
 
         // Prioritize male Urdu / Hindi voices
         const urMaleVoice = voices.find((v) => {
@@ -413,8 +443,6 @@ function playMaleWebSpeechChunk(
         if (urMaleVoice) {
           utterance.voice = urMaleVoice;
           utterance.lang = urMaleVoice.lang || 'ur-PK';
-        } else {
-          utterance.lang = 'ur-PK';
         }
       }
 
@@ -454,7 +482,7 @@ function playMaleWebSpeechChunk(
         resolve(false);
       };
 
-      const maxDuration = Math.max(4000, text.length * 250);
+      const maxDuration = Math.max(3500, text.length * 200);
       timer = setTimeout(() => {
         signal.removeEventListener('abort', onAbort);
         cleanup();
@@ -470,10 +498,8 @@ function playMaleWebSpeechChunk(
 
 /**
  * Universal voice player:
- * Supports:
- * - Direct authentic MP3 audio URLs (Qari Abdul Basit EveryAyah recitation)
- * - Deep male speech synthesis (Amro Elbosaty style for Arabic, Zia Mohyeddin style for Urdu)
- * - Serverless audio proxy fallback
+ * Prioritizes high-quality audio playback and automatically falls back to Web Speech synthesis
+ * ensuring that sound is NEVER silent.
  */
 export async function playVoice(
   text: string,
@@ -482,8 +508,10 @@ export async function playVoice(
   rate: number = 1.0,
   options?: PlayVoiceOptions
 ): Promise<void> {
+  // 1. Immediately unlock browser audio context on user gesture
   unlockAudioContext();
 
+  // 2. If already playing this ID, stop and toggle off
   if (currentState.isPlaying && currentState.activeId === id) {
     stopAllAudio();
     return;
@@ -554,14 +582,15 @@ export async function playVoice(
       error: null,
     });
 
-    await playAudioUrlSingle(options.audioUrl, rate, signal);
-    if (!signal.aborted) {
+    const success = await playAudioUrlSingle(options.audioUrl, rate, signal);
+    if (success && !signal.aborted) {
       stopAllAudio();
+      return;
     }
-    return;
+    // If EveryAyah direct URL failed or network blocked, continue to standard TTS pipeline below
   }
 
-  // Path 3: Speech Synthesis with Male Voice (Amro Elbosaty for Arabic, Zia Mohyeddin for Urdu)
+  // Path 3: Speech Pipeline (Serverless Audio Proxy -> Direct TTS -> Native Male Speech Synthesis)
   const clean = stripHtml(text).trim();
   if (!clean) return;
 
@@ -591,25 +620,32 @@ export async function playVoice(
       error: null,
     });
 
-    let success = false;
+    const encoded = encodeURIComponent(chunk);
+    let chunkPlayed = false;
 
-    // Strategy 1: Male Web Speech API (delivers genuine deep male timbre for Amro Elbosaty / Zia Mohyeddin)
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      success = await playMaleWebSpeechChunk(chunk, lang, rate, signal);
-    }
-
-    // Strategy 2: Serverless proxy /api/tts
-    if (!success && !signal.aborted) {
-      const encoded = encodeURIComponent(chunk);
+    // Strategy A: Serverless audio proxy /api/tts (works across all browsers, mobile and desktop)
+    if (!chunkPlayed && !signal.aborted) {
       const serverUrl = `/api/tts?tl=${lang}&q=${encoded}`;
-      success = await playAudioUrlSingle(serverUrl, rate, signal);
+      chunkPlayed = await playAudioUrlSingle(serverUrl, rate, signal);
     }
 
-    // Strategy 3: Direct TTS endpoint
-    if (!success && !signal.aborted) {
-      const encoded = encodeURIComponent(chunk);
+    // Strategy B: Direct Google Translate TTS endpoint with no-referrer
+    if (!chunkPlayed && !signal.aborted) {
       const directUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${encoded}`;
-      await playAudioUrlSingle(directUrl, rate, signal);
+      chunkPlayed = await playAudioUrlSingle(directUrl, rate, signal);
+    }
+
+    // Strategy C: Native Web Speech API with male voice profiling & deep pitch
+    if (!chunkPlayed && !signal.aborted && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      chunkPlayed = await playMaleWebSpeechChunk(chunk, lang, rate, signal);
+    }
+
+    if (!chunkPlayed && !signal.aborted) {
+      notify({
+        ...currentState,
+        error: 'آواز لوڈ نہیں ہو سکی، براہِ کرم انٹرنیٹ یا والیوم چیک کریں۔',
+      });
+      break;
     }
 
     if (signal.aborted) break;
