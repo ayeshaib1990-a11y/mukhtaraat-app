@@ -608,6 +608,15 @@ export default function App() {
     const numPrefix = index !== undefined ? `${index + 1}. ` : '';
     const wordTitle = w.w || w.word || '';
     let out = `${numPrefix}${wordTitle}\nصرفی و لغوی تحقیق\n`;
+    const isJamid = (w.qism || '').includes('جامد') || (w.bahas || '').includes('جامد');
+    if (isJamid) {
+      out += `سہ اقسام: ${w.qism || 'اسم (جامد)'}\n`;
+      if (w.singular) out += `مفرد: ${w.singular}\n`;
+      if (w.plural) out += `جمع: ${w.plural}\n`;
+      out += `معنی: ${w.meaning || '---'}\n`;
+      if (w.extra) out += `فائدہ: ${w.extra}\n`;
+      return out;
+    }
     if (w.qism) out += `سہ اقسام: ${w.qism}\n`;
     if (w.singular) out += `مفرد: ${w.singular}\n`;
     if (w.plural) out += `جمع: ${w.plural}\n`;
@@ -616,10 +625,8 @@ export default function App() {
     if (w.bahas) out += `بَحْث: ${w.bahas}\n`;
     if (w.shash) out += `شُشَّ اِقْسَام: ${w.shash}\n`;
     if (w.bab) out += `بَاب: ${w.bab}\n`;
-    const isJamid = (w.qism || '').includes('جامد') || (w.bahas || '').includes('جامد');
-    if (!isJamid && (w.wazn || !isJamid)) {
-      if (w.wazn) out += `وزن: ${w.wazn}\n`;
-    }
+    if (w.haft) out += `ہَفْتِ اِقْسَام: ${w.haft}\n`;
+    if (w.wazn) out += `وزن: ${w.wazn}\n`;
     out += `معنی: ${w.meaning || '---'}\n`;
     if (w.extra) out += `فائدہ: ${w.extra}\n`;
     return out;
@@ -1550,62 +1557,65 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* مَادَّہ */}
-                          {word.root && (
-                            <div className="info-row">
-                              <span className="info-label">مَادَّہ:</span>
-                              <span className="info-value font-bold tracking-widest text-base">{word.root}</span>
-                            </div>
-                          )}
-
-                          {/* صِّیغَہ */}
-                          {word.seegha && (
-                            <div className="info-row">
-                              <span className="info-label">صِّیغَہ:</span>
-                              <span className="info-value font-medium">{word.seegha}</span>
-                            </div>
-                          )}
-
-                          {/* بَحْث */}
-                          {word.bahas && (
-                            <div className="info-row">
-                              <span className="info-label">بَحْث:</span>
-                              <span className="info-value font-medium">{word.bahas}</span>
-                            </div>
-                          )}
-
-                          {/* شُشَّ اِقْسَام */}
-                          {word.shash && (
-                            <div className="info-row">
-                              <span className="info-label">شُشَّ اِقْسَام:</span>
-                              <span className="info-value font-medium">{word.shash}</span>
-                            </div>
-                          )}
-
-                          {/* بَاب */}
-                          {word.bab && (
-                            <div className="info-row">
-                              <span className="info-label">بَاب:</span>
-                              <span className="info-value font-medium">{word.bab}</span>
-                            </div>
-                          )}
-
-                          {/* ہَفْتِ اِقْسَام */}
-                          {word.haft && (
-                            <div className="info-row">
-                              <span className="info-label">ہَفْتِ اِقْسَام:</span>
-                              <span className="info-value font-medium">{word.haft}</span>
-                            </div>
-                          )}
-
-                          {/* وزن - Only shown for non-jamid words */}
+                          {/* Non-jamid fields: only shown when NOT isme jamid */}
                           {!((word.qism || '').includes('جامد') || (word.bahas || '').includes('جامد')) && (
-                            <div className="info-row">
-                              <span className="info-label font-bold text-amber-800">وزن:</span>
-                              <span className="info-value font-medium font-arabic text-base">
-                                {word.wazn || '-------'}
-                              </span>
-                            </div>
+                            <>
+                              {/* مَادَّہ */}
+                              {word.root && (
+                                <div className="info-row">
+                                  <span className="info-label">مَادَّہ:</span>
+                                  <span className="info-value font-bold tracking-widest text-base">{word.root}</span>
+                                </div>
+                              )}
+
+                              {/* صِّیغَہ */}
+                              {word.seegha && (
+                                <div className="info-row">
+                                  <span className="info-label">صِّیغَہ:</span>
+                                  <span className="info-value font-medium">{word.seegha}</span>
+                                </div>
+                              )}
+
+                              {/* بَحْث */}
+                              {word.bahas && (
+                                <div className="info-row">
+                                  <span className="info-label">بَحْث:</span>
+                                  <span className="info-value font-medium">{word.bahas}</span>
+                                </div>
+                              )}
+
+                              {/* شُشَّ اِقْسَام */}
+                              {word.shash && (
+                                <div className="info-row">
+                                  <span className="info-label">شُشَّ اِقْسَام:</span>
+                                  <span className="info-value font-medium">{word.shash}</span>
+                                </div>
+                              )}
+
+                              {/* بَاب */}
+                              {word.bab && (
+                                <div className="info-row">
+                                  <span className="info-label">بَاب:</span>
+                                  <span className="info-value font-medium">{word.bab}</span>
+                                </div>
+                              )}
+
+                              {/* ہَفْتِ اِقْسَام */}
+                              {word.haft && (
+                                <div className="info-row">
+                                  <span className="info-label">ہَفْتِ اِقْسَام:</span>
+                                  <span className="info-value font-medium">{word.haft}</span>
+                                </div>
+                              )}
+
+                              {/* وزن */}
+                              <div className="info-row">
+                                <span className="info-label font-bold text-amber-800">وزن:</span>
+                                <span className="info-value font-medium font-arabic text-base">
+                                  {word.wazn || '-------'}
+                                </span>
+                              </div>
+                            </>
                           )}
 
                           {/* معنی */}
@@ -1730,13 +1740,17 @@ export default function App() {
 
                       <div className="space-y-0 text-sm font-arabic">
                         {word.qism && <div className="info-row"><span className="info-label">سہ اقسام:</span><span className="info-value">{word.qism}</span></div>}
-                        {word.root && <div className="info-row"><span className="info-label">مَادَّہ:</span><span className="info-value font-bold">{word.root}</span></div>}
-                        {word.seegha && <div className="info-row"><span className="info-label">صِّیغَہ:</span><span className="info-value">{word.seegha}</span></div>}
-                        {word.bahas && <div className="info-row"><span className="info-label">بَحْث:</span><span className="info-value">{word.bahas}</span></div>}
-                        {word.bab && <div className="info-row"><span className="info-label">بَاب:</span><span className="info-value">{word.bab}</span></div>}
-                        {word.haft && <div className="info-row"><span className="info-label">ہَفْتِ اِقْسَام:</span><span className="info-value">{word.haft}</span></div>}
+                        {word.singular && <div className="info-row"><span className="info-label">مفرد:</span><span className="info-value">{word.singular}</span></div>}
+                        {word.plural && <div className="info-row"><span className="info-label">جمع:</span><span className="info-value">{word.plural}</span></div>}
                         {!((word.qism || '').includes('جامد') || (word.bahas || '').includes('جامد')) && (
-                          <div className="info-row"><span className="info-label">وزن:</span><span className="info-value">{word.wazn || '-------'}</span></div>
+                          <>
+                            {word.root && <div className="info-row"><span className="info-label">مَادَّہ:</span><span className="info-value font-bold">{word.root}</span></div>}
+                            {word.seegha && <div className="info-row"><span className="info-label">صِّیغَہ:</span><span className="info-value">{word.seegha}</span></div>}
+                            {word.bahas && <div className="info-row"><span className="info-label">بَحْث:</span><span className="info-value">{word.bahas}</span></div>}
+                            {word.bab && <div className="info-row"><span className="info-label">بَاب:</span><span className="info-value">{word.bab}</span></div>}
+                            {word.haft && <div className="info-row"><span className="info-label">ہَفْتِ اِقْسَام:</span><span className="info-value">{word.haft}</span></div>}
+                            <div className="info-row"><span className="info-label">وزن:</span><span className="info-value">{word.wazn || '-------'}</span></div>
+                          </>
                         )}
                         <div className="info-row !border-b-0"><span className="info-label">معنی:</span><span className="info-value font-urdu text-base">{word.meaning || '---'}</span></div>
                       </div>
@@ -2109,62 +2123,65 @@ export default function App() {
                 </div>
               )}
 
-              {/* مَادَّہ (حروفِ اصلیہ) */}
-              {activeWord.root && (
-                <div className="info-row">
-                  <span className="info-label">مَادَّہ:</span>
-                  <span className="info-value font-bold text-base tracking-widest">{activeWord.root}</span>
-                </div>
-              )}
-
-              {/* صِّیغَہ */}
-              {activeWord.seegha && (
-                <div className="info-row">
-                  <span className="info-label">صِّیغَہ:</span>
-                  <span className="info-value font-medium">{activeWord.seegha}</span>
-                </div>
-              )}
-
-              {/* بَحْث */}
-              {activeWord.bahas && (
-                <div className="info-row">
-                  <span className="info-label">بَحْث:</span>
-                  <span className="info-value font-medium">{activeWord.bahas}</span>
-                </div>
-              )}
-
-              {/* شَش اَقْسَام */}
-              {activeWord.shash && (
-                <div className="info-row">
-                  <span className="info-label">شُشَّ اِقْسَام:</span>
-                  <span className="info-value font-medium">{activeWord.shash}</span>
-                </div>
-              )}
-
-              {/* بَاب کَا نَام */}
-              {activeWord.bab && (
-                <div className="info-row">
-                  <span className="info-label">بَاب:</span>
-                  <span className="info-value font-medium">{activeWord.bab}</span>
-                </div>
-              )}
-
-              {/* هَفْت اَقْسَام */}
-              {activeWord.haft && (
-                <div className="info-row">
-                  <span className="info-label">ہَفْتِ اِقْسَام:</span>
-                  <span className="info-value font-medium">{activeWord.haft}</span>
-                </div>
-              )}
-
-              {/* وَزْن - Only shown for non-jamid words */}
+              {/* Only for non-jamid words */}
               {!((activeWord.qism || '').includes('جامد') || (activeWord.bahas || '').includes('جامد')) && (
-                <div className="info-row">
-                  <span className="info-label font-bold text-amber-800">وزن:</span>
-                  <span className="info-value font-medium text-base">
-                    {activeWord.wazn || '-------'}
-                  </span>
-                </div>
+                <>
+                  {/* مَادَّہ (حروفِ اصلیہ) */}
+                  {activeWord.root && (
+                    <div className="info-row">
+                      <span className="info-label">مَادَّہ:</span>
+                      <span className="info-value font-bold text-base tracking-widest">{activeWord.root}</span>
+                    </div>
+                  )}
+
+                  {/* صِّیغَہ */}
+                  {activeWord.seegha && (
+                    <div className="info-row">
+                      <span className="info-label">صِّیغَہ:</span>
+                      <span className="info-value font-medium">{activeWord.seegha}</span>
+                    </div>
+                  )}
+
+                  {/* بَحْث */}
+                  {activeWord.bahas && (
+                    <div className="info-row">
+                      <span className="info-label">بَحْث:</span>
+                      <span className="info-value font-medium">{activeWord.bahas}</span>
+                    </div>
+                  )}
+
+                  {/* شَش اَقْسَام */}
+                  {activeWord.shash && (
+                    <div className="info-row">
+                      <span className="info-label">شُشَّ اِقْسَام:</span>
+                      <span className="info-value font-medium">{activeWord.shash}</span>
+                    </div>
+                  )}
+
+                  {/* بَاب کَا نَام */}
+                  {activeWord.bab && (
+                    <div className="info-row">
+                      <span className="info-label">بَاب:</span>
+                      <span className="info-value font-medium">{activeWord.bab}</span>
+                    </div>
+                  )}
+
+                  {/* هَفْت اَقْسَام */}
+                  {activeWord.haft && (
+                    <div className="info-row">
+                      <span className="info-label">ہَفْتِ اِقْسَام:</span>
+                      <span className="info-value font-medium">{activeWord.haft}</span>
+                    </div>
+                  )}
+
+                  {/* وَزْن */}
+                  <div className="info-row">
+                    <span className="info-label font-bold text-amber-800">وزن:</span>
+                    <span className="info-value font-medium text-base">
+                      {activeWord.wazn || '-------'}
+                    </span>
+                  </div>
+                </>
               )}
 
               {/* مَعْنٰی (لغوی معنی) */}
