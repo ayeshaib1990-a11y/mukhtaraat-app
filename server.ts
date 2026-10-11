@@ -2,7 +2,7 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
-import ttsHandler from './api/tts';
+import ttsHandler from './api/tts.ts';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
