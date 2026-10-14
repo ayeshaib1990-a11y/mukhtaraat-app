@@ -86,27 +86,18 @@ function fetchRawChunk(text: string, lang: 'ar' | 'ur'): Promise<Buffer> {
 }
 
 /**
- * Transforms audio stream with studio equalization into:
- * - 'female': Strong, articulate, crystal-clear classical orator voice with pristine makharij & accent.
- * - 'male': Resonant masculine baritone orator voice.
+ * Transforms audio stream with studio equalization into resonant masculine baritone orator voice.
  * If ffmpeg is not available in the serverless environment, gracefully falls back to rawCombined.
  */
 function processStudioAudio(
   rawCombined: Buffer,
-  lang: 'ar' | 'ur',
-  gender: 'female' | 'male'
+  lang: 'ar' | 'ur'
 ): Promise<Buffer> {
   return new Promise((resolve) => {
-    let filter = '';
-    if (gender === 'female') {
-      filter =
-        'equalizer=f=180:width_type=h:width=80:g=2,equalizer=f=2800:width_type=h:width=800:g=1.5,volume=1.12';
-    } else {
-      filter =
-        lang === 'ur'
-          ? 'asetrate=24000*0.76,atempo=1.31,equalizer=f=120:width_type=h:width=60:g=7,equalizer=f=260:width_type=h:width=100:g=3,equalizer=f=3500:width_type=h:width=1000:g=-5'
-          : 'asetrate=24000*0.77,atempo=1.30,equalizer=f=125:width_type=h:width=60:g=6,equalizer=f=280:width_type=h:width=100:g=3,equalizer=f=3600:width_type=h:width=1000:g=-5';
-    }
+    const filter =
+      lang === 'ur'
+        ? 'asetrate=24000*0.76,atempo=1.31,equalizer=f=120:width_type=h:width=60:g=7,equalizer=f=260:width_type=h:width=100:g=3,equalizer=f=3500:width_type=h:width=1000:g=-5'
+        : 'asetrate=24000*0.77,atempo=1.30,equalizer=f=125:width_type=h:width=60:g=6,equalizer=f=280:width_type=h:width=100:g=3,equalizer=f=3600:width_type=h:width=1000:g=-5';
 
     try {
       const ff = spawn('ffmpeg', [
@@ -156,9 +147,8 @@ export default async function handler(req: any, res: any) {
   }
 
   const tl = ((req.query?.tl as string) || 'ar').toLowerCase() as 'ar' | 'ur';
-  const gender = (((req.query?.gender as string) || 'female').toLowerCase() === 'male'
-    ? 'male'
-    : 'female') as 'female' | 'male';
+  // Exclusively masculine voice
+  const gender = 'male';
   const q = ((req.query?.q as string) || '').trim();
 
   if (!q) {
@@ -205,7 +195,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const combinedRaw = Buffer.concat(rawBuffers);
-    const audioBuffer = await processStudioAudio(combinedRaw, tl, gender);
+    const audioBuffer = await processStudioAudio(combinedRaw, tl);
 
     // Store in lean memory cache (LRU purge if > MAX_CACHE_ITEMS)
     if (memoryCache.size >= MAX_CACHE_ITEMS) {

@@ -8,31 +8,23 @@
 //    - Web Speech API with male voice prioritisation and low pitch
 //    - Shared singleton HTMLAudioElement with user-gesture unlocking
 
-export type VoiceGender = 'female' | 'male';
+export type VoiceGender = 'male';
 
 export function getVoiceGender(): VoiceGender {
   if (typeof window !== 'undefined') {
     try {
-      const saved = localStorage.getItem('app_voice_gender');
-      if (saved === 'female' || saved === 'male') return saved;
+      localStorage.removeItem('app_voice_gender'); // Purge any legacy female voice preference
     } catch {
       // ignore
     }
   }
-  return 'female'; // Default to strong female voice per user request
+  return 'male';
 }
 
-export function setVoiceGender(gender: VoiceGender): void {
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('app_voice_gender', gender);
-    } catch {
-      // ignore
-    }
-  }
+export function setVoiceGender(_gender: VoiceGender): void {
   notify({
     ...currentState,
-    voiceGender: gender,
+    voiceGender: 'male',
   });
 }
 
@@ -171,24 +163,16 @@ export function getQuranChapterAudioUrls(chapterIndex: number): string[] | null 
  * - Chapters 1, 2, 3 Urdu: Dedicated male Urdu translation voiceover
  */
 /**
- * Returns authentic audio URL for a given chapter, section, language, and gender.
- * - When female voice is selected, dynamic studio audio is generated via /api/tts?gender=female
- * - When male voice is selected, master pre-recorded files are prioritized where available
+ * Returns authentic audio URL for a given chapter, section, and language.
+ * Uses master pre-recorded high-fidelity male audio recitations.
  */
 export function getSectionVoiceoverAudioUrl(
   chapterIndex: number,
   sectionIndex: number,
   lang: 'ar' | 'ur',
-  gender?: VoiceGender
+  _gender?: VoiceGender
 ): string | null {
-  const currentGender = gender || getVoiceGender();
-
-  // If user selected Strong Female voice, dynamically stream via /api/tts?gender=female
-  if (currentGender === 'female') {
-    return null;
-  }
-
-  // Pre-recorded master Male audio sources:
+  // Master Male audio sources:
   if (lang === 'ar') {
     if (chapterIndex === 0 || chapterIndex === 1) {
       return getQuranSectionAudioUrl(chapterIndex, sectionIndex);
@@ -223,13 +207,8 @@ export function getChapterVoiceoverAudioUrls(
   chapterIndex: number,
   lang: 'ar' | 'ur',
   totalSections: number,
-  gender?: VoiceGender
+  _gender?: VoiceGender
 ): string[] | null {
-  const currentGender = gender || getVoiceGender();
-  if (currentGender === 'female') {
-    return null; // Will stream full chapter via sequential studio chunks
-  }
-
   if (lang === 'ar') {
     if (chapterIndex === 0 || chapterIndex === 1) {
       return getQuranChapterAudioUrls(chapterIndex);
@@ -474,12 +453,13 @@ function playAudioUrlSingle(
 
 /**
  * Web Speech API fallback:
- * Supports both pristine Female and resonant Male profiles.
+ * Exclusively uses dignified masculine profiles with low baritone pitch,
+ * and strictly blacklists any female voices.
  */
 function playWebSpeechChunk(
   text: string,
   lang: 'ar' | 'ur',
-  gender: VoiceGender,
+  _gender: VoiceGender,
   rate: number,
   signal: AbortSignal
 ): Promise<boolean> {
@@ -502,44 +482,59 @@ function playWebSpeechChunk(
 
       const voices = window.speechSynthesis.getVoices() || [];
 
+      // Strict check to reject ANY female voice
+      const isFemaleVoice = (name: string) => {
+        const n = name.toLowerCase();
+        return (
+          n.includes('female') ||
+          n.includes('woman') ||
+          n.includes('girl') ||
+          n.includes('zira') ||
+          n.includes('samantha') ||
+          n.includes('victoria') ||
+          n.includes('karen') ||
+          n.includes('susan') ||
+          n.includes('eva') ||
+          n.includes('hoda') ||
+          n.includes('salma') ||
+          n.includes('zeina') ||
+          n.includes('mariam') ||
+          n.includes('leila') ||
+          n.includes('zari') ||
+          n.includes('fatima') ||
+          n.includes('layla') ||
+          n.includes('uzma') ||
+          n.includes('swara') ||
+          n.includes('kalpana') ||
+          n.includes('ananya')
+        );
+      };
+
       if (lang === 'ar') {
         utterance.lang = 'ar-SA';
         utterance.rate = Math.max(0.75, rate * 0.90);
-        utterance.pitch = gender === 'female' ? 1.05 : 0.50;
+        utterance.pitch = 0.50; // Deep masculine tone
 
         const arVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('ar'));
-        if (gender === 'female') {
-          const arFemale = arVoices.find((v) => {
-            const name = v.name.toLowerCase();
-            return (
-              name.includes('female') ||
-              name.includes('hoda') ||
-              name.includes('salma') ||
-              name.includes('zeina') ||
-              name.includes('mariam') ||
-              name.includes('leila') ||
-              name.includes('zari')
-            );
-          }) || arVoices[0];
-          if (arFemale) utterance.voice = arFemale;
-        } else {
-          const arMale = arVoices.find((v) => {
-            const name = v.name.toLowerCase();
-            return (
-              name.includes('male') ||
+        const arMale = arVoices.find((v) => {
+          const name = v.name.toLowerCase();
+          return (
+            !isFemaleVoice(name) &&
+            (name.includes('male') ||
               name.includes('maged') ||
               name.includes('tarik') ||
+              name.includes('tariq') ||
               name.includes('hamed') ||
               name.includes('shakir') ||
-              name.includes('naayf')
-            );
-          });
-          if (arMale) utterance.voice = arMale;
-        }
+              name.includes('naayf') ||
+              name.includes('hamza'))
+          );
+        }) || arVoices.find((v) => !isFemaleVoice(v.name.toLowerCase()));
+        if (arMale) utterance.voice = arMale;
       } else {
         utterance.lang = 'ur-PK';
         utterance.rate = Math.max(0.75, rate * 0.88);
-        utterance.pitch = gender === 'female' ? 1.05 : 0.50;
+        utterance.pitch = 0.50; // Deep masculine tone
 
         const urVoices = voices.filter(
           (v) =>
@@ -547,36 +542,22 @@ function playWebSpeechChunk(
             v.lang.toLowerCase().includes('urdu') ||
             v.lang.toLowerCase().startsWith('hi')
         );
-        if (gender === 'female') {
-          const urFemale = urVoices.find((v) => {
-            const name = v.name.toLowerCase();
-            return (
-              name.includes('female') ||
-              name.includes('uzma') ||
-              name.includes('swara') ||
-              name.includes('kalpana') ||
-              name.includes('ananya')
-            );
-          }) || urVoices[0];
-          if (urFemale) {
-            utterance.voice = urFemale;
-            utterance.lang = urFemale.lang || 'ur-PK';
-          }
-        } else {
-          const urMale = urVoices.find((v) => {
-            const name = v.name.toLowerCase();
-            return (
-              name.includes('male') ||
+        const urMale = urVoices.find((v) => {
+          const name = v.name.toLowerCase();
+          return (
+            !isFemaleVoice(name) &&
+            (name.includes('male') ||
               name.includes('asad') ||
               name.includes('salman') ||
               name.includes('madhav') ||
-              name.includes('rohit')
-            );
-          });
-          if (urMale) {
-            utterance.voice = urMale;
-            utterance.lang = urMale.lang || 'ur-PK';
-          }
+              name.includes('rohit') ||
+              name.includes('david') ||
+              name.includes('george'))
+          );
+        }) || urVoices.find((v) => !isFemaleVoice(v.name.toLowerCase()));
+        if (urMale) {
+          utterance.voice = urMale;
+          utterance.lang = urMale.lang || 'ur-PK';
         }
       }
 
@@ -661,11 +642,7 @@ export async function playVoice(
 
   let reciterName = options?.reciterName;
   if (!reciterName) {
-    if (gender === 'female') {
-      reciterName = lang === 'ar' ? 'عربی صوتی تلفظ' : 'اردو صوتی تلفظ';
-    } else {
-      reciterName = lang === 'ar' ? 'عربی صوتی تلفظ' : 'اردو صوتی تلفظ';
-    }
+    reciterName = lang === 'ar' ? 'عربی صوتی تلفظ' : 'اردو صوتی تلفظ';
   }
 
   // Path 1: Array of direct audio URLs (e.g. Master recitation)
@@ -760,9 +737,9 @@ export async function playVoice(
     const encoded = encodeURIComponent(chunk);
     let chunkPlayed = false;
 
-    // Strategy A: Serverless audio proxy /api/tts with studio equalization
+    // Strategy A: Serverless audio proxy /api/tts with masculine studio equalization
     if (!chunkPlayed && !signal.aborted) {
-      const serverUrl = `/api/tts?tl=${lang}&gender=${gender}&q=${encoded}`;
+      const serverUrl = `/api/tts?tl=${lang}&gender=male&q=${encoded}`;
       chunkPlayed = await playAudioUrlSingle(serverUrl, rate, signal);
     }
 
