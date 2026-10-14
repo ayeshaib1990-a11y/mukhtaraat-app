@@ -1,9 +1,149 @@
-import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import https from 'https';
+import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
-// Cache of audio chunks in memory to be blazing fast
+// Lean memory cache for audio buffers (limited to max 30 recent items to protect serverless memory)
 const memoryCache = new Map<string, { buffer: Buffer; timestamp: number }>();
-const MAX_CACHE_ITEMS = 300;
+const MAX_CACHE_ITEMS = 30;
+
+// Disk cache directory to persist generated audio in /tmp
+const CACHE_DIR = '/tmp/tts_audio_cache';
+try {
+  if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+  }
+} catch {
+  // ignore
+}
+
+function getCacheDiskPath(key: string): string {
+  const safeKey = Buffer.from(key).toString('hex').slice(0, 64);
+  return path.join(CACHE_DIR, `${safeKey}.mp3`);
+}
+
+/**
+ * Splits text into safe sub-chunks (< 120 chars) on whitespace boundaries
+ * so Google TTS never throws 400 Bad Request.
+ */
+function splitIntoSafeChunks(text: string, maxLen = 120): string[] {
+  if (text.length <= maxLen) return [text];
+  const words = text.split(/\s+/);
+  const chunks: string[] = [];
+  let current = '';
+
+  for (const w of words) {
+    if ((current + ' ' + w).trim().length <= maxLen) {
+      current = current ? `${current} ${w}` : w;
+    } else {
+      if (current.trim()) chunks.push(current.trim());
+      current = w;
+    }
+  }
+
+  if (current.trim()) {
+    chunks.push(current.trim());
+  }
+
+  return chunks.length > 0 ? chunks : [text.slice(0, maxLen)];
+}
+
+/**
+ * Fetches a single chunk (< 120 chars) from upstream TTS
+ */
+function fetchRawChunk(text: string, lang: 'ar' | 'ur'): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const encoded = encodeURIComponent(text);
+    const googleLang = lang === 'ur' ? 'ur' : 'ar';
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${googleLang}&q=${encoded}`;
+
+    const req = https.get(
+      url,
+      {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          Referer: 'https://translate.google.com/',
+        },
+      },
+      (res) => {
+        if (res.statusCode !== 200) {
+          return reject(new Error(`Upstream TTS returned status ${res.statusCode}`));
+        }
+
+        const chunks: Buffer[] = [];
+        res.on('data', (c) => chunks.push(c));
+        res.on('end', () => resolve(Buffer.concat(chunks)));
+        res.on('error', reject);
+      }
+    );
+
+    req.on('error', reject);
+    req.setTimeout(8000, () => {
+      req.destroy(new Error('TTS request timed out'));
+    });
+  });
+}
+
+/**
+ * Transforms audio stream with studio equalization into:
+ * - 'female': Strong, articulate, crystal-clear classical orator voice with pristine makharij & accent.
+ * - 'male': Resonant masculine baritone orator voice.
+ * If ffmpeg is not available in the serverless environment, gracefully falls back to rawCombined.
+ */
+function processStudioAudio(
+  rawCombined: Buffer,
+  lang: 'ar' | 'ur',
+  gender: 'female' | 'male'
+): Promise<Buffer> {
+  return new Promise((resolve) => {
+    let filter = '';
+    if (gender === 'female') {
+      filter =
+        'equalizer=f=180:width_type=h:width=80:g=2,equalizer=f=2800:width_type=h:width=800:g=1.5,volume=1.12';
+    } else {
+      filter =
+        lang === 'ur'
+          ? 'asetrate=24000*0.76,atempo=1.31,equalizer=f=120:width_type=h:width=60:g=7,equalizer=f=260:width_type=h:width=100:g=3,equalizer=f=3500:width_type=h:width=1000:g=-5'
+          : 'asetrate=24000*0.77,atempo=1.30,equalizer=f=125:width_type=h:width=60:g=6,equalizer=f=280:width_type=h:width=100:g=3,equalizer=f=3600:width_type=h:width=1000:g=-5';
+    }
+
+    try {
+      const ff = spawn('ffmpeg', [
+        '-i',
+        'pipe:0',
+        '-af',
+        filter,
+        '-f',
+        'mp3',
+        '-b:a',
+        '96k',
+        'pipe:1',
+      ]);
+
+      const outChunks: Buffer[] = [];
+      ff.stdout.on('data', (c) => outChunks.push(c));
+
+      ff.on('close', (code) => {
+        if (code === 0 && outChunks.length > 0) {
+          resolve(Buffer.concat(outChunks));
+        } else {
+          resolve(rawCombined);
+        }
+      });
+
+      ff.on('error', () => {
+        // Fallback gracefully without throwing or leaking memory if ffmpeg is absent
+        resolve(rawCombined);
+      });
+
+      ff.stdin.write(rawCombined);
+      ff.stdin.end();
+    } catch {
+      resolve(rawCombined);
+    }
+  });
+}
 
 export default async function handler(req: any, res: any) {
   // CORS headers
@@ -15,104 +155,81 @@ export default async function handler(req: any, res: any) {
     return res.status(200).end();
   }
 
-  const tl = ((req.query?.tl as string) || 'ar').toLowerCase();
+  const tl = ((req.query?.tl as string) || 'ar').toLowerCase() as 'ar' | 'ur';
+  const gender = (((req.query?.gender as string) || 'female').toLowerCase() === 'male'
+    ? 'male'
+    : 'female') as 'female' | 'male';
   const q = ((req.query?.q as string) || '').trim();
-  const chapter = parseInt((req.query?.ch as string) || '-1', 10);
-  const requestedVoice = (req.query?.voice as string) || '';
 
   if (!q) {
     return res.status(400).send('Query text is required');
   }
 
-  // Max 300 chars per query chunk
-  const cleanText = q.slice(0, 300).trim();
-  const cacheKey = `${tl}:${requestedVoice}:${chapter}:${cleanText}`;
+  const cleanText = q.slice(0, 500).trim();
+  const cacheKey = `${tl}:${gender}:${cleanText}`;
 
+  // 1. Check in-memory cache
   if (memoryCache.has(cacheKey)) {
     const cached = memoryCache.get(cacheKey)!;
     res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400, immutable'
+    );
     return res.send(cached.buffer);
   }
 
-  // 1. Primary: High-fidelity natural neural male voices via Microsoft Edge TTS
-  try {
-    let voiceName: string;
-    let voiceOptions: { pitch?: string; rate?: string } = {};
-
-    if (tl === 'ar') {
-      // Arabic male voice (Amro Elbosaty / Shakir style Egyptian Classical Arabic)
-      // ar-EG-ShakirNeural is an authentic, natural, classical male voice
-      voiceName = 'ar-EG-ShakirNeural';
-      voiceOptions = { pitch: '-5Hz', rate: '-4%' };
-    } else {
-      // Urdu male voice (Zia Mohyeddin style: deep baritone resonant Pakistani Urdu orator)
-      // ur-PK-AsadNeural with deep resonant pitch
-      voiceName = 'ur-PK-AsadNeural';
-      voiceOptions = { pitch: '-15Hz', rate: '-6%' };
-    }
-
-    if (requestedVoice) {
-      voiceName = requestedVoice;
-    }
-
-    const tts = new MsEdgeTTS();
-    await tts.setMetadata(voiceName, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
-    const { audioStream } = await tts.toStream(cleanText, voiceOptions);
-
-    const chunks: Buffer[] = [];
-    audioStream.on('data', (chunk: Buffer) => chunks.push(chunk));
-
-    await new Promise<void>((resolve, reject) => {
-      audioStream.on('end', () => resolve());
-      audioStream.on('error', (err: any) => reject(err));
-    });
-
-    const fullBuffer = Buffer.concat(chunks);
-    if (fullBuffer.length > 0) {
-      if (memoryCache.size > MAX_CACHE_ITEMS) {
-        const oldestKey = memoryCache.keys().next().value;
-        if (oldestKey) memoryCache.delete(oldestKey);
-      }
-      memoryCache.set(cacheKey, { buffer: fullBuffer, timestamp: Date.now() });
-
+  // 2. Check disk cache (stream directly to response to conserve Node.js heap)
+  const diskPath = getCacheDiskPath(cacheKey);
+  if (fs.existsSync(diskPath)) {
+    try {
       res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
-      return res.send(fullBuffer);
+      res.setHeader(
+        'Cache-Control',
+        'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400, immutable'
+      );
+      return fs.createReadStream(diskPath).pipe(res);
+    } catch {
+      // fallback to generation
     }
-  } catch (edgeError) {
-    console.warn('Edge TTS attempt failed, trying fallback:', edgeError);
   }
 
-  // 2. Fallback: Google Translate TTS proxy
+  // 3. Split into safe chunks, fetch raw buffers, concatenate & process
   try {
-    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${encodeURIComponent(tl)}&q=${encodeURIComponent(cleanText.slice(0, 190))}`;
+    const chunks = splitIntoSafeChunks(cleanText, 110);
+    const rawBuffers: Buffer[] = [];
 
-    const proxyReq = https.get(
-      ttsUrl,
-      {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          Referer: 'https://translate.google.com/',
-        },
-      },
-      (proxyRes) => {
-        if (proxyRes.statusCode !== 200) {
-          return res.status(proxyRes.statusCode || 500).send('TTS fetch failed');
-        }
+    for (const chunk of chunks) {
+      const buf = await fetchRawChunk(chunk, tl);
+      rawBuffers.push(buf);
+    }
 
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        proxyRes.pipe(res);
-      }
+    const combinedRaw = Buffer.concat(rawBuffers);
+    const audioBuffer = await processStudioAudio(combinedRaw, tl, gender);
+
+    // Store in lean memory cache (LRU purge if > MAX_CACHE_ITEMS)
+    if (memoryCache.size >= MAX_CACHE_ITEMS) {
+      const oldestKey = memoryCache.keys().next().value;
+      if (oldestKey) memoryCache.delete(oldestKey);
+    }
+    memoryCache.set(cacheKey, { buffer: audioBuffer, timestamp: Date.now() });
+
+    // Store on disk
+    try {
+      fs.writeFileSync(diskPath, audioBuffer);
+    } catch {
+      // ignore disk write errors
+    }
+
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Content-Length', audioBuffer.length);
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400, immutable'
     );
-
-    proxyReq.on('error', (err) => {
-      console.error('Fallback TTS Proxy Error:', err);
-      res.status(500).send('TTS Error');
-    });
-  } catch (err) {
-    res.status(500).send('TTS processing failed');
+    return res.send(audioBuffer);
+  } catch (err: any) {
+    console.error('TTS generation error:', err);
+    return res.status(500).send('Audio generation failed');
   }
 }

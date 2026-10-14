@@ -7,6 +7,22 @@ import ttsHandler from './api/tts.ts';
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+// Enable CORS and audio headers
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
+// Static audio directory from public/audio
+const publicAudioDir = path.resolve(process.cwd(), 'public/audio');
+if (!fs.existsSync(publicAudioDir)) {
+  fs.mkdirSync(publicAudioDir, { recursive: true });
+}
+app.use('/audio', express.static(publicAudioDir));
+app.use(express.static(path.resolve(process.cwd(), 'public')));
+
 // API route for High-Quality Neural Male TTS: /api/tts?tl=ar&q=... or /api/tts?tl=ur&q=...
 app.get('/api/tts', (req, res) => {
   return ttsHandler(req, res);

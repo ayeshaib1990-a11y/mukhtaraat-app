@@ -8,10 +8,39 @@
 //    - Web Speech API with male voice prioritisation and low pitch
 //    - Shared singleton HTMLAudioElement with user-gesture unlocking
 
+export type VoiceGender = 'female' | 'male';
+
+export function getVoiceGender(): VoiceGender {
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = localStorage.getItem('app_voice_gender');
+      if (saved === 'female' || saved === 'male') return saved;
+    } catch {
+      // ignore
+    }
+  }
+  return 'female'; // Default to strong female voice per user request
+}
+
+export function setVoiceGender(gender: VoiceGender): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('app_voice_gender', gender);
+    } catch {
+      // ignore
+    }
+  }
+  notify({
+    ...currentState,
+    voiceGender: gender,
+  });
+}
+
 export interface AudioPlaybackState {
   isPlaying: boolean;
   activeId: string | null;
   lang: 'ar' | 'ur' | null;
+  voiceGender?: VoiceGender;
   currentText?: string;
   reciterName?: string;
   chunkProgress?: { current: number; total: number };
@@ -24,6 +53,7 @@ export interface PlayVoiceOptions {
   reciterName?: string;
   chapterIndex?: number;
   sectionIndex?: number;
+  gender?: VoiceGender;
 }
 
 type StateListener = (state: AudioPlaybackState) => void;
@@ -33,6 +63,7 @@ let currentState: AudioPlaybackState = {
   isPlaying: false,
   activeId: null,
   lang: null,
+  voiceGender: getVoiceGender(),
   reciterName: undefined,
   error: null,
 };
@@ -100,12 +131,12 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
  */
 export function getQuranSectionAudioUrl(chapterIndex: number, sectionIndex: number): string | null {
   if (chapterIndex === 0) {
-    const ayah = 63 + sectionIndex;
-    if (ayah >= 63 && ayah <= 77) {
+    const ayah = 61 + sectionIndex; // Section 0 is verse 61 ("تَبَارَكَ الَّذِي جَعَلَ فِي السَّمَاءِ بُرُوجًا") through verse 77
+    if (ayah >= 61 && ayah <= 77) {
       return `https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0250${ayah}.mp3`;
     }
   } else if (chapterIndex === 1) {
-    const ayah = 1 + sectionIndex;
+    const ayah = 1 + sectionIndex; // Section 0 is verse 1 ("طسٓمٓ") through verse 28
     if (ayah >= 1 && ayah <= 28) {
       return `https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0280${String(ayah).padStart(2, '0')}.mp3`;
     }
@@ -119,7 +150,7 @@ export function getQuranSectionAudioUrl(chapterIndex: number, sectionIndex: numb
 export function getQuranChapterAudioUrls(chapterIndex: number): string[] | null {
   if (chapterIndex === 0) {
     const urls: string[] = [];
-    for (let a = 63; a <= 77; a++) {
+    for (let a = 61; a <= 77; a++) {
       urls.push(`https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0250${a}.mp3`);
     }
     return urls;
@@ -129,6 +160,95 @@ export function getQuranChapterAudioUrls(chapterIndex: number): string[] | null 
       urls.push(`https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0280${String(a).padStart(2, '0')}.mp3`);
     }
     return urls;
+  }
+  return null;
+}
+
+/**
+ * Returns authentic male audio URL for a given chapter, section, and language.
+ * - Chapters 1 & 2 Arabic: EveryAyah Qari Abdul Basit recitation
+ * - Chapter 3 Arabic (Hadith): Dedicated male Hadith recitation
+ * - Chapters 1, 2, 3 Urdu: Dedicated male Urdu translation voiceover
+ */
+/**
+ * Returns authentic audio URL for a given chapter, section, language, and gender.
+ * - When female voice is selected, dynamic studio audio is generated via /api/tts?gender=female
+ * - When male voice is selected, master pre-recorded files are prioritized where available
+ */
+export function getSectionVoiceoverAudioUrl(
+  chapterIndex: number,
+  sectionIndex: number,
+  lang: 'ar' | 'ur',
+  gender?: VoiceGender
+): string | null {
+  const currentGender = gender || getVoiceGender();
+
+  // If user selected Strong Female voice, dynamically stream via /api/tts?gender=female
+  if (currentGender === 'female') {
+    return null;
+  }
+
+  // Pre-recorded master Male audio sources:
+  if (lang === 'ar') {
+    if (chapterIndex === 0 || chapterIndex === 1) {
+      return getQuranSectionAudioUrl(chapterIndex, sectionIndex);
+    }
+    if (chapterIndex === 2) {
+      return `/audio/ch2_ar_sec${sectionIndex}.mp3`;
+    }
+    if (chapterIndex === 3) {
+      return `/audio/ch3_ar_sec${sectionIndex}.mp3`;
+    }
+  } else {
+    if (chapterIndex === 0) {
+      return `/audio/ch0_ur_sec${sectionIndex}.mp3`;
+    }
+    if (chapterIndex === 1) {
+      return `/audio/ch1_ur_sec${sectionIndex}.mp3`;
+    }
+    if (chapterIndex === 2) {
+      return `/audio/ch2_ur_sec${sectionIndex}.mp3`;
+    }
+    if (chapterIndex === 3) {
+      return `/audio/ch3_ur_sec${sectionIndex}.mp3`;
+    }
+  }
+  return null;
+}
+
+/**
+ * Returns array of URLs for full chapter playback
+ */
+export function getChapterVoiceoverAudioUrls(
+  chapterIndex: number,
+  lang: 'ar' | 'ur',
+  totalSections: number,
+  gender?: VoiceGender
+): string[] | null {
+  const currentGender = gender || getVoiceGender();
+  if (currentGender === 'female') {
+    return null; // Will stream full chapter via sequential studio chunks
+  }
+
+  if (lang === 'ar') {
+    if (chapterIndex === 0 || chapterIndex === 1) {
+      return getQuranChapterAudioUrls(chapterIndex);
+    }
+    if (chapterIndex === 2 || chapterIndex === 3) {
+      const urls: string[] = [];
+      for (let i = 0; i < totalSections; i++) {
+        urls.push(`/audio/ch${chapterIndex}_ar_sec${i}.mp3`);
+      }
+      return urls;
+    }
+  } else {
+    if (chapterIndex >= 0 && chapterIndex <= 3) {
+      const urls: string[] = [];
+      for (let i = 0; i < totalSections; i++) {
+        urls.push(`/audio/ch${chapterIndex}_ur_sec${i}.mp3`);
+      }
+      return urls;
+    }
   }
   return null;
 }
@@ -324,7 +444,7 @@ function playAudioUrlSingle(
         }
       };
 
-      // 6 second timeout to avoid indefinite hanging on slow network or broken proxy
+      // 25 second timeout for pristine server-side neural male generation
       loadTimeoutTimer = setTimeout(() => {
         if (!ended) {
           signal.removeEventListener('abort', onAbort);
@@ -336,7 +456,7 @@ function playAudioUrlSingle(
           }
           resolve(false);
         }
-      }, 6000);
+      }, 25000);
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -353,13 +473,13 @@ function playAudioUrlSingle(
 }
 
 /**
- * Male Web Speech API synthesis:
- * - Arabic: Classical masculine recitation profile (Sheikh Amro Elbosaty / Qari style)
- * - Urdu: Poetic baritone orator profile (Zia Mohyeddin style)
+ * Web Speech API fallback:
+ * Supports both pristine Female and resonant Male profiles.
  */
-function playMaleWebSpeechChunk(
+function playWebSpeechChunk(
   text: string,
   lang: 'ar' | 'ur',
+  gender: VoiceGender,
   rate: number,
   signal: AbortSignal
 ): Promise<boolean> {
@@ -384,65 +504,79 @@ function playMaleWebSpeechChunk(
 
       if (lang === 'ar') {
         utterance.lang = 'ar-SA';
-        utterance.rate = Math.max(0.75, rate * 0.9);
-        utterance.pitch = 0.82; // Deep, masculine, resonant baritone pitch
+        utterance.rate = Math.max(0.75, rate * 0.90);
+        utterance.pitch = gender === 'female' ? 1.05 : 0.50;
 
-        // Prioritize male Arabic voices
-        const arMaleVoice = voices.find((v) => {
-          const name = v.name.toLowerCase();
-          const isAr = v.lang.toLowerCase().startsWith('ar');
-          if (!isAr) return false;
-          return (
-            name.includes('male') ||
-            name.includes('maged') ||
-            name.includes('tarik') ||
-            name.includes('hamed') ||
-            name.includes('shakir') ||
-            name.includes('naayf') ||
-            (!name.includes('female') &&
-              !name.includes('salma') &&
-              !name.includes('laila') &&
-              !name.includes('zari') &&
-              !name.includes('hoda') &&
-              !name.includes('mariam'))
-          );
-        }) || voices.find((v) => v.lang.toLowerCase().startsWith('ar'));
-
-        if (arMaleVoice) utterance.voice = arMaleVoice;
+        const arVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('ar'));
+        if (gender === 'female') {
+          const arFemale = arVoices.find((v) => {
+            const name = v.name.toLowerCase();
+            return (
+              name.includes('female') ||
+              name.includes('hoda') ||
+              name.includes('salma') ||
+              name.includes('zeina') ||
+              name.includes('mariam') ||
+              name.includes('leila') ||
+              name.includes('zari')
+            );
+          }) || arVoices[0];
+          if (arFemale) utterance.voice = arFemale;
+        } else {
+          const arMale = arVoices.find((v) => {
+            const name = v.name.toLowerCase();
+            return (
+              name.includes('male') ||
+              name.includes('maged') ||
+              name.includes('tarik') ||
+              name.includes('hamed') ||
+              name.includes('shakir') ||
+              name.includes('naayf')
+            );
+          });
+          if (arMale) utterance.voice = arMale;
+        }
       } else {
         utterance.lang = 'ur-PK';
-        // Zia Mohyeddin Male Urdu Orator Profile
-        utterance.rate = Math.max(0.78, rate * 0.88);
-        utterance.pitch = 0.78; // Distinctive deep orator baritone of Zia Mohyeddin
+        utterance.rate = Math.max(0.75, rate * 0.88);
+        utterance.pitch = gender === 'female' ? 1.05 : 0.50;
 
-        // Prioritize male Urdu / Hindi voices
-        const urMaleVoice = voices.find((v) => {
-          const name = v.name.toLowerCase();
-          const isUrOrHi =
+        const urVoices = voices.filter(
+          (v) =>
             v.lang.toLowerCase().startsWith('ur') ||
             v.lang.toLowerCase().includes('urdu') ||
-            v.lang.toLowerCase().startsWith('hi');
-          if (!isUrOrHi) return false;
-          return (
-            name.includes('male') ||
-            name.includes('asad') ||
-            name.includes('salman') ||
-            name.includes('madhav') ||
-            name.includes('rohit') ||
-            (!name.includes('female') &&
-              !name.includes('uzma') &&
-              !name.includes('swara') &&
-              !name.includes('kalpana') &&
-              !name.includes('kavya') &&
-              !name.includes('heera'))
-          );
-        }) ||
-        voices.find((v) => v.lang.toLowerCase().startsWith('ur') || v.lang.toLowerCase().includes('urdu')) ||
-        voices.find((v) => v.lang.toLowerCase().startsWith('hi'));
-
-        if (urMaleVoice) {
-          utterance.voice = urMaleVoice;
-          utterance.lang = urMaleVoice.lang || 'ur-PK';
+            v.lang.toLowerCase().startsWith('hi')
+        );
+        if (gender === 'female') {
+          const urFemale = urVoices.find((v) => {
+            const name = v.name.toLowerCase();
+            return (
+              name.includes('female') ||
+              name.includes('uzma') ||
+              name.includes('swara') ||
+              name.includes('kalpana') ||
+              name.includes('ananya')
+            );
+          }) || urVoices[0];
+          if (urFemale) {
+            utterance.voice = urFemale;
+            utterance.lang = urFemale.lang || 'ur-PK';
+          }
+        } else {
+          const urMale = urVoices.find((v) => {
+            const name = v.name.toLowerCase();
+            return (
+              name.includes('male') ||
+              name.includes('asad') ||
+              name.includes('salman') ||
+              name.includes('madhav') ||
+              name.includes('rohit')
+            );
+          });
+          if (urMale) {
+            utterance.voice = urMale;
+            utterance.lang = urMale.lang || 'ur-PK';
+          }
         }
       }
 
@@ -523,27 +657,27 @@ export async function playVoice(
   playbackAbortController = controller;
   const signal = controller.signal;
 
+  const gender = options?.gender || getVoiceGender();
+
   let reciterName = options?.reciterName;
   if (!reciterName) {
-    if (lang === 'ar') {
-      reciterName =
-        options?.chapterIndex === 0 || options?.chapterIndex === 1
-          ? 'قاری عبد الباسط'
-          : 'عمرو البساطی';
+    if (gender === 'female') {
+      reciterName = lang === 'ar' ? 'عربی صوتی تلفظ' : 'اردو صوتی تلفظ';
     } else {
-      reciterName = 'ضیاء محی الدین';
+      reciterName = lang === 'ar' ? 'عربی صوتی تلفظ' : 'اردو صوتی تلفظ';
     }
   }
 
-  // Path 1: Array of direct audio URLs (e.g. Qari Abdul Basit full Quranic chapter)
+  // Path 1: Array of direct audio URLs (e.g. Master recitation)
   if (options?.audioUrls && options.audioUrls.length > 0) {
     const urls = options.audioUrls;
     notify({
       isPlaying: true,
       activeId: id,
       lang,
+      voiceGender: gender,
       reciterName,
-      currentText: 'تلاوت قرآنِ کریم — قاری عبد الباسط عبد الصمد',
+      currentText: lang === 'ar' ? 'تلاوتِ عربی کلام' : 'اردو ترجمہ و مفہوم',
       chunkProgress: { current: 1, total: urls.length },
       error: null,
     });
@@ -554,8 +688,9 @@ export async function playVoice(
         isPlaying: true,
         activeId: id,
         lang,
+        voiceGender: gender,
         reciterName,
-        currentText: `آیت نمبر ${i + 1}`,
+        currentText: `حصہ نمبر ${i + 1}`,
         chunkProgress: { current: i + 1, total: urls.length },
         error: null,
       });
@@ -570,12 +705,13 @@ export async function playVoice(
     return;
   }
 
-  // Path 2: Single direct audio URL (e.g. Qari Abdul Basit single Ayah)
+  // Path 2: Single direct audio URL
   if (options?.audioUrl) {
     notify({
       isPlaying: true,
       activeId: id,
       lang,
+      voiceGender: gender,
       reciterName,
       currentText: text.length > 80 ? text.slice(0, 80) + '...' : text,
       chunkProgress: { current: 1, total: 1 },
@@ -587,19 +723,19 @@ export async function playVoice(
       stopAllAudio();
       return;
     }
-    // If EveryAyah direct URL failed or network blocked, continue to standard TTS pipeline below
   }
 
-  // Path 3: Speech Pipeline (Serverless Audio Proxy -> Direct TTS -> Native Male Speech Synthesis)
+  // Path 3: Speech Pipeline (Serverless Studio Equalizer -> Web Speech Fallback)
   const clean = stripHtml(text).trim();
   if (!clean) return;
 
-  const chunks = splitTextIntoSentences(clean, 140);
+  const chunks = splitTextIntoSentences(clean, 95);
 
   notify({
     isPlaying: true,
     activeId: id,
     lang,
+    voiceGender: gender,
     reciterName,
     currentText: clean.length > 80 ? clean.slice(0, 80) + '...' : clean,
     chunkProgress: { current: 1, total: chunks.length },
@@ -614,6 +750,7 @@ export async function playVoice(
       isPlaying: true,
       activeId: id,
       lang,
+      voiceGender: gender,
       reciterName,
       currentText: chunk,
       chunkProgress: { current: i + 1, total: chunks.length },
@@ -623,21 +760,20 @@ export async function playVoice(
     const encoded = encodeURIComponent(chunk);
     let chunkPlayed = false;
 
-    // Strategy A: Serverless audio proxy /api/tts (works across all browsers, mobile and desktop)
+    // Strategy A: Serverless audio proxy /api/tts with studio equalization
     if (!chunkPlayed && !signal.aborted) {
-      const serverUrl = `/api/tts?tl=${lang}&q=${encoded}`;
+      const serverUrl = `/api/tts?tl=${lang}&gender=${gender}&q=${encoded}`;
       chunkPlayed = await playAudioUrlSingle(serverUrl, rate, signal);
     }
 
-    // Strategy B: Direct Google Translate TTS endpoint with no-referrer
-    if (!chunkPlayed && !signal.aborted) {
-      const directUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${encoded}`;
-      chunkPlayed = await playAudioUrlSingle(directUrl, rate, signal);
-    }
-
-    // Strategy C: Native Web Speech API with male voice profiling & deep pitch
-    if (!chunkPlayed && !signal.aborted && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      chunkPlayed = await playMaleWebSpeechChunk(chunk, lang, rate, signal);
+    // Strategy B: Native Web Speech API fallback
+    if (
+      !chunkPlayed &&
+      !signal.aborted &&
+      typeof window !== 'undefined' &&
+      'speechSynthesis' in window
+    ) {
+      chunkPlayed = await playWebSpeechChunk(chunk, lang, gender, rate, signal);
     }
 
     if (!chunkPlayed && !signal.aborted) {

@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { CHAPTERS, WordItem } from './data/chaptersData';
 import { getDictionaryEntry, CLASSICAL_DICTIONARY } from './data/dictionaryData';
-import { playVoice, stopAllAudio, subscribeAudioState, AudioPlaybackState, getQuranSectionAudioUrl, getQuranChapterAudioUrls } from './utils/audioPlayer';
+import { playVoice, stopAllAudio, subscribeAudioState, AudioPlaybackState, getQuranSectionAudioUrl, getQuranChapterAudioUrls, getSectionVoiceoverAudioUrl, getChapterVoiceoverAudioUrls, getVoiceGender, setVoiceGender, VoiceGender } from './utils/audioPlayer';
 
 // Theme Definitions
 export type Theme = 'sepia' | 'sapphire' | 'emerald' | 'dark';
@@ -370,15 +370,26 @@ export default function App() {
   const [audioState, setAudioState] = useState<AudioPlaybackState>({
     isPlaying: false,
     activeId: null,
-    lang: null
+    lang: null,
+    voiceGender: getVoiceGender(),
   });
+  const [voiceGender, setLocalVoiceGender] = useState<VoiceGender>(getVoiceGender());
 
   useEffect(() => {
     const unsubscribe = subscribeAudioState((state) => {
       setAudioState(state);
+      if (state.voiceGender) {
+        setLocalVoiceGender(state.voiceGender);
+      }
     });
     return () => unsubscribe();
   }, []);
+
+  const toggleVoiceGender = () => {
+    const next: VoiceGender = voiceGender === 'female' ? 'male' : 'female';
+    setLocalVoiceGender(next);
+    setVoiceGender(next);
+  };
 
   const currentTheme = THEMES[theme];
   const chapter = CHAPTERS[selectedChapterIndex] || CHAPTERS[0];
@@ -599,39 +610,33 @@ export default function App() {
     text: string,
     lang: 'ar' | 'ur',
     id: string,
-    customOptions?: { audioUrl?: string; audioUrls?: string[]; reciterName?: string }
+    customOptions?: { audioUrl?: string; audioUrls?: string[]; reciterName?: string; gender?: VoiceGender }
   ) => {
     if (audioState.isPlaying && audioState.activeId === id) {
       stopAllAudio();
     } else {
-      let reciterName = customOptions?.reciterName;
+      const activeGender = customOptions?.gender || voiceGender;
       let audioUrl = customOptions?.audioUrl;
       let audioUrls = customOptions?.audioUrls;
 
-      if (!reciterName) {
-        if (lang === 'ar') {
-          reciterName = (selectedChapterIndex === 0 || selectedChapterIndex === 1)
-            ? 'قاری عبد الباسط'
-            : 'عمرو البساطی';
-        } else {
-          reciterName = 'ضیاء محی الدین';
-        }
-      }
-
-      // Automatically attach Qari Abdul Basit recitation for Chapter 1 and Chapter 2 sections/chapter
-      if (lang === 'ar' && !audioUrl && !audioUrls) {
-        if (id.startsWith('sec-ar-')) {
-          const secIdx = parseInt(id.replace('sec-ar-', ''), 10);
-          const quranUrl = getQuranSectionAudioUrl(selectedChapterIndex, secIdx);
-          if (quranUrl) {
-            audioUrl = quranUrl;
-            reciterName = 'قاری عبد الباسط';
+      // Automatically attach authentic audio recordings for Chapters 1, 2, 3 (Urdu & Arabic) when available
+      if (!audioUrl && !audioUrls) {
+        if (id.startsWith('sec-ar-') || id.startsWith('sec-ur-')) {
+          const secIdx = parseInt(id.replace('sec-ar-', '').replace('sec-ur-', ''), 10);
+          const vUrl = getSectionVoiceoverAudioUrl(selectedChapterIndex, secIdx, lang, activeGender);
+          if (vUrl) {
+            audioUrl = vUrl;
           }
-        } else if (id === 'full-chapter-ar' || id === `chapter-ar-${selectedChapterIndex}`) {
-          const quranUrls = getQuranChapterAudioUrls(selectedChapterIndex);
-          if (quranUrls) {
-            audioUrls = quranUrls;
-            reciterName = 'قاری عبد الباسط';
+        } else if (
+          id === 'full-chapter-ar' ||
+          id === 'full-chapter-ur' ||
+          id === `chapter-ar-${selectedChapterIndex}` ||
+          id === `chapter-ur-${selectedChapterIndex}`
+        ) {
+          const totalSecs = chapter.sections?.length || 0;
+          const vUrls = getChapterVoiceoverAudioUrls(selectedChapterIndex, lang, totalSecs, activeGender);
+          if (vUrls) {
+            audioUrls = vUrls;
           }
         }
       }
@@ -639,8 +644,8 @@ export default function App() {
       playVoice(text, lang, id, speechRate, {
         audioUrl,
         audioUrls,
-        reciterName,
         chapterIndex: selectedChapterIndex,
+        gender: activeGender,
       });
     }
   };
@@ -659,14 +664,16 @@ export default function App() {
       if (w.extra) out += `فائدہ: ${w.extra}\n`;
       return out;
     }
+    // Ordered strictly according to standard sarfi tahqeeq:
+    // مادہ، سہ اقسام، بحث، صیغہ، باب، شش اقسام، ہفت اقسام، وزن، معنی
+    if (w.root) out += `مادہ: ${w.root}\n`;
     if (w.qism) out += `سہ اقسام: ${w.qism}\n`;
     if (w.singular) out += `مفرد: ${w.singular}\n`;
     if (w.plural) out += `جمع: ${w.plural}\n`;
-    if (w.root) out += `مادہ: ${w.root}\n`;
-    if (w.seegha) out += `صیغہ: ${w.seegha}\n`;
     if (w.bahas) out += `بحث: ${w.bahas}\n`;
-    if (w.shash) out += `شش اقسام: ${w.shash}\n`;
+    if (w.seegha) out += `صیغہ: ${w.seegha}\n`;
     if (w.bab) out += `باب: ${w.bab}\n`;
+    if (w.shash) out += `شش اقسام: ${w.shash}\n`;
     if (w.haft) out += `ہفت اقسام: ${w.haft}\n`;
     if (w.wazn) out += `وزن: ${w.wazn}\n`;
     out += `معنی: ${w.meaning || '---'}\n`;
@@ -840,6 +847,19 @@ export default function App() {
               </button>
             )}
 
+            {/* Voice Gender Switcher Toggle */}
+            <button
+              onClick={toggleVoiceGender}
+              className={`px-2.5 py-1 rounded-lg border text-xs font-bold items-center gap-1.5 transition cursor-pointer flex shadow-2xs ${
+                voiceGender === 'female'
+                  ? 'bg-rose-50 text-rose-900 border-rose-300 dark:bg-rose-950 dark:text-rose-200'
+                  : 'bg-indigo-50 text-indigo-900 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200'
+              }`}
+              title="آواز کی قسم تبدیل کریں (خاتون / مردانہ باوقار آواز)"
+            >
+              <span>{voiceGender === 'female' ? '🎙️ خاتون آواز' : '🎙️ مردانہ آواز'}</span>
+            </button>
+
             {/* Current Chapter Arabic Audio Play */}
             <button
               onClick={() => {
@@ -850,10 +870,10 @@ export default function App() {
                 audioState.isPlaying && audioState.activeId === `chapter-ar-${selectedChapterIndex}` ? 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold shadow-xs' : 'hover:bg-black/5'
               }`}
               style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-              title={`عربی آواز سنیں — ${selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط عبد الصمد' : 'عمرو البساطی'}`}
+              title="عربی صوتی تلفظ سنیں"
             >
               <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-              <span>{selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط (عربی)' : 'عمرو البساطی (عربی)'}</span>
+              <span>عربی آواز</span>
             </button>
 
             {/* Current Chapter Urdu Audio Play */}
@@ -866,10 +886,10 @@ export default function App() {
                 audioState.isPlaying && audioState.activeId === `chapter-ur-${selectedChapterIndex}` ? 'bg-amber-100 text-amber-900 border-amber-400 font-bold shadow-xs' : 'hover:bg-black/5'
               }`}
               style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-              title="اردو آواز سنیں — ضیاء محی الدین اسلوب"
+              title="اردو صوتی تلفظ سنیں"
             >
               <Volume2 className="w-3.5 h-3.5 text-amber-700" />
-              <span>ضیاء محی الدین (اردو)</span>
+              <span>اردو آواز</span>
             </button>
 
             {/* Audio Speed Selector */}
@@ -1141,6 +1161,18 @@ export default function App() {
             {/* Audio Play All Buttons */}
             <div className="flex items-center gap-2">
               <button
+                onClick={toggleVoiceGender}
+                className={`px-3 py-1.5 rounded-lg border font-bold flex items-center gap-1.5 cursor-pointer transition shadow-2xs ${
+                  voiceGender === 'female'
+                    ? 'bg-rose-50 text-rose-900 border-rose-300 dark:bg-rose-950 dark:text-rose-200'
+                    : 'bg-indigo-50 text-indigo-900 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200'
+                }`}
+                title="آواز کی قسم تبدیل کریں (خاتون / مردانہ باوقار آواز)"
+              >
+                <span>{voiceGender === 'female' ? '🎙️ خاتون آواز' : '🎙️ مردانہ آواز'}</span>
+              </button>
+
+              <button
                 onClick={() => {
                   const fullArabic = chapter.sections.map(s => stripTags(s.arabic)).join(' ');
                   handlePlayVoice(fullArabic, 'ar', 'full-chapter-ar');
@@ -1149,10 +1181,10 @@ export default function App() {
                   audioState.isPlaying && audioState.activeId === 'full-chapter-ar' ? 'bg-emerald-100 text-emerald-900 border-emerald-400' : 'hover:bg-black/5'
                 }`}
                 style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                title={`عربی آواز سنیں — ${selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط' : 'عمرو البساطی'}`}
+                title="عربی صوتی تلفظ سنیں"
               >
                 <Volume2 className="w-4 h-4 text-emerald-700" />
-                <span>{selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط (عربی)' : 'عمرو البساطی (عربی)'}</span>
+                <span>عربی آواز</span>
               </button>
 
               <button
@@ -1164,10 +1196,10 @@ export default function App() {
                   audioState.isPlaying && audioState.activeId === 'full-chapter-ur' ? 'bg-amber-100 text-amber-900 border-amber-400' : 'hover:bg-black/5'
                 }`}
                 style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                title="اردو آواز سنیں — ضیاء محی الدین اسلوب"
+                title="اردو صوتی تلفظ سنیں"
               >
                 <Volume2 className="w-4 h-4 text-amber-700" />
-                <span>ضیاء محی الدین (اردو)</span>
+                <span>اردو آواز</span>
               </button>
             </div>
           </div>
@@ -1351,10 +1383,10 @@ export default function App() {
                               isArabicPlaying ? 'bg-emerald-100 text-emerald-900 border-emerald-400' : 'hover:bg-black/5'
                             }`}
                             style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                            title={`عربی آواز سنیں — ${selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'تلاوت: قاری عبد الباسط' : 'قراءت: عمرو البساطی'}`}
+                            title="عربی صوتی تلفظ سنیں"
                           >
                             <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-                            <span className="hidden sm:inline">{selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط' : 'عمرو البساطی'}</span>
+                            <span className="hidden sm:inline">عربی آواز</span>
                           </button>
 
                           {/* Urdu Audio for Section */}
@@ -1365,10 +1397,10 @@ export default function App() {
                                 isUrduPlaying ? 'bg-amber-100 text-amber-900 border-amber-400' : 'hover:bg-black/5'
                               }`}
                               style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                              title="اردو آواز سنیں — ضیاء محی الدین اسلوب"
+                              title="اردو صوتی تلفظ سنیں"
                             >
                               <Volume2 className="w-3.5 h-3.5 text-amber-700" />
-                              <span className="hidden sm:inline">ضیاء محی الدین</span>
+                              <span className="hidden sm:inline">اردو آواز</span>
                             </button>
                           )}
 
@@ -1552,10 +1584,10 @@ export default function App() {
                                 isArabicPlaying ? 'bg-emerald-100 text-emerald-900 border-emerald-400 animate-pulse' : 'hover:bg-black/5'
                               }`}
                               style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                              title={`عربی آواز (${selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط' : 'عمرو البساطی'})`}
+                              title="عربی صوتی تلفظ سنیں"
                             >
                               <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-                              <span>{selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط' : 'عمرو البساطی'}</span>
+                              <span>عربی آواز</span>
                             </button>
 
                             <button
@@ -1564,18 +1596,26 @@ export default function App() {
                                 isUrduPlaying ? 'bg-amber-100 text-amber-900 border-amber-400 animate-pulse' : 'hover:bg-black/5'
                               }`}
                               style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                              title="اردو آواز (ضیاء محی الدین اسلوب)"
+                              title="اردو صوتی تلفظ سنیں"
                             >
                               <Volume2 className="w-3.5 h-3.5 text-amber-700" />
-                              <span>ضیاء محی الدین</span>
+                              <span>اردو آواز</span>
                             </button>
                           </div>
                         </div>
 
-                        {/* Exact Sarfi Tahqeeq Rows */}
+                        {/* Exact Sarfi Tahqeeq Rows: مادہ، سہ اقسام، بحث، صیغہ، باب، شش اقسام، ہفت اقسام، وزن، معنی */}
                         <div className="space-y-0 text-sm font-arabic">
                           
-                          {/* سہ اقسام */}
+                          {/* 1. مادہ */}
+                          {word.root && (
+                            <div className="info-row">
+                              <span className="info-label">مادہ:</span>
+                              <span className="info-value font-bold tracking-widest text-base">{word.root}</span>
+                            </div>
+                          )}
+
+                          {/* 2. سہ اقسام */}
                           {word.qism && (
                             <div className="info-row">
                               <span className="info-label">سہ اقسام:</span>
@@ -1602,23 +1642,7 @@ export default function App() {
                           {/* Non-jamid fields: only shown when NOT isme jamid */}
                           {!((word.qism || '').includes('جامد') || (word.bahas || '').includes('جامد')) && (
                             <>
-                              {/* مادہ */}
-                              {word.root && (
-                                <div className="info-row">
-                                  <span className="info-label">مادہ:</span>
-                                  <span className="info-value font-bold tracking-widest text-base">{word.root}</span>
-                                </div>
-                              )}
-
-                              {/* صیغہ */}
-                              {word.seegha && (
-                                <div className="info-row">
-                                  <span className="info-label">صیغہ:</span>
-                                  <span className="info-value font-medium">{word.seegha}</span>
-                                </div>
-                              )}
-
-                              {/* بحث */}
+                              {/* 3. بحث */}
                               {word.bahas && (
                                 <div className="info-row">
                                   <span className="info-label">بحث:</span>
@@ -1626,15 +1650,15 @@ export default function App() {
                                 </div>
                               )}
 
-                              {/* شش اقسام */}
-                              {word.shash && (
+                              {/* 4. صیغہ */}
+                              {word.seegha && (
                                 <div className="info-row">
-                                  <span className="info-label">شش اقسام:</span>
-                                  <span className="info-value font-medium">{word.shash}</span>
+                                  <span className="info-label">صیغہ:</span>
+                                  <span className="info-value font-medium">{word.seegha}</span>
                                 </div>
                               )}
 
-                              {/* باب */}
+                              {/* 5. باب */}
                               {word.bab && (
                                 <div className="info-row">
                                   <span className="info-label">باب:</span>
@@ -1642,7 +1666,15 @@ export default function App() {
                                 </div>
                               )}
 
-                              {/* ہفت اقسام */}
+                              {/* 6. شش اقسام */}
+                              {word.shash && (
+                                <div className="info-row">
+                                  <span className="info-label">شش اقسام:</span>
+                                  <span className="info-value font-medium">{word.shash}</span>
+                                </div>
+                              )}
+
+                              {/* 7. ہفت اقسام */}
                               {word.haft && (
                                 <div className="info-row">
                                   <span className="info-label">ہفت اقسام:</span>
@@ -1650,7 +1682,7 @@ export default function App() {
                                 </div>
                               )}
 
-                              {/* وزن */}
+                              {/* 8. وزن */}
                               <div className="info-row">
                                 <span className="info-label font-bold text-amber-800">وزن:</span>
                                 <span className="info-value font-medium font-arabic text-base">
@@ -1660,7 +1692,7 @@ export default function App() {
                             </>
                           )}
 
-                          {/* معنی */}
+                          {/* 9. معنی */}
                           <div className="info-row !border-b-0">
                             <span className="info-label">معنی:</span>
                             <span className="info-value font-urdu text-base leading-relaxed" style={{ color: currentTheme.urduColor }}>
@@ -1781,17 +1813,18 @@ export default function App() {
                       </div>
 
                       <div className="space-y-0 text-sm font-arabic">
+                        {word.root && <div className="info-row"><span className="info-label">مادہ:</span><span className="info-value font-bold tracking-widest">{word.root}</span></div>}
                         {word.qism && <div className="info-row"><span className="info-label">سہ اقسام:</span><span className="info-value">{word.qism}</span></div>}
                         {word.singular && <div className="info-row"><span className="info-label">مفرد:</span><span className="info-value">{word.singular}</span></div>}
                         {word.plural && <div className="info-row"><span className="info-label">جمع:</span><span className="info-value">{word.plural}</span></div>}
                         {!((word.qism || '').includes('جامد') || (word.bahas || '').includes('جامد')) && (
                           <>
-                            {word.root && <div className="info-row"><span className="info-label">مادہ:</span><span className="info-value font-bold">{word.root}</span></div>}
-                            {word.seegha && <div className="info-row"><span className="info-label">صیغہ:</span><span className="info-value">{word.seegha}</span></div>}
                             {word.bahas && <div className="info-row"><span className="info-label">بحث:</span><span className="info-value">{word.bahas}</span></div>}
+                            {word.seegha && <div className="info-row"><span className="info-label">صیغہ:</span><span className="info-value">{word.seegha}</span></div>}
                             {word.bab && <div className="info-row"><span className="info-label">باب:</span><span className="info-value">{word.bab}</span></div>}
+                            {word.shash && <div className="info-row"><span className="info-label">شش اقسام:</span><span className="info-value">{word.shash}</span></div>}
                             {word.haft && <div className="info-row"><span className="info-label">ہفت اقسام:</span><span className="info-value">{word.haft}</span></div>}
-                            <div className="info-row"><span className="info-label">وزن:</span><span className="info-value">{word.wazn || '-------'}</span></div>
+                            <div className="info-row"><span className="info-label font-bold text-amber-800">وزن:</span><span className="info-value">{word.wazn || '-------'}</span></div>
                           </>
                         )}
                         <div className="info-row !border-b-0"><span className="info-label">معنی:</span><span className="info-value font-urdu text-base">{word.meaning || '---'}</span></div>
@@ -2141,111 +2174,111 @@ export default function App() {
                   ) : (
                     <div className="p-5 sm:p-6 overflow-y-auto space-y-0 text-sm font-arabic">
                       
-                      {/* سہ اقسام */}
-              {activeWord.qism && (
-                <div className="info-row">
-                  <span className="info-label">سہ اقسام:</span>
-                  <span className="info-value font-medium">{activeWord.qism}</span>
-                </div>
-              )}
+                      {/* 1. مادہ (حروفِ اصلیہ) */}
+                      {activeWord.root && (
+                        <div className="info-row">
+                          <span className="info-label">مادہ:</span>
+                          <span className="info-value font-bold text-base tracking-widest">{activeWord.root}</span>
+                        </div>
+                      )}
 
-              {/* مفرد (if exists) */}
-              {activeWord.singular && (
-                <div className="info-row">
-                  <span className="info-label">مفرد:</span>
-                  <span className="info-value font-medium">{activeWord.singular}</span>
-                </div>
-              )}
+                      {/* 2. سہ اقسام */}
+                      {activeWord.qism && (
+                        <div className="info-row">
+                          <span className="info-label">سہ اقسام:</span>
+                          <span className="info-value font-medium">{activeWord.qism}</span>
+                        </div>
+                      )}
 
-              {/* جمع (if exists) */}
-              {activeWord.plural && (
-                <div className="info-row">
-                  <span className="info-label">جمع:</span>
-                  <span className="info-value font-medium">{activeWord.plural}</span>
-                </div>
-              )}
+                      {/* مفرد (if exists) */}
+                      {activeWord.singular && (
+                        <div className="info-row">
+                          <span className="info-label">مفرد:</span>
+                          <span className="info-value font-medium">{activeWord.singular}</span>
+                        </div>
+                      )}
 
-              {/* Only for non-jamid words */}
-              {!((activeWord.qism || '').includes('جامد') || (activeWord.bahas || '').includes('جامد')) && (
-                <>
-                  {/* مادہ (حروفِ اصلیہ) */}
-                  {activeWord.root && (
-                    <div className="info-row">
-                      <span className="info-label">مادہ:</span>
-                      <span className="info-value font-bold text-base tracking-widest">{activeWord.root}</span>
+                      {/* جمع (if exists) */}
+                      {activeWord.plural && (
+                        <div className="info-row">
+                          <span className="info-label">جمع:</span>
+                          <span className="info-value font-medium">{activeWord.plural}</span>
+                        </div>
+                      )}
+
+                      {/* Only for non-jamid words */}
+                      {!((activeWord.qism || '').includes('جامد') || (activeWord.bahas || '').includes('جامد')) && (
+                        <>
+                          {/* 3. بحث */}
+                          {activeWord.bahas && (
+                            <div className="info-row">
+                              <span className="info-label">بحث:</span>
+                              <span className="info-value font-medium">{activeWord.bahas}</span>
+                            </div>
+                          )}
+
+                          {/* 4. صیغہ */}
+                          {activeWord.seegha && (
+                            <div className="info-row">
+                              <span className="info-label">صیغہ:</span>
+                              <span className="info-value font-medium">{activeWord.seegha}</span>
+                            </div>
+                          )}
+
+                          {/* 5. باب کا نام */}
+                          {activeWord.bab && (
+                            <div className="info-row">
+                              <span className="info-label">باب:</span>
+                              <span className="info-value font-medium">{activeWord.bab}</span>
+                            </div>
+                          )}
+
+                          {/* 6. شش اقسام */}
+                          {activeWord.shash && (
+                            <div className="info-row">
+                              <span className="info-label">شش اقسام:</span>
+                              <span className="info-value font-medium">{activeWord.shash}</span>
+                            </div>
+                          )}
+
+                          {/* 7. ہفت اقسام */}
+                          {activeWord.haft && (
+                            <div className="info-row">
+                              <span className="info-label">ہفت اقسام:</span>
+                              <span className="info-value font-medium">{activeWord.haft}</span>
+                            </div>
+                          )}
+
+                          {/* 8. وزن */}
+                          <div className="info-row">
+                            <span className="info-label font-bold text-amber-800">وزن:</span>
+                            <span className="info-value font-medium text-base">
+                              {activeWord.wazn || '-------'}
+                            </span>
+                          </div>
+                        </>
+                      )}
+
+                      {/* 9. مَعْنٰی (لغوی معنی) */}
+                      <div className="info-row !border-b-0">
+                        <span className="info-label">معنی:</span>
+                        <span className="info-value font-urdu text-base leading-relaxed" style={{ color: currentTheme.urduColor }}>
+                          {activeWord.meaning || '---'}
+                        </span>
+                      </div>
+
+                      {/* Extra (فائدہ) if present */}
+                      {activeWord.extra && activeWord.extra.trim() && (
+                        <div className="mt-3 p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-slate-800 leading-relaxed font-urdu">
+                          <strong>فائدہ: </strong> {activeWord.extra}
+                        </div>
+                      )}
+
                     </div>
                   )}
-
-                  {/* صیغہ */}
-                  {activeWord.seegha && (
-                    <div className="info-row">
-                      <span className="info-label">صیغہ:</span>
-                      <span className="info-value font-medium">{activeWord.seegha}</span>
-                    </div>
-                  )}
-
-                  {/* بحث */}
-                  {activeWord.bahas && (
-                    <div className="info-row">
-                      <span className="info-label">بحث:</span>
-                      <span className="info-value font-medium">{activeWord.bahas}</span>
-                    </div>
-                  )}
-
-                  {/* شش اقسام */}
-                  {activeWord.shash && (
-                    <div className="info-row">
-                      <span className="info-label">شش اقسام:</span>
-                      <span className="info-value font-medium">{activeWord.shash}</span>
-                    </div>
-                  )}
-
-                  {/* باب کا نام */}
-                  {activeWord.bab && (
-                    <div className="info-row">
-                      <span className="info-label">باب:</span>
-                      <span className="info-value font-medium">{activeWord.bab}</span>
-                    </div>
-                  )}
-
-                  {/* ہفت اقسام */}
-                  {activeWord.haft && (
-                    <div className="info-row">
-                      <span className="info-label">ہفت اقسام:</span>
-                      <span className="info-value font-medium">{activeWord.haft}</span>
-                    </div>
-                  )}
-
-                  {/* وزن */}
-                  <div className="info-row">
-                    <span className="info-label font-bold text-amber-800">وزن:</span>
-                    <span className="info-value font-medium text-base">
-                      {activeWord.wazn || '-------'}
-                    </span>
-                  </div>
                 </>
-              )}
-
-              {/* مَعْنٰی (لغوی معنی) */}
-              <div className="info-row !border-b-0">
-                <span className="info-label">معنی:</span>
-                <span className="info-value font-urdu text-base leading-relaxed" style={{ color: currentTheme.urduColor }}>
-                  {activeWord.meaning || '---'}
-                </span>
-              </div>
-
-              {/* Extra (فائدہ) if present */}
-              {activeWord.extra && activeWord.extra.trim() && (
-                <div className="mt-3 p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-slate-800 leading-relaxed font-urdu">
-                  <strong>فائدہ: </strong> {activeWord.extra}
-                </div>
-              )}
-
-            </div>
-          )}
-        </>
-      );
-    })()}
+              );
+            })()}
 
             {/* Modal Actions Footer with Arabic & Urdu Audio */}
             <div 
@@ -2258,10 +2291,10 @@ export default function App() {
                   onClick={() => handlePlayVoice(activeWord.w || activeWord.word || '', 'ar', 'modal-word-ar')}
                   className="px-3 py-1.5 rounded-lg text-xs font-bold border transition flex items-center gap-1.5 cursor-pointer bg-white hover:bg-slate-50 shadow-2xs"
                   style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                  title={`عربی آواز سنیں (${selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط' : 'عمرو البساطی'})`}
+                  title="عربی صوتی تلفظ سنیں"
                 >
                   <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>{selectedChapterIndex === 0 || selectedChapterIndex === 1 ? 'قاری عبد الباسط (عربی)' : 'عمرو البساطی (عربی)'}</span>
+                  <span>عربی آواز</span>
                 </button>
 
                 {/* Urdu Audio Button */}
@@ -2269,10 +2302,10 @@ export default function App() {
                   onClick={() => handlePlayVoice(activeWord.meaning || '', 'ur', 'modal-word-ur')}
                   className="px-3 py-1.5 rounded-lg text-xs font-bold border transition flex items-center gap-1.5 cursor-pointer bg-white hover:bg-slate-50 shadow-2xs"
                   style={{ borderColor: currentTheme.cardBorder, color: currentTheme.primaryText }}
-                  title="اردو معنی سنیں (ضیاء محی الدین)"
+                  title="اردو صوتی تلفظ سنیں"
                 >
                   <Volume2 className="w-3.5 h-3.5 text-amber-700" />
-                  <span>ضیاء محی الدین (اردو)</span>
+                  <span>اردو آواز</span>
                 </button>
               </div>
 
@@ -2362,6 +2395,7 @@ export default function App() {
               {/* Latest Updated Chapters Quick Cards */}
               {!searchQuery && (
                 <div className="mt-3 space-y-1.5">
+
                   <div 
                     onClick={() => handleSelectChapter(24)}
                     className="p-2.5 rounded-xl border border-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 cursor-pointer transition flex items-center justify-between gap-2 shadow-2xs"
@@ -2907,9 +2941,12 @@ export default function App() {
             </div>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">
                   {audioState.lang === 'ar' ? 'عربی قراءت' : 'اردو ترجمہ'}
+                </span>
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  {audioState.voiceGender === 'female' ? '🎙️ خاتون' : '🎙️ مردانہ'}
                 </span>
                 {audioState.chunkProgress && audioState.chunkProgress.total > 1 && (
                   <span className="text-[11px] font-mono text-slate-300">
@@ -2923,7 +2960,16 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Voice Gender Switcher in Player */}
+            <button
+              onClick={toggleVoiceGender}
+              className="px-2 py-1 rounded-lg border border-slate-700 bg-slate-800 text-xs font-bold text-slate-200 hover:bg-slate-700 transition cursor-pointer"
+              title="آواز تبدیل کریں (خاتون / مردانہ)"
+            >
+              {voiceGender === 'female' ? 'خاتون' : 'مردانہ'}
+            </button>
+
             {/* Speed Toggle */}
             <button
               onClick={() => setSpeechRate(speechRate === 0.75 ? 1.0 : speechRate === 1.0 ? 1.25 : 0.75)}
