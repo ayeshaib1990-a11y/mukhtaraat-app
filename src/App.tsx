@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { CHAPTERS, WordItem } from './data/chaptersData';
 import { getDictionaryEntry, CLASSICAL_DICTIONARY } from './data/dictionaryData';
-import { playVoice, stopAllAudio, subscribeAudioState, AudioPlaybackState, getQuranSectionAudioUrl, getQuranChapterAudioUrls, getSectionVoiceoverAudioUrl, getChapterVoiceoverAudioUrls, getVoiceGender, setVoiceGender, VoiceGender } from './utils/audioPlayer';
+import { playVoice, stopAllAudio, subscribeAudioState, AudioPlaybackState, getQuranSectionAudioUrl, getQuranChapterAudioUrls, getSectionVoiceoverAudioUrl, getChapterVoiceoverAudioUrls, getQuranWordAudioUrl, getVoiceGender, setVoiceGender, VoiceGender } from './utils/audioPlayer';
 
 // Theme Definitions
 export type Theme = 'sepia' | 'sapphire' | 'emerald' | 'dark';
@@ -628,6 +628,12 @@ export default function App() {
           const vUrls = getChapterVoiceoverAudioUrls(selectedChapterIndex, lang, totalSecs, activeGender);
           if (vUrls) {
             audioUrls = vUrls;
+          }
+        } else if (lang === 'ar') {
+          // Check Quranic word audio map for individual words
+          const wordAudio = getQuranWordAudioUrl(text);
+          if (wordAudio) {
+            audioUrl = wordAudio;
           }
         }
       }

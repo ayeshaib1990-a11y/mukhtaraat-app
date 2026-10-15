@@ -8,6 +8,68 @@
 //    - Web Speech API with male voice prioritisation and low pitch
 //    - Shared singleton HTMLAudioElement with user-gesture unlocking
 
+import quranWordAudioData from '../data/quranWordAudioMap.json';
+
+const quranWordMap: Record<string, string> = quranWordAudioData as Record<string, string>;
+
+function stripArabicDiacritics(str: string): string {
+  return (str || '')
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    .replace(/[ٱإأآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .trim();
+}
+
+/**
+ * Looks up authentic male Qari pronunciation from QuranCDN for any Quranic word
+ */
+export function getQuranWordAudioUrl(word: string): string | null {
+  if (!word || !quranWordMap) return null;
+  const raw = word.trim();
+  const clean = stripArabicDiacritics(raw);
+  const parts = clean.split(/\s+/);
+  const toCheck = [raw, clean];
+  if (parts.length > 1) {
+    toCheck.push(parts[parts.length - 1]);
+    toCheck.push(parts[0]);
+  }
+
+  for (const item of toCheck) {
+    const c = stripArabicDiacritics(item);
+    const rootWord = c.startsWith('ال') ? c.slice(2) : c.startsWith('لل') ? c.slice(2) : c;
+    const candidates = [
+      item,
+      c,
+      rootWord,
+      'و' + c,
+      'ف' + c,
+      'ال' + c,
+      'ب' + c,
+      'ل' + c,
+      'لل' + c,
+      'ال' + rootWord,
+      'لل' + rootWord,
+      'و' + rootWord,
+      'ف' + rootWord,
+      'ب' + rootWord,
+      c.startsWith('و') ? c.slice(1) : null,
+      c.startsWith('ف') ? c.slice(1) : null,
+      c.startsWith('ال') ? c.slice(2) : null,
+      c.startsWith('ب') ? c.slice(1) : null,
+      c.startsWith('ل') ? c.slice(1) : null,
+      c.startsWith('لل') ? c.slice(2) : null,
+    ].filter(Boolean) as string[];
+
+    for (const cand of candidates) {
+      if (quranWordMap[cand]) {
+        return quranWordMap[cand];
+      }
+    }
+  }
+  return null;
+}
+
 export type VoiceGender = 'male';
 
 export function getVoiceGender(): VoiceGender {
@@ -702,9 +764,32 @@ export async function playVoice(
     }
   }
 
-  // Path 3: Speech Pipeline (Serverless Studio Equalizer -> Web Speech Fallback)
+  // Path 3: Speech Pipeline
   const clean = stripHtml(text).trim();
   if (!clean) return;
+
+  // Direct Path 2.5: If Arabic word matches authentic QuranCDN recitation, play directly
+  if (lang === 'ar') {
+    const quranWordUrl = getQuranWordAudioUrl(clean);
+    if (quranWordUrl) {
+      notify({
+        isPlaying: true,
+        activeId: id,
+        lang,
+        voiceGender: gender,
+        reciterName,
+        currentText: clean,
+        chunkProgress: { current: 1, total: 1 },
+        error: null,
+      });
+
+      const success = await playAudioUrlSingle(quranWordUrl, rate, signal);
+      if (success && !signal.aborted) {
+        stopAllAudio();
+        return;
+      }
+    }
+  }
 
   const chunks = splitTextIntoSentences(clean, 95);
 
