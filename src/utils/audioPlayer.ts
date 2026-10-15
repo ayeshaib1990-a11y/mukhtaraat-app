@@ -185,8 +185,9 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
  */
 export function getQuranSectionAudioUrl(chapterIndex: number, sectionIndex: number): string | null {
   if (chapterIndex === 0) {
-    const ayah = 61 + sectionIndex; // Section 0 is verse 61 ("تَبَارَكَ الَّذِي جَعَلَ فِي السَّمَاءِ بُرُوجًا") through verse 77
-    if (ayah >= 61 && ayah <= 77) {
+    const ayahMap = [61, 62, 63, 64, 65, 66, 67, 68, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77];
+    const ayah = ayahMap[sectionIndex];
+    if (ayah && ayah >= 61 && ayah <= 77) {
       return `https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/0250${ayah}.mp3`;
     }
   } else if (chapterIndex === 1) {
