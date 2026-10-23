@@ -397,14 +397,23 @@ export default function App() {
     lang: null,
     voiceGender: getVoiceGender(),
   });
-  const [voiceGender] = useState<VoiceGender>('male');
+  const [voiceGender, setLocalVoiceGender] = useState<VoiceGender>(getVoiceGender());
 
   useEffect(() => {
     const unsubscribe = subscribeAudioState((state) => {
       setAudioState(state);
+      if (state.voiceGender) {
+        setLocalVoiceGender(state.voiceGender);
+      }
     });
     return () => unsubscribe();
   }, []);
+
+  const toggleVoiceGender = () => {
+    const next: VoiceGender = voiceGender === 'female' ? 'male' : 'female';
+    setLocalVoiceGender(next);
+    setVoiceGender(next);
+  };
 
   const currentTheme = THEMES[theme];
   const chapter = CHAPTERS[selectedChapterIndex] || CHAPTERS[0];
@@ -876,13 +885,18 @@ export default function App() {
               </button>
             )}
 
-            {/* Dignified Male Voice Indicator */}
-            <div
-              className="px-2.5 py-1 rounded-lg border text-xs font-bold items-center gap-1.5 flex shadow-2xs bg-indigo-50 text-indigo-900 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200"
-              title="باوقار مردانہ صوتی تلاوت و تلفظ"
+            {/* Voice Gender Switcher Toggle */}
+            <button
+              onClick={toggleVoiceGender}
+              className={`px-2.5 py-1 rounded-lg border text-xs font-bold items-center gap-1.5 transition cursor-pointer flex shadow-2xs ${
+                voiceGender === 'female'
+                  ? 'bg-rose-50 text-rose-900 border-rose-300 dark:bg-rose-950 dark:text-rose-200'
+                  : 'bg-indigo-50 text-indigo-900 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200'
+              }`}
+              title="آواز کی قسم تبدیل کریں (خاتون / مردانہ)"
             >
-              <span>🎙️ باوقار مردانہ آواز</span>
-            </div>
+              <span>{voiceGender === 'female' ? '🎙️ خاتون آواز (خوش الحان)' : '🎙️ مردانہ آواز'}</span>
+            </button>
 
             {/* Current Chapter Arabic Audio Play */}
             <button
@@ -1214,12 +1228,17 @@ export default function App() {
 
             {/* Audio Play All Buttons */}
             <div className="flex items-center gap-2">
-              <div
-                className="px-3 py-1.5 rounded-lg border font-bold flex items-center gap-1.5 shadow-2xs bg-indigo-50 text-indigo-900 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200"
-                title="باوقار مردانہ صوتی تلاوت و تلفظ"
+              <button
+                onClick={toggleVoiceGender}
+                className={`px-3 py-1.5 rounded-lg border font-bold flex items-center gap-1.5 cursor-pointer transition shadow-2xs ${
+                  voiceGender === 'female'
+                    ? 'bg-rose-50 text-rose-900 border-rose-300 dark:bg-rose-950 dark:text-rose-200'
+                    : 'bg-indigo-50 text-indigo-900 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200'
+                }`}
+                title="آواز کی قسم تبدیل کریں (خاتون / مردانہ)"
               >
-                <span>🎙️ باوقار مردانہ آواز</span>
-              </div>
+                <span>{voiceGender === 'female' ? '🎙️ خاتون آواز (خوش الحان)' : '🎙️ مردانہ آواز'}</span>
+              </button>
 
               <button
                 onClick={() => {
@@ -3060,9 +3079,17 @@ export default function App() {
                 <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/50">
                   {audioState.lang === 'ar' ? 'عربی قراءت' : 'اردو ترجمہ'}
                 </span>
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-200 border border-indigo-700/50">
-                  🎙️ باوقار مردانہ آواز
-                </span>
+                <button
+                  onClick={toggleVoiceGender}
+                  className={`text-[10px] font-medium px-1.5 py-0.5 rounded border cursor-pointer transition ${
+                    voiceGender === 'female'
+                      ? 'bg-rose-950 text-rose-200 border-rose-700/50'
+                      : 'bg-indigo-950 text-indigo-200 border-indigo-700/50'
+                  }`}
+                  title="آواز تبدیل کریں (خاتون / مردانہ)"
+                >
+                  {voiceGender === 'female' ? '🎙️ خاتون آواز' : '🎙️ مردانہ آواز'}
+                </button>
                 {audioState.chunkProgress && audioState.chunkProgress.total > 1 && (
                   <span className="text-[11px] font-mono text-slate-300">
                     حصہ {audioState.chunkProgress.current} از {audioState.chunkProgress.total}
@@ -3076,6 +3103,14 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Voice Gender Switcher in Player */}
+            <button
+              onClick={toggleVoiceGender}
+              className="px-2 py-1 rounded-lg border border-slate-700 bg-slate-800 text-xs font-bold text-slate-200 hover:bg-slate-700 transition cursor-pointer"
+              title="آواز تبدیل کریں (خاتون / مردانہ)"
+            >
+              {voiceGender === 'female' ? 'خاتون' : 'مردانہ'}
+            </button>
 
 
             {/* Speed Toggle */}

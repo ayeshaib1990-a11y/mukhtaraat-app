@@ -70,23 +70,31 @@ export function getQuranWordAudioUrl(word: string): string | null {
   return null;
 }
 
-export type VoiceGender = 'male';
+export type VoiceGender = 'male' | 'female';
 
 export function getVoiceGender(): VoiceGender {
   if (typeof window !== 'undefined') {
     try {
-      localStorage.removeItem('app_voice_gender'); // Purge any legacy female voice preference
+      const saved = localStorage.getItem('app_voice_gender') as VoiceGender;
+      if (saved === 'female' || saved === 'male') return saved;
     } catch {
       // ignore
     }
   }
-  return 'male';
+  return 'female';
 }
 
-export function setVoiceGender(_gender: VoiceGender): void {
+export function setVoiceGender(gender: VoiceGender): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('app_voice_gender', gender);
+    } catch {
+      // ignore
+    }
+  }
   notify({
     ...currentState,
-    voiceGender: 'male',
+    voiceGender: gender,
   });
 }
 
@@ -235,14 +243,9 @@ export function getSectionVoiceoverAudioUrl(
   lang: 'ar' | 'ur',
   _gender?: VoiceGender
 ): string | null {
-  // Master Male audio sources:
-  // For Quranic chapters (0: عباد الرحمن, 1: سيدنا موسى), return authentic EveryAyah Sheikh Abdul Basit Murattal recitation
+  // Authentic Quranic recitation by Sheikh Abdul Basit (Murattal 192kbps) for Chapters 1 & 2 Arabic
   if (lang === 'ar' && (chapterIndex === 0 || chapterIndex === 1)) {
     return getQuranSectionAudioUrl(chapterIndex, sectionIndex);
-  }
-  // For chapters 0-4 with pre-rendered authoritative masculine audio, serve directly from static asset folder
-  if (chapterIndex >= 0 && chapterIndex <= 4) {
-    return `/audio/ch${chapterIndex}_${lang}_sec${sectionIndex}.mp3`;
   }
   return null;
 }
@@ -253,20 +256,12 @@ export function getSectionVoiceoverAudioUrl(
 export function getChapterVoiceoverAudioUrls(
   chapterIndex: number,
   lang: 'ar' | 'ur',
-  totalSections: number,
+  _totalSections: number,
   _gender?: VoiceGender
 ): string[] | null {
-  // For Quranic chapters (0: عباد الرحمن, 1: سيدنا موسى), return authentic EveryAyah Sheikh Abdul Basit Murattal full recitation
+  // Authentic Quranic recitation by Sheikh Abdul Basit for Chapters 1 & 2 Arabic
   if (lang === 'ar' && (chapterIndex === 0 || chapterIndex === 1)) {
     return getQuranChapterAudioUrls(chapterIndex);
-  }
-  // Pre-rendered master male audio URLs for chapters 0-4
-  if (chapterIndex >= 0 && chapterIndex <= 4 && totalSections > 0) {
-    const urls: string[] = [];
-    for (let s = 0; s < totalSections; s++) {
-      urls.push(`/audio/ch${chapterIndex}_${lang}_sec${s}.mp3`);
-    }
-    return urls;
   }
   return null;
 }
@@ -504,34 +499,40 @@ function normalizeTextForSpeech(text: string, lang: 'ar' | 'ur'): string {
 
   if (lang === 'ar') {
     cleaned = cleaned
-      .replace(/ﷺ/g, 'صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ')
+      .replace(/ﷺ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
+      .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
       .replace(/اللّٰهُ/g, 'اللهُ')
       .replace(/اللّٰهِ/g, 'اللهِ')
       .replace(/اللّٰهَ/g, 'اللهَ')
-      .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, 'رَضِيَ اللهُ عَنْهُ')
-      .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, 'رَضِيَ اللهُ عَنْهَا')
-      .replace(/عَلَيْهِ السَّلَامُ/g, 'عَلَيْهِ السَّلَامُ');
+      .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِيَ اللهُ عَنْهُ ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِيَ اللهُ عَنْهَا ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, ' رَضِيَ اللهُ عَنْهُمْ ')
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَيْهِ السَّلَامُ ');
   } else {
     cleaned = cleaned
-      .replace(/ﷺ/g, 'صلی اللہ علیہ وسلم')
-      .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, 'صلی اللہ علیہ وسلم')
-      .replace(/رضی اللہ عنہا/g, 'رضی اللہ عنہا')
-      .replace(/رضی اللہ عنہ/g, 'رضی اللہ عنہ')
-      .replace(/علیہ السلام/g, 'علیہ السلام');
+      .replace(/ﷺ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/صلی اللہ علیہ وسلم/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/رضی اللہ عنہا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
+      .replace(/رضی اللہ عنہ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
+      .replace(/علیہ السلام/g, ' عَلَیْہِ السَّلَامْ ')
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَیْہِ السَّلَامْ ');
   }
 
   return cleaned;
 }
 
 /**
- * Web Speech API fallback:
- * Exclusively uses verified masculine profiles with low baritone pitch,
- * and strictly blacklists any female or unverified robotic cloud voices.
+ * Natural Web Speech API:
+ * Offers clean, articulate natural pronunciation with natural pitch (no artificial distortion),
+ * and supports both melodious female and clear male voices.
  */
 function playWebSpeechChunk(
   text: string,
   lang: 'ar' | 'ur',
-  _gender: VoiceGender,
+  gender: VoiceGender,
   rate: number,
   signal: AbortSignal
 ): Promise<boolean> {
@@ -555,99 +556,56 @@ function playWebSpeechChunk(
 
       const voices = window.speechSynthesis.getVoices() || [];
 
-      // Strict blacklist of all female, feminine, or unverified cloud voices
-      const isFemaleOrUnverifiedVoice = (name: string) => {
-        const n = name.toLowerCase();
-        return (
-          n.includes('female') ||
-          n.includes('woman') ||
-          n.includes('girl') ||
-          n.includes('google عربي') ||
-          n.includes('google arabic') ||
-          n.includes('google اردو') ||
-          n.includes('google hindi') ||
-          n.includes('google हिन्दी') ||
-          n.includes('zira') ||
-          n.includes('samantha') ||
-          n.includes('victoria') ||
-          n.includes('karen') ||
-          n.includes('susan') ||
-          n.includes('eva') ||
-          n.includes('hoda') ||
-          n.includes('salma') ||
-          n.includes('zeina') ||
-          n.includes('mariam') ||
-          n.includes('leila') ||
-          n.includes('zari') ||
-          n.includes('fatima') ||
-          n.includes('layla') ||
-          n.includes('uzma') ||
-          n.includes('swara') ||
-          n.includes('kalpana') ||
-          n.includes('ananya') ||
-          n.includes('lekha') ||
-          n.includes('neerja') ||
-          n.includes('geeta') ||
-          n.includes('heera')
-        );
-      };
-
       if (lang === 'ar') {
         utterance.lang = 'ar-SA';
-        utterance.rate = Math.max(0.75, rate * 0.90);
-        utterance.pitch = 0.50; // Deep masculine tone
+        utterance.rate = Math.max(0.80, Math.min(1.0, rate * 0.90));
+        utterance.pitch = gender === 'female' ? 1.05 : 0.96; // Natural human pitch
 
         const arVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('ar'));
-        const arMale = arVoices.find((v) => {
-          const name = v.name.toLowerCase();
-          return (
-            !isFemaleOrUnverifiedVoice(name) &&
-            (name.includes('male') ||
-              name.includes('maged') ||
-              name.includes('tarik') ||
-              name.includes('tariq') ||
-              name.includes('hamed') ||
-              name.includes('shakir') ||
-              name.includes('naayf') ||
-              name.includes('hamza'))
-          );
-        });
-
-        // STRICT: If no confirmed male voice exists on device, do NOT speak with random female voice
-        if (!arMale) {
-          resolve(false);
-          return;
+        if (arVoices.length > 0) {
+          if (gender === 'female') {
+            const femaleV = arVoices.find((v) => {
+              const n = v.name.toLowerCase();
+              return n.includes('female') || n.includes('salma') || n.includes('zeina') || n.includes('mariam') || n.includes('leila') || n.includes('fatima') || n.includes('hoda') || n.includes('zari');
+            });
+            utterance.voice = femaleV || arVoices[0];
+          } else {
+            const maleV = arVoices.find((v) => {
+              const n = v.name.toLowerCase();
+              return n.includes('male') || n.includes('maged') || n.includes('tarik') || n.includes('tariq') || n.includes('hamed') || n.includes('shakir') || n.includes('hamza') || n.includes('naayf');
+            });
+            utterance.voice = maleV || arVoices[0];
+          }
         }
-        utterance.voice = arMale;
       } else {
         utterance.lang = 'ur-PK';
-        utterance.rate = Math.max(0.75, rate * 0.88);
-        utterance.pitch = 0.50; // Deep masculine tone
+        utterance.rate = Math.max(0.80, Math.min(1.0, rate * 0.90));
+        utterance.pitch = gender === 'female' ? 1.05 : 0.96; // Natural human pitch
 
         const urVoices = voices.filter(
           (v) =>
             v.lang.toLowerCase().startsWith('ur') ||
-            v.lang.toLowerCase().includes('urdu')
+            v.lang.toLowerCase().includes('urdu') ||
+            v.lang.toLowerCase().startsWith('hi')
         );
-        const urMale = urVoices.find((v) => {
-          const name = v.name.toLowerCase();
-          return (
-            !isFemaleOrUnverifiedVoice(name) &&
-            (name.includes('male') ||
-              name.includes('asad') ||
-              name.includes('salman') ||
-              name.includes('david') ||
-              name.includes('george'))
-          );
-        });
-
-        // STRICT: If no confirmed male voice exists on device, do NOT speak with random female voice
-        if (!urMale) {
-          resolve(false);
-          return;
+        if (urVoices.length > 0) {
+          if (gender === 'female') {
+            const femaleV = urVoices.find((v) => {
+              const n = v.name.toLowerCase();
+              return n.includes('female') || n.includes('uzma') || n.includes('swara') || n.includes('kalpana') || n.includes('ananya') || n.includes('lekha') || n.includes('zira');
+            });
+            utterance.voice = femaleV || urVoices[0];
+          } else {
+            const maleV = urVoices.find((v) => {
+              const n = v.name.toLowerCase();
+              return n.includes('male') || n.includes('asad') || n.includes('salman') || n.includes('david');
+            });
+            utterance.voice = maleV || urVoices[0];
+          }
+          if (utterance.voice) {
+            utterance.lang = utterance.voice.lang || 'ur-PK';
+          }
         }
-        utterance.voice = urMale;
-        utterance.lang = urMale.lang || 'ur-PK';
       }
 
       let ended = false;
@@ -731,7 +689,9 @@ export async function playVoice(
 
   let reciterName = options?.reciterName;
   if (!reciterName) {
-    reciterName = lang === 'ar' ? 'باوقار عربی صوتی تلاوت (برصغیر لحن)' : 'باوقار اردو صوتی ترجمہ (برصغیر فصیح لہجہ)';
+    reciterName = lang === 'ar'
+      ? (gender === 'female' ? 'خوش الحان قراءت (خاتون)' : 'عربی صوتی تلاوت (مردانہ)')
+      : (gender === 'female' ? 'سلیس صوتی ترجمہ (خاتون)' : 'اردو صوتی ترجمہ (مردانہ)');
   }
 
   // Path 1: Array of direct audio URLs (e.g. Master recitation)
@@ -850,9 +810,9 @@ export async function playVoice(
     const encoded = encodeURIComponent(normChunk);
     let chunkPlayed = false;
 
-    // Strategy A: Serverless audio proxy /api/tts with masculine neural voice (Fenrir)
+    // Strategy A: Serverless audio proxy /api/tts with studio neural voice
     if (!chunkPlayed && !signal.aborted) {
-      const serverUrl = `/api/tts?tl=${lang}&gender=male&q=${encoded}`;
+      const serverUrl = `/api/tts?tl=${lang}&gender=${gender}&q=${encoded}`;
       chunkPlayed = await playAudioUrlSingle(serverUrl, rate, signal);
     }
 

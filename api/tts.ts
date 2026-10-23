@@ -45,21 +45,26 @@ function normalizeSalawatAndSacredText(text: string, lang: 'ar' | 'ur'): string 
 
   if (lang === 'ar') {
     cleaned = cleaned
-      .replace(/ﷺ/g, 'صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ')
+      .replace(/ﷺ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
+      .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
       .replace(/اللّٰهُ/g, 'اللهُ')
       .replace(/اللّٰهِ/g, 'اللهِ')
       .replace(/اللّٰهَ/g, 'اللهَ')
-      .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, 'رَضِيَ اللهُ عَنْهُ')
-      .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, 'رَضِيَ اللهُ عَنْهَا')
-      .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, 'رَضِيَ اللهُ عَنْهُمْ')
-      .replace(/عَلَيْهِ السَّلَامُ/g, 'عَلَيْهِ السَّلَامُ');
+      .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِيَ اللهُ عَنْهُ ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِيَ اللهُ عَنْهَا ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, ' رَضِيَ اللهُ عَنْهُمْ ')
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَيْهِ السَّلَامُ ');
   } else {
     cleaned = cleaned
-      .replace(/ﷺ/g, 'صلی اللہ علیہ وسلم')
-      .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, 'صلی اللہ علیہ وسلم')
-      .replace(/رضی اللہ عنہا/g, 'رضی اللہ عنہا')
-      .replace(/رضی اللہ عنہ/g, 'رضی اللہ عنہ')
-      .replace(/علیہ السلام/g, 'علیہ السلام');
+      .replace(/ﷺ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/صلی اللہ علیہ وسلم/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/رضی اللہ عنہا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
+      .replace(/رضی اللہ عنہ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
+      .replace(/علیہ السلام/g, ' عَلَیْہِ السَّلَامْ ')
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَیْہِ السَّلَامْ ');
   }
 
   return cleaned;
@@ -127,21 +132,29 @@ function fetchHttpBuffer(url: string): Promise<Buffer> {
 
 /**
  * Generates natural studio male narration using @google/genai with model 'gemini-3.8-flash-tts'
- * and voice 'Fenrir' (deep, dignified masculine voice).
+/**
+ * Generates natural studio audio using @google/genai with model 'gemini-3.8-flash-lite-tts'.
+ * Supports 'Kore' (melodious, clear voice) and 'Puck' (clean natural voice).
  */
-async function generateGeminiMaleAudio(text: string, _lang: 'ar' | 'ur'): Promise<Buffer | null> {
+async function generateGeminiAudio(text: string, gender: 'male' | 'female'): Promise<Buffer | null> {
   if (!process.env.GEMINI_API_KEY) return null;
   try {
     const { GoogleGenAI } = await import('@google/genai');
     const ai = new GoogleGenAI();
+    const voiceName = gender === 'female' ? 'Kore' : 'Puck';
     const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash-tts',
-      contents: text,
+      model: 'gemini-3.8-flash-lite-tts',
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text }],
+        },
+      ],
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Fenrir' }, // Deep resonant masculine voice
+            prebuiltVoiceConfig: { voiceName },
           },
         },
       },
@@ -152,7 +165,7 @@ async function generateGeminiMaleAudio(text: string, _lang: 'ar' | 'ur'): Promis
       return Buffer.from(base64Audio, 'base64');
     }
   } catch (err) {
-    console.error('Gemini male TTS generation error:', err);
+    console.error('Gemini TTS generation error:', err);
   }
   return null;
 }
@@ -168,6 +181,7 @@ export default async function handler(req: any, res: any) {
   }
 
   const tl = ((req.query?.tl as string) || 'ar').toLowerCase() as 'ar' | 'ur';
+  const gender = (((req.query?.gender as string) || 'female').toLowerCase() === 'male' ? 'male' : 'female') as 'male' | 'female';
   const rawQ = ((req.query?.q as string) || '').trim();
 
   if (!rawQ) {
@@ -175,7 +189,7 @@ export default async function handler(req: any, res: any) {
   }
 
   const cleanText = normalizeSalawatAndSacredText(rawQ.slice(0, 500), tl);
-  const cacheKey = `${tl}:male:${cleanText}`;
+  const cacheKey = `${tl}:${gender}:${cleanText}`;
 
   // 1. Check in-memory cache
   if (memoryCache.has(cacheKey)) {
@@ -231,9 +245,9 @@ export default async function handler(req: any, res: any) {
     }
   }
 
-  // 4. Strategy B: Generate high-fidelity neural male audio via Gemini TTS (gemini-3.8-flash-tts)
+  // 4. Strategy B: Generate high-fidelity neural audio via Gemini TTS (gemini-3.8-flash-lite-tts)
   try {
-    const geminiBuffer = await generateGeminiMaleAudio(cleanText, tl);
+    const geminiBuffer = await generateGeminiAudio(cleanText, gender);
     if (geminiBuffer) {
       if (memoryCache.size >= MAX_CACHE_ITEMS) {
         const oldest = memoryCache.keys().next().value;
