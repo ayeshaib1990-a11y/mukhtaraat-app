@@ -731,7 +731,7 @@ export async function playVoice(
 
   let reciterName = options?.reciterName;
   if (!reciterName) {
-    reciterName = lang === 'ar' ? 'عربی صوتی تلفظ' : 'اردو صوتی تلفظ';
+    reciterName = lang === 'ar' ? 'باوقار عربی صوتی تلاوت (برصغیر لحن)' : 'باوقار اردو صوتی ترجمہ (برصغیر فصیح لہجہ)';
   }
 
   // Path 1: Array of direct audio URLs (e.g. Master recitation)
