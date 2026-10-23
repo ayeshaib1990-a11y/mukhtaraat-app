@@ -240,7 +240,10 @@ export function getSectionVoiceoverAudioUrl(
   if (lang === 'ar' && (chapterIndex === 0 || chapterIndex === 1)) {
     return getQuranSectionAudioUrl(chapterIndex, sectionIndex);
   }
-  // All other chapters and translations dynamically utilize high-fidelity studio male TTS (Fenrir) via /api/tts
+  // For chapters 0-4 with pre-rendered authoritative masculine audio, serve directly from static asset folder
+  if (chapterIndex >= 0 && chapterIndex <= 4) {
+    return `/audio/ch${chapterIndex}_${lang}_sec${sectionIndex}.mp3`;
+  }
   return null;
 }
 
@@ -250,14 +253,21 @@ export function getSectionVoiceoverAudioUrl(
 export function getChapterVoiceoverAudioUrls(
   chapterIndex: number,
   lang: 'ar' | 'ur',
-  _totalSections: number,
+  totalSections: number,
   _gender?: VoiceGender
 ): string[] | null {
   // For Quranic chapters (0: عباد الرحمن, 1: سيدنا موسى), return authentic EveryAyah Sheikh Abdul Basit Murattal full recitation
   if (lang === 'ar' && (chapterIndex === 0 || chapterIndex === 1)) {
     return getQuranChapterAudioUrls(chapterIndex);
   }
-  // Other chapters stream smoothly through /api/tts male neural recitation
+  // Pre-rendered master male audio URLs for chapters 0-4
+  if (chapterIndex >= 0 && chapterIndex <= 4 && totalSections > 0) {
+    const urls: string[] = [];
+    for (let s = 0; s < totalSections; s++) {
+      urls.push(`/audio/ch${chapterIndex}_${lang}_sec${s}.mp3`);
+    }
+    return urls;
+  }
   return null;
 }
 
