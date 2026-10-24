@@ -38,8 +38,13 @@ function stripArabicDiacritics(str: string): string {
 
 function normalizeSalawatAndSacredText(text: string, lang: 'ar' | 'ur'): string {
   let cleaned = (text || '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/[«»"']/g, '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[«»"'“”]/g, '')
+    .replace(/[–—―-]/g, ' ، ')
+    .replace(/[\/\\|]/g, ' یا ')
+    .replace(/[()\[\]{}]/g, ' ، ')
+    .replace(/۔\s*۔+/g, '۔ ')
+    .replace(/\.{2,}/g, '۔ ')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -47,27 +52,55 @@ function normalizeSalawatAndSacredText(text: string, lang: 'ar' | 'ur'): string 
     cleaned = cleaned
       .replace(/ﷺ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
       .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
+      .replace(/صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
       .replace(/اللّٰهُ/g, 'اللهُ')
       .replace(/اللّٰهِ/g, 'اللهِ')
       .replace(/اللّٰهَ/g, 'اللهَ')
       .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِيَ اللهُ عَنْهُ ')
       .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِيَ اللهُ عَنْهَا ')
       .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, ' رَضِيَ اللهُ عَنْهُمْ ')
-      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَيْهِ السَّلَامُ ');
+      .replace(/رَضِيَ اللهُ عَنْهُ/g, ' رَضِيَ اللهُ عَنْهُ ')
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَيْهِ السَّلَامُ ')
+      .replace(/عَلَيْهَا السَّلَامُ/g, ' عَلَيْهَا السَّلَامُ ')
+      .replace(/عَلَيْهِمَا السَّلَامُ/g, ' عَلَيْهِمَا السَّلَامُ ')
+      .replace(/عَلَيْهِمُ السَّلَامُ/g, ' عَلَيْهِمُ السَّلَامُ ')
+      .replace(/جَلَّ جَلَالُهُ/g, ' جَلَّ جَلَالُهُ ')
+      .replace(/سُبْحَانَهُ وَتَعَالَىٰ?/g, ' سُبْحَانَهُ وَتَعَالَى ')
+      .replace(/عَزَّ وَجَلَّ/g, ' عَزَّ وَجَلَّ ')
+      .replace(/تَبَارَكَ وَتَعَالَىٰ?/g, ' تَبَارَكَ وَتَعَالَى ');
   } else {
     cleaned = cleaned
       .replace(/ﷺ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
       .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
       .replace(/صلی اللہ علیہ وسلم/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/صلی اللہ علیہ و آلہ وسلم/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
       .replace(/رضی اللہ عنہا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
       .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
       .replace(/رضی اللہ عنہ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
       .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
+      .replace(/رضی اللہ عنہم/g, ' رَضِیَ اللّٰہُ عَنْہُمْ ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, ' رَضِیَ اللّٰہُ عَنْہُمْ ')
       .replace(/علیہ السلام/g, ' عَلَیْہِ السَّلَامْ ')
-      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَیْہِ السَّلَامْ ');
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَیْہِ السَّلَامْ ')
+      .replace(/علیہا السلام/g, ' عَلَیْہَا السَّلَامْ ')
+      .replace(/عَلَيْهَا السَّلَامُ/g, ' عَلَیْہَا السَّلَامْ ')
+      .replace(/علیہم السلام/g, ' عَلَیْہِمُ السَّلَامْ ')
+      .replace(/عَلَيْهِمُ السَّلَامُ/g, ' عَلَیْہِمُ السَّلَامْ ')
+      .replace(/رحمتہ اللہ علیہ/g, ' رَحْمَۃُ اللّٰہِ عَلَیْہِ ')
+      .replace(/رحمہ اللہ/g, ' رَحِمَہُ اللّٰہُ ')
+      .replace(/رَحِمَهُ اللّٰهُ/g, ' رَحِمَہُ اللّٰہُ ')
+      .replace(/جل جلالہ/g, ' جَلَّ جَلَالُہٗ ')
+      .replace(/جَلَّ جَلَالُهُ/g, ' جَلَّ جَلَالُہٗ ')
+      .replace(/سبحانہ و تعالی/g, ' سُبْحَانَہٗ وَتَعَالٰی ')
+      .replace(/سبحانہ وتعالیٰ?/g, ' سُبْحَانَہٗ وَتَعَالٰی ')
+      .replace(/سُبْحَانَهُ وَتَعَالَىٰ?/g, ' سُبْحَانَہٗ وَتَعَالٰی ')
+      .replace(/عز وجل/g, ' عَزَّ وَجَلَّ ')
+      .replace(/عَزَّ وَجَلَّ/g, ' عَزَّ وَجَلَّ ')
+      .replace(/تبارک و تعالی/g, ' تَبَارَکَ وَتَعَالٰی ')
+      .replace(/تَبَارَكَ وَتَعَالَىٰ?/g, ' تَبَارَکَ وَتَعَالٰی ');
   }
 
-  return cleaned;
+  return cleaned.replace(/\s+/g, ' ').trim();
 }
 
 function lookupQuranWordAudio(word: string): string | null {
@@ -131,17 +164,40 @@ function fetchHttpBuffer(url: string): Promise<Buffer> {
 }
 
 /**
- * Generates natural studio male narration using @google/genai with model 'gemini-3.8-flash-tts'
-/**
- * Generates natural studio audio using @google/genai with model 'gemini-3.8-flash-lite-tts'.
- * Supports 'Kore' (melodious, clear voice) and 'Puck' (clean natural voice).
+ * Direct high-fidelity Google Translate TTS fetcher in Node.js
+ * Produces crisp, clear, perfectly enunciated natural speech without cutting or distortion.
  */
-async function generateGeminiAudio(text: string, gender: 'male' | 'female'): Promise<Buffer | null> {
+function fetchGoogleTtsBuffer(text: string, lang: 'ar' | 'ur'): Promise<Buffer> {
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(text)}`;
+  return new Promise((resolve, reject) => {
+    https.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://translate.google.com/'
+      }
+    }, (res) => {
+      if (res.statusCode !== 200) {
+        return reject(new Error(`Google TTS status: ${res.statusCode}`));
+      }
+      const chunks: Buffer[] = [];
+      res.on('data', (c) => chunks.push(c));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
+      res.on('error', reject);
+    }).on('error', reject);
+  });
+}
+
+/**
+ * Generates natural studio male narration using @google/genai with model 'gemini-3.8-flash-lite-tts'.
+ * Strictly uses 'Charon' (authoritative, baritone, dignified male voice) for scholarly Islamic & Urdu recitation.
+ */
+async function generateGeminiAudio(text: string): Promise<Buffer | null> {
   if (!process.env.GEMINI_API_KEY) return null;
   try {
     const { GoogleGenAI } = await import('@google/genai');
     const ai = new GoogleGenAI();
-    const voiceName = gender === 'female' ? 'Kore' : 'Puck';
+    // 'Charon' is the premier authoritative, deep baritone male voice in Gemini TTS
+    const voiceName = 'Charon';
     const response = await ai.models.generateContent({
       model: 'gemini-3.8-flash-lite-tts',
       contents: [
@@ -165,7 +221,7 @@ async function generateGeminiAudio(text: string, gender: 'male' | 'female'): Pro
       return Buffer.from(base64Audio, 'base64');
     }
   } catch (err) {
-    console.error('Gemini TTS generation error:', err);
+    console.error('Gemini TTS generation error (will seamlessly fall back to Google TTS):', err);
   }
   return null;
 }
@@ -181,7 +237,6 @@ export default async function handler(req: any, res: any) {
   }
 
   const tl = ((req.query?.tl as string) || 'ar').toLowerCase() as 'ar' | 'ur';
-  const gender = (((req.query?.gender as string) || 'female').toLowerCase() === 'male' ? 'male' : 'female') as 'male' | 'female';
   const rawQ = ((req.query?.q as string) || '').trim();
 
   if (!rawQ) {
@@ -189,7 +244,7 @@ export default async function handler(req: any, res: any) {
   }
 
   const cleanText = normalizeSalawatAndSacredText(rawQ.slice(0, 500), tl);
-  const cacheKey = `${tl}:${gender}:${cleanText}`;
+  const cacheKey = `male:${tl}:${cleanText}`;
 
   // 1. Check in-memory cache
   if (memoryCache.has(cacheKey)) {
@@ -203,10 +258,12 @@ export default async function handler(req: any, res: any) {
   }
 
   // 2. Check disk cache
-  const diskPath = path.join(CACHE_DIR, `${Buffer.from(cacheKey).toString('hex').slice(0, 48)}.wav`);
-  if (fs.existsSync(diskPath)) {
+  const diskPathWav = path.join(CACHE_DIR, `${Buffer.from(cacheKey).toString('hex').slice(0, 48)}.wav`);
+  const diskPathMp3 = path.join(CACHE_DIR, `${Buffer.from(cacheKey).toString('hex').slice(0, 48)}.mp3`);
+
+  if (fs.existsSync(diskPathWav)) {
     try {
-      const diskBuf = fs.readFileSync(diskPath);
+      const diskBuf = fs.readFileSync(diskPathWav);
       memoryCache.set(cacheKey, { buffer: diskBuf, contentType: 'audio/wav', timestamp: Date.now() });
       res.setHeader('Content-Type', 'audio/wav');
       res.setHeader('Content-Length', diskBuf.length);
@@ -218,9 +275,23 @@ export default async function handler(req: any, res: any) {
     } catch {
       // ignore
     }
+  } else if (fs.existsSync(diskPathMp3)) {
+    try {
+      const diskBuf = fs.readFileSync(diskPathMp3);
+      memoryCache.set(cacheKey, { buffer: diskBuf, contentType: 'audio/mpeg', timestamp: Date.now() });
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Length', diskBuf.length);
+      res.setHeader(
+        'Cache-Control',
+        'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400, immutable'
+      );
+      return res.send(diskBuf);
+    } catch {
+      // ignore
+    }
   }
 
-  // 3. Strategy A: Check if word is an authentic Quranic word from QuranCDN (Male Qari)
+  // 3. Strategy A: Check if word is an authentic Quranic word from QuranCDN (Male Qari recitation)
   if (tl === 'ar') {
     const quranAudioUrl = lookupQuranWordAudio(cleanText);
     if (quranAudioUrl) {
@@ -231,6 +302,9 @@ export default async function handler(req: any, res: any) {
           if (oldest) memoryCache.delete(oldest);
         }
         memoryCache.set(cacheKey, { buffer: audioBuffer, contentType: 'audio/mpeg', timestamp: Date.now() });
+        try {
+          fs.writeFileSync(diskPathMp3, audioBuffer);
+        } catch {}
 
         res.setHeader('Content-Type', 'audio/mpeg');
         res.setHeader('Content-Length', audioBuffer.length);
@@ -245,9 +319,9 @@ export default async function handler(req: any, res: any) {
     }
   }
 
-  // 4. Strategy B: Generate high-fidelity neural audio via Gemini TTS (gemini-3.8-flash-lite-tts)
+  // 4. Strategy B: Generate high-fidelity authoritative male audio via Gemini TTS (voice: Charon)
   try {
-    const geminiBuffer = await generateGeminiAudio(cleanText, gender);
+    const geminiBuffer = await generateGeminiAudio(cleanText);
     if (geminiBuffer) {
       if (memoryCache.size >= MAX_CACHE_ITEMS) {
         const oldest = memoryCache.keys().next().value;
@@ -255,7 +329,7 @@ export default async function handler(req: any, res: any) {
       }
       memoryCache.set(cacheKey, { buffer: geminiBuffer, contentType: 'audio/wav', timestamp: Date.now() });
       try {
-        fs.writeFileSync(diskPath, geminiBuffer);
+        fs.writeFileSync(diskPathWav, geminiBuffer);
       } catch {}
 
       res.setHeader('Content-Type', 'audio/wav');
@@ -270,6 +344,30 @@ export default async function handler(req: any, res: any) {
     console.error('Gemini TTS processing error:', err);
   }
 
-  // 5. If serverless has no audio available, return 404 so client knows
-  return res.status(404).send('Male audio source not available on server');
+  // 5. Strategy C: Bulletproof fallback to Google Translate TTS (Never 404s, crisp, natural pronunciation)
+  try {
+    const googleBuffer = await fetchGoogleTtsBuffer(cleanText, tl);
+    if (googleBuffer && googleBuffer.length > 0) {
+      if (memoryCache.size >= MAX_CACHE_ITEMS) {
+        const oldest = memoryCache.keys().next().value;
+        if (oldest) memoryCache.delete(oldest);
+      }
+      memoryCache.set(cacheKey, { buffer: googleBuffer, contentType: 'audio/mpeg', timestamp: Date.now() });
+      try {
+        fs.writeFileSync(diskPathMp3, googleBuffer);
+      } catch {}
+
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Length', googleBuffer.length);
+      res.setHeader(
+        'Cache-Control',
+        'public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400, immutable'
+      );
+      return res.send(googleBuffer);
+    }
+  } catch (err) {
+    console.error('Google TTS fallback error:', err);
+  }
+
+  return res.status(500).send('Unable to generate audio');
 }

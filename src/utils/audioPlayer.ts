@@ -70,31 +70,16 @@ export function getQuranWordAudioUrl(word: string): string | null {
   return null;
 }
 
-export type VoiceGender = 'male' | 'female';
+export type VoiceGender = 'male';
 
 export function getVoiceGender(): VoiceGender {
-  if (typeof window !== 'undefined') {
-    try {
-      const saved = localStorage.getItem('app_voice_gender') as VoiceGender;
-      if (saved === 'female' || saved === 'male') return saved;
-    } catch {
-      // ignore
-    }
-  }
-  return 'female';
+  return 'male';
 }
 
-export function setVoiceGender(gender: VoiceGender): void {
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('app_voice_gender', gender);
-    } catch {
-      // ignore
-    }
-  }
+export function setVoiceGender(_gender: VoiceGender): void {
   notify({
     ...currentState,
-    voiceGender: gender,
+    voiceGender: 'male',
   });
 }
 
@@ -492,8 +477,13 @@ function playAudioUrlSingle(
  */
 function normalizeTextForSpeech(text: string, lang: 'ar' | 'ur'): string {
   let cleaned = (text || '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/[«»"']/g, '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[«»"'“”]/g, '')
+    .replace(/[–—―-]/g, ' ، ')
+    .replace(/[\/\\|]/g, ' یا ')
+    .replace(/[()\[\]{}]/g, ' ، ')
+    .replace(/۔\s*۔+/g, '۔ ')
+    .replace(/\.{2,}/g, '۔ ')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -501,38 +491,66 @@ function normalizeTextForSpeech(text: string, lang: 'ar' | 'ur'): string {
     cleaned = cleaned
       .replace(/ﷺ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
       .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
+      .replace(/صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ')
       .replace(/اللّٰهُ/g, 'اللهُ')
       .replace(/اللّٰهِ/g, 'اللهِ')
       .replace(/اللّٰهَ/g, 'اللهَ')
       .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِيَ اللهُ عَنْهُ ')
       .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِيَ اللهُ عَنْهَا ')
       .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, ' رَضِيَ اللهُ عَنْهُمْ ')
-      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَيْهِ السَّلَامُ ');
+      .replace(/رَضِيَ اللهُ عَنْهُ/g, ' رَضِيَ اللهُ عَنْهُ ')
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَيْهِ السَّلَامُ ')
+      .replace(/عَلَيْهَا السَّلَامُ/g, ' عَلَيْهَا السَّلَامُ ')
+      .replace(/عَلَيْهِمَا السَّلَامُ/g, ' عَلَيْهِمَا السَّلَامُ ')
+      .replace(/عَلَيْهِمُ السَّلَامُ/g, ' عَلَيْهِمُ السَّلَامُ ')
+      .replace(/جَلَّ جَلَالُهُ/g, ' جَلَّ جَلَالُهُ ')
+      .replace(/سُبْحَانَهُ وَتَعَالَىٰ?/g, ' سُبْحَانَهُ وَتَعَالَى ')
+      .replace(/عَزَّ وَجَلَّ/g, ' عَزَّ وَجَلَّ ')
+      .replace(/تَبَارَكَ وَتَعَالَىٰ?/g, ' تَبَارَكَ وَتَعَالَى ');
   } else {
     cleaned = cleaned
       .replace(/ﷺ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
       .replace(/صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
       .replace(/صلی اللہ علیہ وسلم/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
+      .replace(/صلی اللہ علیہ و آلہ وسلم/g, ' صَلَّی اللّٰہُ عَلَیْہِ وَسَلَّمْ ')
       .replace(/رضی اللہ عنہا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
       .replace(/رَضِيَ اللّٰهُ عَنْهَا/g, ' رَضِیَ اللّٰہُ عَنْہَا ')
       .replace(/رضی اللہ عنہ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
       .replace(/رَضِيَ اللّٰهُ عَنْهُ/g, ' رَضِیَ اللّٰہُ عَنْہُ ')
+      .replace(/رضی اللہ عنہم/g, ' رَضِیَ اللّٰہُ عَنْہُمْ ')
+      .replace(/رَضِيَ اللّٰهُ عَنْهُمْ/g, ' رَضِیَ اللّٰہُ عَنْہُمْ ')
       .replace(/علیہ السلام/g, ' عَلَیْہِ السَّلَامْ ')
-      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَیْہِ السَّلَامْ ');
+      .replace(/عَلَيْهِ السَّلَامُ/g, ' عَلَیْہِ السَّلَامْ ')
+      .replace(/علیہا السلام/g, ' عَلَیْہَا السَّلَامْ ')
+      .replace(/عَلَيْهَا السَّلَامُ/g, ' عَلَیْہَا السَّلَامْ ')
+      .replace(/علیہم السلام/g, ' عَلَیْہِمُ السَّلَامْ ')
+      .replace(/عَلَيْهِمُ السَّلَامُ/g, ' عَلَیْہِمُ السَّلَامْ ')
+      .replace(/رحمتہ اللہ علیہ/g, ' رَحْمَۃُ اللّٰہِ عَلَیْہِ ')
+      .replace(/رحمہ اللہ/g, ' رَحِمَہُ اللّٰہُ ')
+      .replace(/رَحِمَهُ اللّٰهُ/g, ' رَحِمَہُ اللّٰہُ ')
+      .replace(/جل جلالہ/g, ' جَلَّ جَلَالُہٗ ')
+      .replace(/جَلَّ جَلَالُهُ/g, ' جَلَّ جَلَالُہٗ ')
+      .replace(/سبحانہ و تعالی/g, ' سُبْحَانَہٗ وَتَعَالٰی ')
+      .replace(/سبحانہ وتعالیٰ?/g, ' سُبْحَانَہٗ وَتَعَالٰی ')
+      .replace(/سُبْحَانَهُ وَتَعَالَىٰ?/g, ' سُبْحَانَہٗ وَتَعَالٰی ')
+      .replace(/عز وجل/g, ' عَزَّ وَجَلَّ ')
+      .replace(/عَزَّ وَجَلَّ/g, ' عَزَّ وَجَلَّ ')
+      .replace(/تبارک و تعالی/g, ' تَبَارَکَ وَتَعَالٰی ')
+      .replace(/تَبَارَكَ وَتَعَالَىٰ?/g, ' تَبَارَکَ وَتَعَالٰی ');
   }
 
-  return cleaned;
+  return cleaned.replace(/\s+/g, ' ').trim();
 }
 
 /**
  * Natural Web Speech API:
- * Offers clean, articulate natural pronunciation with natural pitch (no artificial distortion),
- * and supports both melodious female and clear male voices.
+ * Strictly selects dignified, authoritative male voices with natural human baritone pitch (0.93),
+ * without distortion or robotic artifacts.
  */
 function playWebSpeechChunk(
   text: string,
   lang: 'ar' | 'ur',
-  gender: VoiceGender,
+  _gender: VoiceGender,
   rate: number,
   signal: AbortSignal
 ): Promise<boolean> {
@@ -558,29 +576,30 @@ function playWebSpeechChunk(
 
       if (lang === 'ar') {
         utterance.lang = 'ar-SA';
-        utterance.rate = Math.max(0.80, Math.min(1.0, rate * 0.90));
-        utterance.pitch = gender === 'female' ? 1.05 : 0.96; // Natural human pitch
+        utterance.rate = Math.max(0.78, Math.min(1.0, rate * 0.88));
+        utterance.pitch = 0.94; // Dignified natural baritone
 
         const arVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('ar'));
         if (arVoices.length > 0) {
-          if (gender === 'female') {
-            const femaleV = arVoices.find((v) => {
-              const n = v.name.toLowerCase();
-              return n.includes('female') || n.includes('salma') || n.includes('zeina') || n.includes('mariam') || n.includes('leila') || n.includes('fatima') || n.includes('hoda') || n.includes('zari');
-            });
-            utterance.voice = femaleV || arVoices[0];
-          } else {
-            const maleV = arVoices.find((v) => {
-              const n = v.name.toLowerCase();
-              return n.includes('male') || n.includes('maged') || n.includes('tarik') || n.includes('tariq') || n.includes('hamed') || n.includes('shakir') || n.includes('hamza') || n.includes('naayf');
-            });
-            utterance.voice = maleV || arVoices[0];
-          }
+          const maleV = arVoices.find((v) => {
+            const n = v.name.toLowerCase();
+            return (
+              n.includes('male') ||
+              n.includes('maged') ||
+              n.includes('tarik') ||
+              n.includes('tariq') ||
+              n.includes('hamed') ||
+              n.includes('shakir') ||
+              n.includes('hamza') ||
+              n.includes('naayf')
+            );
+          });
+          utterance.voice = maleV || arVoices[0];
         }
       } else {
         utterance.lang = 'ur-PK';
-        utterance.rate = Math.max(0.80, Math.min(1.0, rate * 0.90));
-        utterance.pitch = gender === 'female' ? 1.05 : 0.96; // Natural human pitch
+        utterance.rate = Math.max(0.78, Math.min(1.0, rate * 0.88));
+        utterance.pitch = 0.93; // Authentic Subcontinent scholarly male pitch
 
         const urVoices = voices.filter(
           (v) =>
@@ -589,19 +608,18 @@ function playWebSpeechChunk(
             v.lang.toLowerCase().startsWith('hi')
         );
         if (urVoices.length > 0) {
-          if (gender === 'female') {
-            const femaleV = urVoices.find((v) => {
-              const n = v.name.toLowerCase();
-              return n.includes('female') || n.includes('uzma') || n.includes('swara') || n.includes('kalpana') || n.includes('ananya') || n.includes('lekha') || n.includes('zira');
-            });
-            utterance.voice = femaleV || urVoices[0];
-          } else {
-            const maleV = urVoices.find((v) => {
-              const n = v.name.toLowerCase();
-              return n.includes('male') || n.includes('asad') || n.includes('salman') || n.includes('david');
-            });
-            utterance.voice = maleV || urVoices[0];
-          }
+          const maleV = urVoices.find((v) => {
+            const n = v.name.toLowerCase();
+            return (
+              n.includes('male') ||
+              n.includes('asad') ||
+              n.includes('salman') ||
+              n.includes('hemant') ||
+              n.includes('rishi') ||
+              n.includes('david')
+            );
+          });
+          utterance.voice = maleV || urVoices[0];
           if (utterance.voice) {
             utterance.lang = utterance.voice.lang || 'ur-PK';
           }
@@ -690,8 +708,8 @@ export async function playVoice(
   let reciterName = options?.reciterName;
   if (!reciterName) {
     reciterName = lang === 'ar'
-      ? (gender === 'female' ? 'خوش الحان قراءت (خاتون)' : 'عربی صوتی تلاوت (مردانہ)')
-      : (gender === 'female' ? 'سلیس صوتی ترجمہ (خاتون)' : 'اردو صوتی ترجمہ (مردانہ)');
+      ? 'عربی صوتی تلاوت (باوقار مردانہ لہجہ)'
+      : 'اردو صوتی مفہوم (باوقار مردانہ لہجہ)';
   }
 
   // Path 1: Array of direct audio URLs (e.g. Master recitation)
@@ -810,20 +828,26 @@ export async function playVoice(
     const encoded = encodeURIComponent(normChunk);
     let chunkPlayed = false;
 
-    // Strategy A: Serverless audio proxy /api/tts with studio neural voice
+    // Strategy A: Serverless audio proxy /api/tts with studio Charon male neural voice
     if (!chunkPlayed && !signal.aborted) {
-      const serverUrl = `/api/tts?tl=${lang}&gender=${gender}&q=${encoded}`;
+      const serverUrl = `/api/tts?tl=${lang}&gender=male&q=${encoded}`;
       chunkPlayed = await playAudioUrlSingle(serverUrl, rate, signal);
     }
 
-    // Strategy B: Native Web Speech API fallback
+    // Strategy B: Direct high-fidelity Google Translate TTS audio fallback
+    if (!chunkPlayed && !signal.aborted) {
+      const directGoogleUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encoded}`;
+      chunkPlayed = await playAudioUrlSingle(directGoogleUrl, rate, signal);
+    }
+
+    // Strategy C: Native Web Speech API fallback with male profile
     if (
       !chunkPlayed &&
       !signal.aborted &&
       typeof window !== 'undefined' &&
       'speechSynthesis' in window
     ) {
-      chunkPlayed = await playWebSpeechChunk(chunk, lang, gender, rate, signal);
+      chunkPlayed = await playWebSpeechChunk(chunk, lang, 'male', rate, signal);
     }
 
     if (!chunkPlayed && !signal.aborted) {
