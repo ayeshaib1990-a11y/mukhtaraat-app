@@ -1,325 +1,167 @@
 import fs from 'fs';
 
-// 1. Read the 179 words
-const words: any[] = JSON.parse(fs.readFileSync('workspace/chapter5_parsed_words.json', 'utf8'));
+// Read Paste_October_22__2026_-_7_56PM_a3c955b0 which contains the 179 words
+const rawTahqeeq = fs.readFileSync('./public/assets/aistudio/Paste_October_22__2026_-_7_56PM_a3c955b0', 'utf8');
 
-// 2. Define the 55 sections with Indo-Pak orthography and complete Urdu translations
-// Using dagger alifs on Alif Maqsura: عَلٰى, إِلٰى, حَتّٰى, أَتٰى, عَسٰى, بَلٰى, نَرٰى, أَخْشٰى, فَبَكٰى, بُصْرٰى
-// Using dagger alifs on Allah: اللّٰهِ, اللّٰهُ, اللّٰهَ, اَللّٰهُمَّ, صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ
-const sections = [
-  {
-    label: "متن 1",
-    arabic: "<span class=\"word-token\" data-word=\"كَانَتْ\">كَانَتْ</span> حَلِيمَةُ بِنْتُ أَبِي ذُؤَيْبٍ السَّعْدِيَّةُ - أُمُّ رَسُولِ اللّٰهِ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ الَّتِي <span class=\"word-token\" data-word=\"أَرْضَعَتْهُ\">أَرْضَعَتْهُ</span> - <span class=\"word-token\" data-word=\"تُحَدِّثُ\">تُحَدِّثُ</span>:",
-    urdu: "حضرت حلیمہ بنتِ ابی ذویب السعدیہ رضی اللہ عنہا - جو رسول اللہ ﷺ کی وہ رضاعی والدہ ہیں جنہوں نے آپ کو دودھ پلایا - بیان کرتی ہیں کہ:"
-  },
-  {
-    label: "متن 2",
-    arabic: "أَنَّهَا <span class=\"word-token\" data-word=\"خَرَجَتْ\">خَرَجَتْ</span> مِنْ بَلَدِهَا مَعَ زَوْجِهَا وَابْنٍ لَهَا صَغِيرٍ <span class=\"word-token\" data-word=\"تُرْضِعُ\">تُرْضِعُهُ</span> فِي نِسْوَةٍ مِنْ بَنِي سَعْدِ بْنِ بَكْرٍ، <span class=\"word-token\" data-word=\"تَلْتَمِسُ\">تَلْتَمِسُ</span> <span class=\"word-token\" data-word=\"الرُّضَعَاءَ\">الرُّضَعَاءَ</span>،",
-    urdu: "وہ قبیلۂ بنو سعد بن بکر کی دوسری عورتوں کے ہمراہ اپنے شوہر اور اپنے ایک چھوٹے دودھ پیتے بچے کے ساتھ اپنے علاقے سے نکلیں، تاکہ مکہ پہنچ کر دودھ پیتے بچوں کو رضاعت کے لیے تلاش کریں،"
-  },
-  {
-    label: "متن 3",
-    arabic: "<span class=\"word-token\" data-word=\"قَالَتْ\">قَالَتْ</span>: وَذٰلِكَ فِي سَنَةٍ <span class=\"word-token\" data-word=\"شَهْبَاءَ\">شَهْبَاءَ</span> <span class=\"word-token\" data-word=\"لَمْ تُبْقِ\">لَمْ تُبْقِ</span> لَنَا شَيْئًا،",
-    urdu: "وہ فرماتی ہیں: اور یہ ایک ایسے قحط زدہ اور سوکھے سال کا واقعہ تھا جس نے ہمارا کوئی مال و متاع باقی نہ چھوڑا تھا،"
-  },
-  {
-    label: "متن 4",
-    arabic: "<span class=\"word-token\" data-word=\"فَخَرَجْتُ\">فَخَرَجْتُ</span> عَلٰى <span class=\"word-token\" data-word=\"أَتَانٍ\">أَتَانٍ</span> لِي قَمْرَاءَ مَعَنَا <span class=\"word-token\" data-word=\"شَارِفٌ\">شَارِفٌ</span> لَنَا، وَاللّٰهِ مَا <span class=\"word-token\" data-word=\"تَبِضُّ\">تَبِضُّ</span> بِقَطْرَةٍ،",
-    urdu: "چنانچہ میں اپنی ایک سبزی مائل سفید رنگ کی کمزور گدھی پر سوار ہو کر نکلی، اور ہمارے ساتھ ہماری ایک بوڑھی اونٹنی بھی تھی جو خدا کی قسم دودھ کی ایک بوند بھی نہیں ٹپکاتی تھی،"
-  },
-  {
-    label: "متن 5",
-    arabic: "وَمَا <span class=\"word-token\" data-word=\"نَنَامُ\">نَنَامُ</span> لَيْلَنَا <span class=\"word-token\" data-word=\"أَجْمَعَ\">أَجْمَعَ</span> مِنْ صَبِيِّنَا الَّذِي مَعَنَا، مِنْ <span class=\"word-token\" data-word=\"بُكَائِهِ\">بُكَائِهِ</span> مِنَ <span class=\"word-token\" data-word=\"الْجُوعِ\">الْجُوعِ</span>،",
-    urdu: "اور ہم بھوک کے مارے روتے ہوئے اپنے اس بچے کی وجہ سے رات بھر سو نہیں پاتے تھے،"
-  },
-  {
-    label: "متن 6",
-    arabic: "مَا فِي ثَدْيَيَّ مَا <span class=\"word-token\" data-word=\"يُغْنِيهِ\">يُغْنِيهِ</span>، وَمَا فِي شَارِفِنَا مَا <span class=\"word-token\" data-word=\"يُغَذِّيهِ\">يُغَذِّيهِ</span>،",
-    urdu: "کیونکہ نہ تو میری چھاتیوں میں اتنا دودھ تھا جو اس کے لیے کافی ہوتا، اور نہ ہماری بوڑھی اونٹنی میں اتنا دودھ تھا جو اس کی غذا بن سکتا،"
-  },
-  {
-    label: "متن 7",
-    arabic: "وَلٰكِنَّا كُنَّا <span class=\"word-token\" data-word=\"نَرْجُو\">نَرْجُو</span> <span class=\"word-token\" data-word=\"الْغَيْثَ\">الْغَيْثَ</span> وَ<span class=\"word-token\" data-word=\"الْفَرَجَ\">الْفَرَجَ</span>،",
-    urdu: "لیکن اس تمام تر عسرت کے باوجود ہم اللہ سے بارش اور کشادگی کی امید لگائے ہوئے تھے،"
-  },
-  {
-    label: "متن 8",
-    arabic: "فَخَرَجْتُ عَلٰى <span class=\"word-token\" data-word=\"أَتَانِي\">أَتَانِي</span> تِلْكَ، فَلَقَدْ <span class=\"word-token\" data-word=\"أَدْمَمْتُ\">أَدْمَمْتُ</span> بِالرَّكْبِ حَتّٰى <span class=\"word-token\" data-word=\"شَقَّ\">شَقَّ</span> ذٰلِكَ عَلَيْهِمْ <span class=\"word-token\" data-word=\"ضُعْفًا\">ضُعْفًا</span> وَ<span class=\"word-token\" data-word=\"عَجَفًا\">عَجَفًا</span>،",
-    urdu: "پس میں اپنی اسی کمزور گدھی پر سوار چلی، تو اس کی سست رفتاری، کمزوری اور لاغری کی وجہ سے میں نے پورے قافلے کو تھکا دیا یہاں تک کہ ان کا میرے ساتھ چلنا وبالِ جان بن گیا،"
-  },
-  {
-    label: "متن 9",
-    arabic: "حَتّٰى <span class=\"word-token\" data-word=\"قَدِمْنَا\">قَدِمْنَا</span> مَكَّةَ <span class=\"word-token\" data-word=\"نَلْتَمِسُ\">نَلْتَمِسُ</span> الرُّضَعَاءَ،",
-    urdu: "تاآنکہ بالآخر ہم دودھ پیتے بچوں کی تلاش میں مکہ مکرمہ پہنچ گئے،"
-  },
-  {
-    label: "متن 10",
-    arabic: "فَمَا مِنَّا امْرَأَةٌ إِلَّا وَقَدْ <span class=\"word-token\" data-word=\"عُرِضَ\">عُرِضَ</span> عَلَيْهَا رَسُولُ اللّٰهِ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ <span class=\"word-token\" data-word=\"فَتَأْبَاهُ\">فَتَأْبَاهُ</span> إِذَا <span class=\"word-token\" data-word=\"قِيلَ\">قِيلَ</span> لَهَا إِنَّهُ <span class=\"word-token\" data-word=\"يَتِيمٌ\">يَتِيمٌ</span>،",
-    urdu: "پس ہم میں سے کوئی ایک عورت بھی ایسی نہ تھی جس کے سامنے رسول اللہ ﷺ کو پیش نہ کیا گیا ہو، مگر جب بھی اسے بتایا جاتا کہ یہ بچہ یتیم ہے تو وہ اسے گود لینے سے انکار کر دیتی،"
-  },
-  {
-    label: "متن 11",
-    arabic: "وَذٰلِكَ أَنَّا إِنَّمَا كُنَّا نَرْجُو <span class=\"word-token\" data-word=\"الْمَعْرُوفَ\">الْمَعْرُوفَ</span> مِنْ أَبِي الصَّبِيِّ،",
-    urdu: "اور اس کی وجہ یہ تھی کہ ہم تو بچے کے والد سے اچھے انعام اور مالی صلے کی امید رکھتی تھیں،"
-  },
-  {
-    label: "متن 12",
-    arabic: "فَكُنَّا نَقُولُ: «يَتِيمٌ?! وَمَا <span class=\"word-token\" data-word=\"عَسٰى\">عَسٰى</span> <span class=\"word-token\" data-word=\"أَنْ تَصْنَعَ\">أَنْ تَصْنَعَ</span> أُمُّهُ وَجَدُّهُ?!» فَكُنَّا <span class=\"word-token\" data-word=\"نَكْرَهُهُ\">نَكْرَهُهُ</span> لِذٰلِكَ،",
-    urdu: "تو ہم آپس میں کہتیں: ”یتیم ہے?! اس کی بیوہ ماں اور بوڑھا دادا بھلا ہمیں کیا مالی فائدہ دے سکیں گے?!“ چنانچہ اس لالچ کی وجہ سے ہم سب نے اسے لینے سے ناپسندیدگی ظاہر کی،"
-  },
-  {
-    label: "متن 13",
-    arabic: "فَمَا <span class=\"word-token\" data-word=\"بَقِيَتِ\">بَقِيَتِ</span> امْرَأَةٌ <span class=\"word-token\" data-word=\"قَدِمَتْ\">قَدِمَتْ</span> مَعِي إِلَّا <span class=\"word-token\" data-word=\"أَخَذَتْ\">أَخَذَتْ</span> <span class=\"word-token\" data-word=\"رَضِيعًا\">رَضِيعًا</span> غَيْرِي،",
-    urdu: "پھر قافلے کی ہر عورت کو کوئی نہ کوئی امیر گھرانے کا شیر خوار بچہ مل گیا سوائے میرے کہ مجھے کوئی بچہ نہ ملا،"
-  },
-  {
-    label: "متن 14",
-    arabic: "فَلَمَّا <span class=\"word-token\" data-word=\"أَجْمَعْنَا\">أَجْمَعْنَا</span> <span class=\"word-token\" data-word=\"الِانْطِلَاقَ\">الِانْطِلَاقَ</span> <span class=\"word-token\" data-word=\"قُلْتُ\">قُلْتُ</span> <span class=\"word-token\" data-word=\"لِصَاحِبِي\">لِصَاحِبِي</span>:",
-    urdu: "پھر جب ہم نے واپس اپنے وطن جانے کی تیاری مکمل کر لی تو میں نے اپنے شوہر سے کہا:"
-  },
-  {
-    label: "متن 15",
-    arabic: "«وَاللّٰهِ إِنِّي <span class=\"word-token\" data-word=\"لَأَكْرَهُ\">لَأَكْرَهُ</span> <span class=\"word-token\" data-word=\"أَنْ أَرْجِعَ\">أَنْ أَرْجِعَ</span> مِنْ بَيْنِ <span class=\"word-token\" data-word=\"صَوَاحِبِي\">صَوَاحِبِي</span> وَ<span class=\"word-token\" data-word=\"لَمْ آخُذْ\">لَمْ آخُذْ</span> رَضِيعًا! وَاللّٰهِ <span class=\"word-token\" data-word=\"لَأَذْهَبَنَّ\">لَأَذْهَبَنَّ</span> إِلٰى ذٰلِكَ الْيَتِيمِ <span class=\"word-token\" data-word=\"فَلَآخُذَنَّهُ\">فَلَآخُذَنَّهُ</span>!»",
-    urdu: "”خدا کی قسم! مجھے یہ بات سخت ناگوار گزرتی ہے کہ میں اپنی سہیلیوں کے درمیان خالی ہاتھ واپس لوٹوں اور کوئی بچہ میرے پاس نہ ہو! خدا کی قسم میں اسی یتیم بچے کے پاس جاؤں گی اور اسی کو اپنی گود میں لے کر جاؤں گی!“"
-  },
-  {
-    label: "متن 16",
-    arabic: "<span class=\"word-token\" data-word=\"قَالَ\">قَالَ</span>: «لَا عَلَيْكِ <span class=\"word-token\" data-word=\"أَنْ تَفْعَلِي\">أَنْ تَفْعَلِي</span>، عَسَى اللّٰهُ <span class=\"word-token\" data-word=\"أَنْ يَجْعَلَ\">أَنْ يَجْعَلَ</span> لَنَا فِيهِ بَرَكَةً»،",
-    urdu: "شوہر نے کہا: ”ایسا کرنے میں کوئی حرج نہیں، کیا عجب کہ اللہ تعالیٰ اسی یتیم کے طفیل ہمارے لیے برکت مقدر فرما دے!“"
-  },
-  {
-    label: "متن 17",
-    arabic: "قَالَتْ: <span class=\"word-token\" data-word=\"فَذَهَبْتُ\">فَذَهَبْتُ</span> إِلَيْهِ <span class=\"word-token\" data-word=\"فَأَخَذْتُهُ\">فَأَخَذْتُهُ</span>، وَمَا <span class=\"word-token\" data-word=\"حَمَلَنِي\">حَمَلَنِي</span> عَلٰى أَخْذِهِ إِلَّا أَنِّي <span class=\"word-token\" data-word=\"لَمْ أَجِدْ\">لَمْ أَجِدْ</span> غَيْرَهُ،",
-    urdu: "حضرت حلیمہ فرماتی ہیں: پس میں گئی اور اس یتیم بچے کو لے آئی، اور مجھے اس کے لینے پر سوائے اس مجبوری کے کسی چیز نے آمادہ نہ کیا تھا کہ مجھے اس کے سوا کوئی دوسرا بچہ نہ ملا تھا،"
-  },
-  {
-    label: "متن 18",
-    arabic: "قَالَتْ: فَلَمَّا أَخَذْتُهُ <span class=\"word-token\" data-word=\"رَجَعْتُ\">رَجَعْتُ</span> بِهِ إِلٰى رَحْلِي،",
-    urdu: "فرماتی ہیں: جب میں اس بچے کو اٹھا کر اپنے کجاوے (خیمے) کی طرف واپس لوٹی،"
-  },
-  {
-    label: "متن 19",
-    arabic: "فَلَمَّا <span class=\"word-token\" data-word=\"وَضَعْتُهُ\">وَضَعْتُهُ</span> فِي حِجْرِي <span class=\"word-token\" data-word=\"أَقْبَلَ\">أَقْبَلَ</span> عَلَيْهِ ثَدْيَايَ بِمَا <span class=\"word-token\" data-word=\"شَاءَ\">شَاءَ</span> مِنْ لَبَنٍ،",
-    urdu: "تو جونہی میں نے اس بچے کو اپنی گود میں رکھا، اچانک میری دونوں چھاتیاں ان کی خواہش کے مطابق دودھ کے چشمے کی طرح ابل پڑیں!"
-  },
-  {
-    label: "متن 20",
-    arabic: "فَشَرِبَ حَتّٰى <span class=\"word-token\" data-word=\"رَوِيَ\">رَوِيَ</span>، وَ<span class=\"word-token\" data-word=\"شَرِبَ\">شَرِبَ</span> مَعَهُ أَخُوهُ حَتّٰى رَوِيَ، ثُمَّ <span class=\"word-token\" data-word=\"نَامَا\">نَامَا</span>،",
-    urdu: "چنانچہ اس بابرکت بچے نے خوب سیر ہو کر دودھ پیا، اور اس کے ساتھ اس کے رضاعی بھائی نے بھی خوب سیر ہو کر پیا، پھر دونوں چین سے سو گئے،"
-  },
-  {
-    label: "متن 21",
-    arabic: "وَ<span class=\"word-token\" data-word=\"مَا كُنَّا\">مَا كُنَّا</span> نَنَامُ مَعَهُ قَبْلَ ذٰلِكَ!",
-    urdu: "حالانکہ اس رات سے پہلے ہم اپنے بھوکے بچے کے رونے کی وجہ سے رات بھر ایک لمحہ نہ سو پاتے تھے!"
-  },
-  {
-    label: "متن 22",
-    arabic: "وَ<span class=\"word-token\" data-word=\"قَامَ\">قَامَ</span> زَوْجِي إِلٰى شَارِفِنَا تِلْكَ، فَإِذَا إِنَّهَا <span class=\"word-token\" data-word=\"لَحَافِلٌ\">لَحَافِلٌ</span>،",
-    urdu: "اور میرا شوہر اٹھ کر ہماری اس سوکھی بوڑھی اونٹنی کے پاس گیا، تو کیا دیکھتا ہے کہ اس کے تھن بھی دودھ سے لبالب بھرے ہوئے ہیں!"
-  },
-  {
-    label: "متن 23",
-    arabic: "<span class=\"word-token\" data-word=\"فَحَلَبَ\">فَحَلَبَ</span> مِنْهَا مَا شَرِبَ وَ<span class=\"word-token\" data-word=\"شَرِبْتُ\">شَرِبْتُ</span> مَعَهُ حَتّٰى <span class=\"word-token\" data-word=\"انْتَهَيْنَا\">انْتَهَيْنَا</span> رِيًّا وَ<span class=\"word-token\" data-word=\"شِبَعًا\">شِبَعًا</span>، <span class=\"word-token\" data-word=\"فَبِتْنَا\">فَبِتْنَا</span> بِخَيْرِ لَيْلَةٍ،",
-    urdu: "چنانچہ اس نے اونٹنی کو دوہا، تو اس نے بھی جی بھر کر پیا اور میں نے بھی پیا یہاں تک کہ ہم دونوں مکمل طور پر سیراب اور آسودہ ہو گئے، اور ہم نے وہ رات ایسی بے نظیر عافیت و برکت میں گزاری جو کبھی نہ گزری تھی،"
-  },
-  {
-    label: "متن 24",
-    arabic: "فَلَمَّا <span class=\"word-token\" data-word=\"أَصْبَحْنَا\">أَصْبَحْنَا</span> قَالَ لِي صَاحِبِي: «<span class=\"word-token\" data-word=\"تَعَلَّمِي\">تَعَلَّمِي</span> وَاللّٰهِ يَا حَلِيمَةُ! لَقَدْ <span class=\"word-token\" data-word=\"أَخَذْتِ\">أَخَذْتِ</span> <span class=\"word-token\" data-word=\"نَسَمَةً\">نَسَمَةً</span> <span class=\"word-token\" data-word=\"مُبَارَكَةً\">مُبَارَكَةً</span>!»",
-    urdu: "پھر جب صبح ہوئی تو میرے شوہر نے مجھ سے کہا: ”حلیمہ! جان لو، خدا کی قسم تم نے ایک غیر معمولی بابرکت جان (روح) کو حاصل کر لیا ہے!“"
-  },
-  {
-    label: "متن 25",
-    arabic: "قَالَتْ: <span class=\"word-token\" data-word=\"فَقُلْتُ\">فَقُلْتُ</span>: «وَاللّٰهِ إِنِّي <span class=\"word-token\" data-word=\"لَأَرْجُو\">لَأَرْجُو</span> ذٰلِكَ!»",
-    urdu: "فرماتی ہیں: میں نے کہا: ”خدا کی قسم مجھے بھی پختہ امید ہے کہ یہ بچہ سراپا برکت ہے!“"
-  },
-  {
-    label: "متن 26",
-    arabic: "قَالَتْ: ثُمَّ <span class=\"word-token\" data-word=\"رَكِبْتُ\">رَكِبْتُ</span> أَتَانِي وَ<span class=\"word-token\" data-word=\"حَمَلْتُ\">حَمَلْتُهُ</span> عَلَيْهَا مَعِي،",
-    urdu: "فرماتی ہیں: پھر میں اپنی گدھی پر سوار ہوئی اور اس مبارک بچے کو اپنے آگے سوار کر لیا،"
-  },
-  {
-    label: "متن 27",
-    arabic: "فَوَاللّٰهِ <span class=\"word-token\" data-word=\"لَقَطَعَتْ\">لَقَطَعَتْ</span> بِالرَّكْبِ <span class=\"word-token\" data-word=\"مَا يَقْدِرُ\">مَا يَقْدِرُ</span> عَلَيْهَا شَيْءٌ مِنْ حُمُرِهِمْ!",
-    urdu: "تو خدا کی قسم! اس کمزور گدھی نے ایسی تیز رفتاری سے دوڑنا شروع کیا کہ قافلے کا کوئی تیز رفتار گدھا بھی اس کی گرد کو نہ پا سکا!"
-  },
-  {
-    label: "متن 28",
-    arabic: "حَتّٰى إِنَّ صَوَاحِبِي <span class=\"word-token\" data-word=\"لَيَقُلْنَ\">لَيَقُلْنَ</span> لِي: «يَا ابْنَةَ أَبِي ذُؤَيْبٍ! وَيْحَكِ! <span class=\"word-token\" data-word=\"ارْبَعِي\">ارْبَعِي</span> عَلَيْنَا! <span class=\"word-token\" data-word=\"أَلَيْسَتْ\">أَلَيْسَتْ</span> هٰذِهِ أَتَانَكِ الَّتِي <span class=\"word-token\" data-word=\"كُنْتِ\">كُنْتِ</span> <span class=\"word-token\" data-word=\"خَرَجْتِ\">خَرَجْتِ</span> عَلَيْهَا?!»",
-    urdu: "یہاں تک کہ میری سہیلیاں چیخ کر مجھ سے کہنے لگیں: ”اے ابو ذویب کی بیٹی! تیرا بھلا ہو، ذرا ٹھہر کر ہمارا انتظار تو کرو! کیا یہ وہی لاغر گدھی نہیں ہے جس پر تم سوار ہو کر آئی تھیں?!“"
-  },
-  {
-    label: "متن 29",
-    arabic: "فَ<span class=\"word-token\" data-word=\"أَقُولُ\">أَقُولُ</span> لَهُنَّ: «بَلٰى وَاللّٰهِ! إِنَّهَا لَهِيَ هِيَ!»",
-    urdu: "تو میں ان سے کہتی: ”ہاں خدا کی قسم! یہ بالکل وہی گدھی ہے!“"
-  },
-  {
-    label: "متن 30",
-    arabic: "فَيَقُلْنَ: «وَاللّٰهِ إِنَّ لَهَا لَشَأْنًا!»",
-    urdu: "تو وہ حیرت سے کہتیں: ”خدا کی قسم اس گدھی کے ساتھ کوئی مافوق الفطرت معجزانہ معاملہ پیش آیا ہے!“"
-  },
-  {
-    label: "متن 31",
-    arabic: "قَالَتْ: ثُمَّ قَدِمْنَا <span class=\"word-token\" data-word=\"مَنَازِلَنَا\">مَنَازِلَنَا</span> مِنْ <span class=\"word-token\" data-word=\"بِلَادِ\">بِلَادِ</span> بَنِي سَعْدٍ، وَمَا <span class=\"word-token\" data-word=\"أَعْلَمُ\">أَعْلَمُ</span> أَرْضًا مِنْ أَرْضِ اللّٰهِ <span class=\"word-token\" data-word=\"أَجْدَبَ\">أَجْدَبَ</span> مِنْهَا،",
-    urdu: "فرماتی ہیں: پھر ہم قبیلۂ بنو سعد کے علاقے میں اپنے گھروں کو پہنچ گئے، اور میرے علم کے مطابق اللہ کی زمین میں اس وقت ہمارے بنو سعد سے زیادہ سوکھا اور قحط زدہ علاقہ کوئی نہ تھا،"
-  },
-  {
-    label: "متن 32",
-    arabic: "فَكَانَتْ غَنَمِي <span class=\"word-token\" data-word=\"تَرُوحُ\">تَرُوحُ</span> عَلَيَّ حِينَ قَدِمْنَا بِهِ مَعَنَا <span class=\"word-token\" data-word=\"شِبَاعًا\">شِبَاعًا</span> لُبَّنًا، فَ<span class=\"word-token\" data-word=\"نَحْلِبُ\">نَحْلِبُ</span> وَ<span class=\"word-token\" data-word=\"نَشْرَبُ\">نَشْرَبُ</span>،",
-    urdu: "لیکن جب سے ہم اس مبارک بچے کو اپنے ساتھ لے کر آئے، میری بکریاں شام کو جب چَر کر واپس آتیں تو پیٹ بھرے ہوتے اور تھن دودھ سے چھلک رہے ہوتے تھے، پس ہم دودھ دوہتے اور پیتے تھے،"
-  },
-  {
-    label: "متن 33",
-    arabic: "وَ<span class=\"word-token\" data-word=\"مَا يَحْلِبُ\">مَا يَحْلِبُ</span> إِنْسَانٌ قَطْرَةَ لَبَنٍ، وَ<span class=\"word-token\" data-word=\"لَا يَجِدُهَا\">لَا يَجِدُهَا</span> فِي ضَرْعٍ،",
-    urdu: "جبکہ بستی کا کوئی دوسرا انسان دودھ کا ایک قطرہ تک نہ دوہ پاتا تھا اور نہ کسی جانور کے تھن میں دودھ کی بوند ملتی تھی،"
-  },
-  {
-    label: "متن 34",
-    arabic: "حَتّٰى كَانَ <span class=\"word-token\" data-word=\"الْحَاضِرُونَ\">الْحَاضِرُونَ</span> مِنْ قَوْمِنَا يَقُولُونَ <span class=\"word-token\" data-word=\"لِرُعْيَانِهِمْ\">لِرُعْيَانِهِمْ</span>: «وَيْلَكُمُ! <span class=\"word-token\" data-word=\"اسْرَحُوا\">اسْرَحُوا</span> حَيْثُ <span class=\"word-token\" data-word=\"يَسْرَحُ\">يَسْرَحُ</span> <span class=\"word-token\" data-word=\"رَاعِي\">رَاعِي</span> بِنْتِ أَبِي ذُؤَيْبٍ!»",
-    urdu: "یہاں تک کہ ہماری قوم کے لوگ اپنے چرواہوں کو ڈانٹ کر کہتے: ”تم پر افسوس ہے! تم بھی اپنی بکریاں وہیں چرایا کرو جہاں ابو ذویب کی بیٹی (حلیمہ) کا چرواہا چراتا ہے!“"
-  },
-  {
-    label: "متن 35",
-    arabic: "<span class=\"word-token\" data-word=\"أَغْنَامُهُمْ\">أَغْنَامُهُمْ</span> <span class=\"word-token\" data-word=\"جِيَاعًا\">جِيَاعًا</span> مَا تَبِضُّ بِقَطْرَةِ لَبَنٍ، وَتَرُوحُ غَنَمِي شِبَاعًا لُبَّنًا!",
-    urdu: "تو وہ چرواہے وہیں چراتے، مگر شام کو ان کی بکریاں اسی طرح بھوکی واپس آتیں کہ دودھ کا ایک قطرہ نہ ٹپکتا، جبکہ میری بکریاں سیر ہو کر دودھ سے بھری ہوئی لوٹتیں!"
-  },
-  {
-    label: "متن 36",
-    arabic: "فَ<span class=\"word-token\" data-word=\"لَمْ نَزَلْ\">لَمْ نَزَلْ</span> <span class=\"word-token\" data-word=\"نَتَعَرَّفُ\">نَتَعَرَّفُ</span> مِنَ اللّٰهِ الزِّيَادَةَ وَالْخَيْرَ حَتّٰى <span class=\"word-token\" data-word=\"مَضَتْ\">مَضَتْ</span> سَنَتَاهُ وَ<span class=\"word-token\" data-word=\"فَصَلْتُهُ\">فَصَلْتُهُ</span>،",
-    urdu: "چنانچہ ہم مسلسل اللہ کی طرف سے خیر و برکت میں اضافہ دیکھتے رہے یہاں تک کہ اس بچے کے دو سال پورے ہو گئے اور میں نے اس کا دودھ چھڑا دیا،"
-  },
-  {
-    label: "متن 37",
-    arabic: "وَ<span class=\"word-token\" data-word=\"كَانَ\">كَانَ</span> <span class=\"word-token\" data-word=\"يَشِبُّ\">يَشِبُّ</span> <span class=\"word-token\" data-word=\"شَبَابًا\">شَبَابًا</span> <span class=\"word-token\" data-word=\"لَا يَشُبُّهُ\">لَا يَشُبُّهُ</span> الْغِلْمَانُ، <span class=\"word-token\" data-word=\"فَلَمْ يَبْلُغْ\">فَلَمْ يَبْلُغْ</span> سَنَتَيْهِ حَتّٰى كَانَ غُلَامًا <span class=\"word-token\" data-word=\"جَفْرًا\">جَفْرًا</span>،",
-    urdu: "اور وہ مبارک بچہ عام بچوں کے برعکس اتنی تیزی سے پروان چڑھتا تھا کہ ابھی دو سال کو پہنچا بھی نہ تھا کہ ایک مضبوط، تروتازہ اور توانا لڑکا بن گیا،"
-  },
-  {
-    label: "متن 38",
-    arabic: "قَالَتْ: فَقَدِمْنَا بِهِ عَلٰى أُمِّهِ، وَنَحْنُ <span class=\"word-token\" data-word=\"أَحْرَصُ\">أَحْرَصُ</span> شَيْءٍ عَلٰى <span class=\"word-token\" data-word=\"مُكْثِهِ\">مُكْثِهِ</span> فِينَا لِمَا كُنَّا <span class=\"word-token\" data-word=\"نَرٰى\">نَرٰى</span> مِنْ بَرَكَتِهِ،",
-    urdu: "فرماتی ہیں: پھر ہم اس بچے کو لے کر ان کی والدہ محترمہ (حضرت آمنہ) کے پاس مکہ آئے، جبکہ ان برکتوں کی وجہ سے جو ہم دیکھ رہے تھے ہم اس بات کے سب سے زیادہ حریص تھے کہ یہ بچہ ہمارے پاس ہی رہے،"
-  },
-  {
-    label: "متن 39",
-    arabic: "<span class=\"word-token\" data-word=\"فَكَلَّمْنَا\">فَكَلَّمْنَا</span> أُمَّهُ وَقُلْتُ لَهَا: «لَوْ <span class=\"word-token\" data-word=\"تَرَكْتِ\">تَرَكْتِ</span> بُنَيَّ عِنْدِي حَتّٰى <span class=\"word-token\" data-word=\"يَغْلُظَ\">يَغْلُظَ</span>، فَإِنِّي <span class=\"word-token\" data-word=\"أَخْشٰى\">أَخْشٰى</span> عَلَيْهِ وَبَاءَ مَكَّةَ!»",
-    urdu: "چنانچہ ہم نے ان کی والدہ سے بات کی اور میں نے عرض کیا: ”کاش آپ میرے اس بیٹے کو مزید کچھ عرصہ میرے پاس ہی رہنے دیں تاکہ یہ اور زیادہ توانا ہو جائے، کیونکہ مجھے اس پر مکہ کی بیماریوں اور وبا کا خوف ہے!“"
-  },
-  {
-    label: "متن 40",
-    arabic: "قَالَتْ: فَلَمْ نَزَلْ بِهَا حَتّٰى <span class=\"word-token\" data-word=\"رَدَّتْهُ\">رَدَّتْهُ</span> مَعَنَا،",
-    urdu: "فرماتی ہیں: ہم مسلسل ان کی منت سماجت کرتے رہے تاآنکہ انہوں نے اسے دوبارہ ہمارے ساتھ بنو سعد بھیج دیا،"
-  },
-  {
-    label: "متن 41",
-    arabic: "قَالَتْ: <span class=\"word-token\" data-word=\"فَرَجَعْنَا\">فَرَجَعْنَا</span> بِهِ، فَوَاللّٰهِ إِنَّهُ بَعْدَ <span class=\"word-token\" data-word=\"مَقْدَمِنَا\">مَقْدَمِنَا</span> بِهِ <span class=\"word-token\" data-word=\"بِأَشْهُرٍ\">بِأَشْهُرٍ</span> مَعَ أَخِيهِ لَفِي بَهْمٍ لَنَا خَلْفَ بُيُوتِنَا،",
-    urdu: "فرماتی ہیں: پس ہم اسے لے کر خوشی خوشی واپس آئے، تو خدا کی قسم ہمارے آنے کے چند ہی ماہ بعد وہ مبارک بچہ اپنے رضاعی بھائی کے ساتھ ہمارے گھر کے پیچھے بکریوں کے ریوڑ میں کھیل رہا تھا،"
-  },
-  {
-    label: "متن 42",
-    arabic: "إِذْ <span class=\"word-token\" data-word=\"أَتَانَا\">أَتَانَا</span> أَخُوهُ <span class=\"word-token\" data-word=\"يَشْتَدُّ\">يَشْتَدُّ</span>، فَقَالَ لِي وَلِأَبِيهِ: «ذَاكَ أَخِي الْقُرَشِيُّ قَدْ أَخَذَهُ رَجُلَانِ عَلَيْهِمَا <span class=\"word-token\" data-word=\"ثِيَابٌ\">ثِيَابٌ</span> <span class=\"word-token\" data-word=\"بِيضٌ\">بِيضٌ</span> <span class=\"word-token\" data-word=\"فَأَضْجَعَاهُ\">فَأَضْجَعَاهُ</span> <span class=\"word-token\" data-word=\"فَشَقَّا\">فَشَقَّا</span> بَطْنَهُ فَهُمَا <span class=\"word-token\" data-word=\"يَسُوطَانِهِ\">يَسُوطَانِهِ</span>!»",
-    urdu: "کہ اچانک اس کا رضاعی بھائی ہانپتا ہوا دوڑا آیا اور مجھ سے اور اپنے باپ سے کہنے لگا: ”وہ میرے قریشی بھائی کو سفید لباس والے دو آدمیوں نے پکڑ کر زمین پر لٹا دیا ہے اور ان کا پیٹ چاک کر کے اسے الٹ پلٹ کر دھو رہے ہیں!“"
-  },
-  {
-    label: "متن 43",
-    arabic: "قَالَتْ: فَخَرَجْتُ أَنَا وَأَبُوهُ نَحْوَهُ، <span class=\"word-token\" data-word=\"فَوَجَدْنَاهُ\">فَوَجَدْنَاهُ</span> <span class=\"word-token\" data-word=\"قَائِمًا\">قَائِمًا</span> <span class=\"word-token\" data-word=\"مُنْتَقِعًا\">مُنْتَقِعًا</span> وَجْهُهُ،",
-    urdu: "حضرت حلیمہ فرماتی ہیں: میں اور اس کے رضاعی باپ دیوانہ وار اس کی طرف دوڑے، تو ہم نے دیکھا کہ وہ اکیلے کھڑے ہیں مگر چہرے کا رنگ اڑا ہوا تھا،"
-  },
-  {
-    label: "متن 44",
-    arabic: "قَالَتْ: <span class=\"word-token\" data-word=\"فَالْتَزَمْتُهُ\">فَالْتَزَمْتُهُ</span> <span class=\"word-token\" data-word=\"وَالْتَزَمَهُ\">وَالْتَزَمَهُ</span> أَبُوهُ، <span class=\"word-token\" data-word=\"فَقُلْنَا\">فَقُلْنَا</span> لَهُ: «مَا لَكَ يَا بُنَيَّ?!»",
-    urdu: "فرماتی ہیں: میں نے اور اس کے باپ نے گھبرا کر اسے اپنے سینے سے لگا لیا اور پوچھا: ”میرے پیارے بیٹے! تجھے کیا ہوا ہے?!“"
-  },
-  {
-    label: "متن 45",
-    arabic: "قَالَ: «<span class=\"word-token\" data-word=\"جَاءَنِي\">جَاءَنِي</span> رَجُلَانِ عَلَيْهِمَا ثِيَابٌ بِيضٌ، <span class=\"word-token\" data-word=\"فَأَضْجَعَانِي\">فَأَضْجَعَانِي</span> وَشَقَّا بَطْنِي، <span class=\"word-token\" data-word=\"فَالْتَمَسَا\">فَالْتَمَسَا</span> فِيهِ شَيْئًا <span class=\"word-token\" data-word=\"لَا أَدْرِي\">لَا أَدْرِي</span> مَا هُوَ!»",
-    urdu: "آپ ﷺ نے فرمایا: ”میرے پاس دو سفید پوش آدمی آئے، انہوں نے مجھے لٹا کر میرا سینہ چاک کیا، اور اس میں سے کوئی چیز نکالی، مجھے معلوم نہیں کہ وہ کیا چیز تھی!“"
-  },
-  {
-    label: "متن 46",
-    arabic: "قَالَتْ: فَرَجَعْنَا إِلٰى <span class=\"word-token\" data-word=\"خِبَائِنَا\">خِبَائِنَا</span>، وَقَالَ لِي أَبُوهُ: «يَا حَلِيمَةُ! لَقَدْ <span class=\"word-token\" data-word=\"خَشِيتُ\">خَشِيتُ</span> <span class=\"word-token\" data-word=\"أَنْ يَكُونَ\">أَنْ يَكُونَ</span> هٰذَا الْغُلَامُ قَدْ <span class=\"word-token\" data-word=\"أُصِيبَ\">أُصِيبَ</span>، <span class=\"word-token\" data-word=\"فَأَلْحِقِيهِ\">فَأَلْحِقِيهِ</span> بِأَهْلِهِ قَبْلَ أَنْ <span class=\"word-token\" data-word=\"يَظْهَرَ\">يَظْهَرَ</span> ذٰلِكَ بِهِ!»",
-    urdu: "فرماتی ہیں: ہم اسے لے کر اپنے خیمے میں واپس آ گئے، تو اس کے والد نے مجھ سے کہا: ”اے حلیمہ! مجھے ڈر ہے کہ اس بچے پر کسی غیبی اثر یا جنات کا سایہ نہ پڑ گیا ہو، اس لیے اس سے پہلے کہ یہ بات کھلے، اسے بخیریت اس کے گھر والوں کے پاس پہنچا آؤ!“"
-  },
-  {
-    label: "متن 47",
-    arabic: "قَالَتْ: <span class=\"word-token\" data-word=\"فَاحْتَمَلْنَاهُ\">فَاحْتَمَلْنَاهُ</span> فَقَدِمْنَا بِهِ عَلٰى أُمِّهِ، فَقَالَتْ: «مَا <span class=\"word-token\" data-word=\"أَقْدَمَكِ\">أَقْدَمَكِ</span> بِهِ يَا ظِئْرُ، وَقَدْ كُنْتِ حَرِيصَةً عَلَيْهِ وَعَلٰى مُكْثِهِ عِنْدَكِ?!»",
-    urdu: "فرماتی ہیں: ہم نے اسے اٹھایا اور مکہ لے جا کر ان کی والدہ کے سامنے پیش کیا، تو انہوں نے حیرت سے پوچھا: ”اے دائی! اتنی جلدی اسے کیسے واپس لے آئیں، حالانکہ تم تو اس کو اپنے پاس رکھنے کے لیے بے تاب اور حریص تھیں?!“"
-  },
-  {
-    label: "متن 48",
-    arabic: "قَالَتْ: فَقُلْتُ: «قَدْ <span class=\"word-token\" data-word=\"بَلَغَ\">بَلَغَ</span> اللّٰهُ بِابْنِي، <span class=\"word-token\" data-word=\"وَقَضَيْتُ\">وَقَضَيْتُ</span> الَّذِي عَلَيَّ، <span class=\"word-token\" data-word=\"وَتَخَوَّفْتُ\">وَتَخَوَّفْتُ</span> <span class=\"word-token\" data-word=\"الأَحْدَاثَ\">الأَحْدَاثَ</span> عَلَيْهِ، <span class=\"word-token\" data-word=\"فَأَدَّيْتُهُ\">فَأَدَّيْتُهُ</span> إِلَيْكِ كَمَا <span class=\"word-token\" data-word=\"تُحِبِّينَ\">تُحِبِّينَ</span>»،",
-    urdu: "فرماتی ہیں: میں نے بات چھپاتے ہوئے کہا: ”اللہ نے میرے بیٹے کو بڑا کر دیا اور میں نے اپنی رضاعت کا فرض پورا کر دیا، اور مجھے زمانے کے حوادث کا اندیشہ ہوا، اس لیے میں آپ کی خواہش کے مطابق اسے واپس لے آئی ہوں“،"
-  },
-  {
-    label: "متن 49",
-    arabic: "قَالَتْ: «مَا هٰذَا شَأْنُكِ، <span class=\"word-token\" data-word=\"فَأَصْدِقِينِي\">فَأَصْدِقِينِي</span> خَبَرَكِ!» <span class=\"word-token\" data-word=\"فَلَمْ تَدَعْنِي\">فَلَمْ تَدَعْنِي</span> حَتّٰى <span class=\"word-token\" data-word=\"أَخْبَرْتُهَا\">أَخْبَرْتُهَا</span>،",
-    urdu: "حضرت آمنہ نے فرمایا: ”یہ بات نہیں ہو سکتی، سچ سچ بتاؤ اصل ماجرا کیا ہے؟“ اور وہ مسلسل اصرار کرتی رہیں تاآنکہ میں نے پورا واقعہ سچ سچ بیان کر دیا،"
-  },
-  {
-    label: "متن 50",
-    arabic: "قَالَتْ: «<span class=\"word-token\" data-word=\"أَفَتَخَوَّفْتِ\">أَفَتَخَوَّفْتِ</span> عَلَيْهِ الشَّيْطَانَ?!» <span class=\"word-token\" data-word=\"قُلْتُ\">قُلْتُ</span>: «نَعَمْ!»",
-    urdu: "حضرت آمنہ نے پوچھا: ”کیا تم اس پر شیطان کے اثر سے ڈر گئی ہو؟“ میں نے کہا: ”ہاں!“"
-  },
-  {
-    label: "متن 51",
-    arabic: "قَالَتْ: «كَلَّا وَاللّٰهِ! مَا لِلشَّيْطَانِ عَلَيْهِ مِنْ سَبِيلٍ! وَإِنَّ لِبُنَيَّ لَشَأْنًا، <span class=\"word-token\" data-word=\"أَفَلَا أُخْبِرُكِ\">أَفَلَا أُخْبِرُكِ</span> خَبَرَهُ?!» قُلْتُ: «بَلٰى!»",
-    urdu: "حضرت آمنہ نے فرمایا: ”ہرگز نہیں، خدا کی قسم! شیطان کا میرے اس بیٹے پر ذرہ برابر کوئی زور نہیں ہو سکتا! میرے اس لختِ جگر کی تو ایک عظیم الشان شان ہے، کیا میں تمہیں اس کی سچی بات نہ بتاؤں؟“ میں نے کہا: ”کیوں نہیں، ضرور بتائیے!“"
-  },
-  {
-    label: "متن 52",
-    arabic: "قَالَتْ: «<span class=\"word-token\" data-word=\"رَأَيْتُ\">رَأَيْتُ</span> حِينَ <span class=\"word-token\" data-word=\"حَمَلْتُ\">حَمَلْتُ</span> بِهِ أَنَّهُ <span class=\"word-token\" data-word=\"خَرَجَ\">خَرَجَ</span> مِنِّي نُورٌ <span class=\"word-token\" data-word=\"أَضَاءَ\">أَضَاءَ</span> لِي قُصُورَ بُصْرٰى مِنْ أَرْضِ الشَّامِ!»",
-    urdu: "حضرت آمنہ نے فرمایا: ”جب میں اس بچے سے حاملہ ہوئی تھی تو میں نے خواب میں دیکھا تھا کہ مجھ سے ایک ایسا نور نکلا جس سے ملکِ شام کے شہر بصریٰ کے شاہی محلات جگمگا اٹھے تھے!"
-  },
-  {
-    label: "متن 53",
-    arabic: "ثُمَّ حَمَلْتُ بِهِ، فَوَاللّٰهِ مَا رَأَيْتُ مِنْ حَمْلٍ قَطُّ كَانَ <span class=\"word-token\" data-word=\"أَخَفَّ\">أَخَفَّ</span> <span class=\"word-token\" data-word=\"لَا أَيْسَرَ\">وَلَا أَيْسَرَ</span> مِنْهُ!",
-    urdu: "پھر وہ میرے پیٹ میں رہا، تو خدا کی قسم میں نے دنیا میں اس سے زیادہ ہلکا، بے تکلیف اور آسان حمل کبھی نہیں دیکھا!"
-  },
-  {
-    label: "متن 54",
-    arabic: "وَ<span class=\"word-token\" data-word=\"وَقَعَ\">وَقَعَ</span> حِينَ <span class=\"word-token\" data-word=\"وَلَدْتُهُ\">وَلَدْتُهُ</span> وَإِنَّهُ <span class=\"word-token\" data-word=\"لَوَاضِعٌ\">لَوَاضِعٌ</span> يَدَيْهِ بِالأَرْضِ، <span class=\"word-token\" data-word=\"رَافِعٌ\">رَافِعٌ</span> رَأْسَهُ إِلٰى السَّمَاءِ!",
-    urdu: "اور جب وہ پیدا ہوا تو اس نے اپنے دونوں ہاتھ زمین پر ٹیک رکھے تھے اور اپنا سرِ مبارک آسمان کی طرف اٹھا رکھا تھا!"
-  },
-  {
-    label: "متن 55",
-    arabic: "<span class=\"word-token\" data-word=\"دَعِيهِ\">دَعِيهِ</span> عَنْكِ، وَ<span class=\"word-token\" data-word=\"انْطَلِقِي\">انْطَلِقِي</span> <span class=\"word-token\" data-word=\"رَاشِدَةً\">رَاشِدَةً</span>!»",
-    urdu: "لہٰذا تم اس خوف اور وسوسے کو دل سے نکال دو، اور بخیر و عافیت اپنے گھر لوٹ جاؤ!“"
-  }
-];
+const blocks = rawTahqeeq.split(/(?:^|\n)\s*(?:[۰-۹\d]+[\.\-]\s*)?کلمہ:/g);
 
-// Check word matching
-console.log('Total sections:', sections.length);
-console.log('Total words defined:', words.length);
+const parsedWords: any[] = [];
 
-const wordMap = new Map();
-words.forEach(w => wordMap.set(w.w, w));
+blocks.slice(1).forEach((block, idx) => {
+  const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+  const firstLine = lines[0] || '';
+  
+  let cleanWord = firstLine.split(/[\(\-\+–—]/)[0].trim();
+  cleanWord = cleanWord.replace(/[،,.:]/g, '').trim();
 
-let tokenCount = 0;
-let errors: any[] = [];
+  // Normalize dagger alifs to match the text tokens:
+  if (cleanWord === 'عَسَىٰ' || cleanWord === 'عَسَى') cleanWord = 'عَسٰى';
+  if (cleanWord === 'نَرَىٰ' || cleanWord === 'نَرَى') cleanWord = 'نَرٰى';
+  if (cleanWord === 'أَخْشَىٰ' || cleanWord === 'أَخْشَى') cleanWord = 'أَخْشٰى';
+  if (cleanWord === 'أَضَآءَ') cleanWord = 'أَضَاءَ';
 
-sections.forEach((s, idx) => {
-  const matches = s.arabic.match(/data-word=\"([^\"]+)\"/g) || [];
-  matches.forEach(m => {
-    tokenCount++;
-    const w = m.replace('data-word=\"', '').replace('\"', '');
-    if (!wordMap.has(w)) {
-      errors.push({ section: idx + 1, word: w });
+  const getField = (prefix: string) => {
+    for (const l of lines) {
+      if (l.startsWith(prefix)) {
+        return l.substring(prefix.length).trim().replace(/^[:：\s]+/, '');
+      }
     }
+    return '';
+  };
+
+  const getMultiLineField = (prefix: string, nextPrefixes: string[]) => {
+    let result = '';
+    let capturing = false;
+    for (const l of lines) {
+      if (l.startsWith(prefix)) {
+        capturing = true;
+        result = l.substring(prefix.length).trim().replace(/^[:：\s]+/, '');
+        continue;
+      }
+      if (capturing) {
+        if (nextPrefixes.some(p => l.startsWith(p))) {
+          capturing = false;
+        } else {
+          result += ' ' + l;
+        }
+      }
+    }
+    return result.trim();
+  };
+
+  const root = getField('مادہ:');
+  const seh = getField('سہ اقسام:');
+  const bahas = getField('بحث:');
+  const seegha = getField('صیغہ:');
+  const bab = getField('باب:');
+  const shash = getField('شش اقسام:');
+  const haft = getField('ہفت اقسام:');
+  const wazn = getField('وزن:');
+  const talil = getMultiLineField('تعلیل:', ['معنی و سیاق:', 'معنی:', 'سیاق:']);
+  const meaning = getMultiLineField('معنی و سیاق:', ['کلمہ:', 'تعلیل:']);
+
+  parsedWords.push({
+    w: cleanWord,
+    root,
+    seh,
+    qism: seh,
+    bahas,
+    seegha,
+    bab,
+    shash,
+    haft,
+    wazn: wazn || '-------',
+    talil: talil || undefined,
+    taleel: talil || undefined,
+    tallel: talil || undefined,
+    meaning
   });
 });
 
-console.log('Total tokens found in text:', tokenCount);
-if (errors.length > 0) {
-  console.error('Mismatched tokens:', errors);
-  process.exit(1);
-} else {
-  console.log('SUCCESS: All 179 tokens match word definitions perfectly!');
+console.log(`Parsed ${parsedWords.length} words from Tahqeeq.`);
+
+// Load chapters
+const chaptersFile = fs.readFileSync('./src/data/chaptersData.ts', 'utf8');
+const jsonMatch = chaptersFile.match(/export const CHAPTERS: Chapter\[\] = ([\s\S]+);/);
+if (!jsonMatch) {
+  throw new Error('Could not match CHAPTERS array');
 }
 
-const ch5Obj = {
-  title: "فِي بَنِي سَعْدٍ",
-  urduTitle: "بنو سعد میں بچپن اور رضاعت کے ایام",
-  ownTahqeeqOnly: true,
-  sections,
-  words
-};
+const chapters = eval(jsonMatch[1]);
+const ch5 = chapters[4];
 
-fs.writeFileSync('workspace/chapter5_replacement.json', JSON.stringify(ch5Obj, null, 2), 'utf8');
-console.log('Saved workspace/chapter5_replacement.json');
+// Check current sections tokens vs parsedWords
+const currentTokens: string[] = [];
+ch5.sections.forEach((sec: any) => {
+  const matches = sec.arabic.match(/data-word="([^"]+)"/g) || [];
+  matches.forEach((m: string) => {
+    currentTokens.push(m.replace('data-word="', '').replace('"', ''));
+  });
+});
+
+console.log(`Tokens in Chapter 5 sections: ${currentTokens.length}`);
+console.log(`Words in parsedWords array: ${parsedWords.length}`);
+
+const currentTokenSet = new Set(currentTokens);
+const parsedWordSet = new Set(parsedWords.map(w => w.w));
+
+const missingInWords = currentTokens.filter(t => !parsedWordSet.has(t));
+const missingInTokens = parsedWords.map(w => w.w).filter(w => !currentTokenSet.has(w));
+
+console.log('Tokens missing in parsed words:', missingInWords);
+console.log('Parsed words missing in tokens:', missingInTokens);
+
+if (missingInWords.length === 0 && missingInTokens.length === 0 && parsedWords.length === 179) {
+  console.log('PERFECT 100% MATCH! All 179 tokens match all 179 words.');
+  
+  // Update Chapter 5 in chapters
+  ch5.words = parsedWords;
+  ch5.ownTahqeeqOnly = true;
+
+  // Build new file content
+  const header = `export interface WordItem {
+  id?: number | string;
+  w: string;
+  word?: string;
+  meaning?: string;
+  root?: string;
+  seh?: string;
+  bab?: string;
+  seegha?: string;
+  bahas?: string;
+  shash?: string;
+  haft?: string;
+  wazn?: string;
+  talil?: string;
+  extra?: string;
+  singular?: string;
+  plural?: string;
+  qism?: string;
+  [key: string]: any;
+}
+
+export interface Section {
+  label: string;
+  arabic: string;
+  urdu: string;
+  [key: string]: any;
+}
+
+export interface Chapter {
+  title: string;
+  urduTitle: string;
+  attribution?: string;
+  ownTahqeeqOnly?: boolean;
+  sections: Section[];
+  words?: WordItem[];
+  [key: string]: any;
+}
+
+export const CHAPTERS: Chapter[] = `;
+
+  const newFileContent = header + JSON.stringify(chapters, null, 2) + `;\n`;
+  fs.writeFileSync('./src/data/chaptersData.ts', newFileContent, 'utf8');
+  console.log('Successfully written updated Chapter 5 to src/data/chaptersData.ts!');
+} else {
+  console.error('Mismatch found! Aborting write.');
+}

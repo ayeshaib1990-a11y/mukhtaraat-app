@@ -2275,11 +2275,11 @@ export default function App() {
                       )}
 
                       {/* 2. سہ اقسام */}
-                      {activeWord.qism && (
+                      {(activeWord.qism || activeWord.seh) && (
                         <div className="info-row">
                           <span className="info-label" style={{ fontSize: `${1.05 + fontSizeOffset * 0.08}rem` }}>سہ اقسام:</span>
                           <span className="info-value font-bold font-urdu text-slate-900" style={{ fontSize: `${1.1 + fontSizeOffset * 0.1}rem` }}>
-                            {activeWord.qism}
+                            {activeWord.qism || activeWord.seh}
                           </span>
                         </div>
                       )}
@@ -2365,11 +2365,11 @@ export default function App() {
                       )}
 
                       {/* 9. تعلیل (اگر موجود ہو) */}
-                      {(activeWord.tallel || activeWord.taleel) && (
+                      {(activeWord.tallel || activeWord.taleel || activeWord.talil) && (
                         <div className="info-row">
                           <span className="info-label font-bold text-emerald-900" style={{ fontSize: `${1.05 + fontSizeOffset * 0.08}rem` }}>تعلیل:</span>
                           <div className="info-value font-medium leading-loose text-slate-900 font-urdu whitespace-pre-line bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200" style={{ fontSize: `${1.05 + fontSizeOffset * 0.08}rem` }}>
-                            {activeWord.tallel || activeWord.taleel}
+                            {activeWord.tallel || activeWord.taleel || activeWord.talil}
                           </div>
                         </div>
                       )}
