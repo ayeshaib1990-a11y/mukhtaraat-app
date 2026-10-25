@@ -39,98 +39,98 @@ export interface Chapter {
 export const CHAPTERS: Chapter[] = [
   {
     "title": "عِبَادُ الرَّحْمٰنِ",
-    "urduTitle": "رحمن کے برگزیدہ بندے (سورۃ الفرقان: آیات ۶۱ تا ۷۷)",
+    "urduTitle": "رحمن کے برگزیده بندے (سورۃ الفرقان: آیات ۶۱ تا ۷۷)",
     "ownTahqeeqOnly": true,
     "sections": [
       {
         "label": "الآيَةُ 61 (آیت ۶۱)",
-        "arabic": "<span class=\"word-token\" data-word=\"تَبَارَكَ\">تَبَارَكَ</span> الَّذِي <span class=\"word-token\" data-word=\"جَعَلَ\">جَعَلَ</span> فِي السَّمَآءِ <span class=\"word-token\" data-word=\"بُرُوجًا\">بُرُوجًا</span> وَجَعَلَ فِيهَا <span class=\"word-token\" data-word=\"سِرَاجًا\">سِرَاجًا</span> وَقَمَرًا <span class=\"word-token\" data-word=\"مُنِيرًا\">مُنِيرًا</span>",
+        "arabic": "<span class=\"word-token\" data-word=\"تَبَارَكَ\">تَبَارَكَ</span> الَّذِي <span class=\"word-token\" data-word=\"جَعَلَ\">جَعَلَ</span> فِي السَّمَآءِ  <span class=\"word-token\" data-word=\"بُرُوجًا\">بُرُوجًا</span> وَجَعَلَ فِيهَا <span class=\"word-token\" data-word=\"سِرَاجًا\">سِرَاجًا</span> وَقَمَرًا <span class=\"word-token\" data-word=\"مُنِيرًا\">مُنِيرًا</span> ۝",
         "urdu": "بڑی بابرکت ہے وہ ذات جس نے آسمان میں برج بنائے اور اس میں ایک روشن چراغ (سورج) اور چمکتا ہوا چاند پیدا کیا،"
       },
       {
         "label": "الآيَةُ 62 (آیت ۶۲)",
-        "arabic": "وَهُوَ الَّذِي جَعَلَ اللَّيْلَ وَالنَّهَارَ <span class=\"word-token\" data-word=\"خِلْفَةً\">خِلْفَةً</span> لِمَنْ <span class=\"word-token\" data-word=\"أَرَادَ\">أَرَادَ</span> <span class=\"word-token\" data-word=\"أَنْ يَذَّكَّرَ\">أَنْ يَذَّكَّرَ</span> أَوْ أَرَادَ <span class=\"word-token\" data-word=\"شُكُورًا\">شُكُورًا</span>",
+        "arabic": "وَهُوَ الَّذِي جَعَلَ اللَّيْلَ وَالنَّهَارَ <span class=\"word-token\" data-word=\"خِلْفَةً\">خِلْفَةً</span> لِمَنْ <span class=\"word-token\" data-word=\"أَرَادَ\">أَرَادَ</span> <span class=\"word-token\" data-word=\"أَنْ يَذَّكَّرَ\">أَنْ يَذَّكَّرَ</span> أَوْ أَرَادَ <span class=\"word-token\" data-word=\"شُكُورًا\">شُكُورًا</span> ۝",
         "urdu": "اور وہی ہے جس نے رات اور دن کو ایک دوسرے کے پیچھے آنے جانے والا بنایا، اس شخص کے لیے جو نصیحت پکڑنا چاہے یا شکر گزاری کا ارادہ رکھے،"
       },
       {
         "label": "الآيَةُ 63 (آیت ۶۳)",
-        "arabic": "وَ<span class=\"word-token\" data-word=\"عِبَادُ\">عِبَادُ</span> <span class=\"word-token\" data-word=\"الرَّحْمٰنِ\">الرَّحْمٰنِ</span> الَّذِينَ <span class=\"word-token\" data-word=\"يَمْشُونَ\">يَمْشُونَ</span> عَلَىٰ الأَرْضِ <span class=\"word-token\" data-word=\"هَوْنًا\">هَوْنًا</span> وَإِذَا <span class=\"word-token\" data-word=\"خَاطَبَهُمْ\">خَاطَبَهُمُ</span> <span class=\"word-token\" data-word=\"الْجَاهِلُونَ\">الْجَاهِلُونَ</span> <span class=\"word-token\" data-word=\"قَالُوا\">قَالُوا</span> <span class=\"word-token\" data-word=\"سَلَامًا\">سَلَامًا</span>",
+        "arabic": "وَ<span class=\"word-token\" data-word=\"عِبَادُ\">عِبَادُ</span> <span class=\"word-token\" data-word=\"الرَّحْمٰنِ\">الرَّحْمٰنِ</span> الَّذِينَ <span class=\"word-token\" data-word=\"يَمْشُونَ\">يَمْشُونَ</span> عَلَى الأَرْضِ <span class=\"word-token\" data-word=\"هَوْنًا\">هَوْنًا</span> وَإِذَا <span class=\"word-token\" data-word=\"خَاطَبَهُمُ\">خَاطَبَهُمُ</span> <span class=\"word-token\" data-word=\"الْجَاهِلُونَ\">الْجَاهِلُونَ</span> <span class=\"word-token\" data-word=\"قَالُوا\">قَالُوا</span> <span class=\"word-token\" data-word=\"سَلَامًا\">سَلَامًا</span> ۝",
         "urdu": "اور رحمٰن کے سچے بندے وہ ہیں جو زمین پر عاجزی و انکساری کے ساتھ وقار سے چلتے ہیں، اور جب جاہل لوگ ان سے (بے ہودہ) مخاطب ہوتے ہیں تو وہ سلامتی کی بات کہہ کر الگ ہو جاتے ہیں،"
       },
       {
         "label": "الآيَةُ 64 (آیت ۶۴)",
-        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"يَبِيتُونَ\">يَبِيتُونَ</span> لِرَبِّهِمْ <span class=\"word-token\" data-word=\"سُجَّدًا\">سُجَّدًا</span> وَ<span class=\"word-token\" data-word=\"قِيَامًا\">قِيَامًا</span>",
+        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"يَبِيتُونَ\">يَبِيتُونَ</span> لِرَبِّهِمْ <span class=\"word-token\" data-word=\"سُجَّدًا\">سُجَّدًا</span> وَ<span class=\"word-token\" data-word=\"قِيَامًا\">قِيَامًا</span> ۝",
         "urdu": "اور وہ لوگ جو اپنے پروردگار کے حضور سجدہ ریزی اور قیام کی حالت میں راتیں بسر کرتے ہیں،"
       },
       {
         "label": "الآيَةُ 65 (آیت ۶۵)",
-        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"يَقُولُونَ\">يَقُولُونَ</span> رَبَّنَا <span class=\"word-token\" data-word=\"اصْرِفْ\">اصْرِفْ</span> عَنَّا <span class=\"word-token\" data-word=\"عَذَابَ\">عَذَابَ</span> جَهَنَّمَ إِنَّ عَذَابَهَا <span class=\"word-token\" data-word=\"کَانَ\">كَانَ</span> <span class=\"word-token\" data-word=\"غَرَامًا\">غَرَامًا</span>",
+        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"يَقُولُونَ\">يَقُولُونَ</span> رَبَّنَا <span class=\"word-token\" data-word=\"اصْرِفْ\">اصْرِفْ</span> عَنَّا <span class=\"word-token\" data-word=\"عَذَابَ\">عَذَابَ</span> جَهَنَّمَ إِنَّ عَذَابَهَا <span class=\"word-token\" data-word=\"كَانَ\">كَانَ</span> <span class=\"word-token\" data-word=\"غَرَامًا\">غَرَامًا</span> ۝",
         "urdu": "اور جو ہر وقت یہ دعا مانگتے رہتے ہیں کہ: اے ہمارے پروردگار! ہم سے جہنم کے عذاب کو پھیر دے، یقیناً اس کا عذاب چمٹ جانے والی جان لیوا مصیبت ہے،"
       },
       {
         "label": "الآيَةُ 66 (آیت ۶۶)",
-        "arabic": "إِنَّهَا <span class=\"word-token\" data-word=\"سَاءَتْ\">سَاءَتْ</span> <span class=\"word-token\" data-word=\"مُسْتَقَرًّا\">مُسْتَقَرًّا</span> وَ<span class=\"word-token\" data-word=\"مُقَامًا\">مُقَامًا</span>",
+        "arabic": "إِنَّهَا <span class=\"word-token\" data-word=\"سَاءَتْ\">سَاءَتْ</span> <span class=\"word-token\" data-word=\"مُسْتَقَرًّا\">مُسْتَقَرًّا</span> وَ<span class=\"word-token\" data-word=\"مُقَامًا\">مُقَامًا</span> ۝",
         "urdu": "بیشک وہ ٹھہرنے اور مستقل رہنے کے اعتبار سے بدترین اور خوفناک جگہ ہے،"
       },
       {
         "label": "الآيَةُ 67 (آیت ۶۷)",
-        "arabic": "وَالَّذِينَ إِذَا <span class=\"word-token\" data-word=\"أَنْفَقُوا\">أَنْفَقُوا</span> <span class=\"word-token\" data-word=\"لَمْ يُسْرِفُوا\">لَمْ يُسْرِفُوا</span> وَ<span class=\"word-token\" data-word=\"لَمْ يَقْتُرُوا\">لَمْ يَقْتُرُوا</span> وَكَانَ بَيْنَ ذٰلِكَ <span class=\"word-token\" data-word=\"قَوَامًا\">قَوَامًا</span>",
+        "arabic": "وَالَّذِينَ إِذَا <span class=\"word-token\" data-word=\"أَنْفَقُوا\">أَنْفَقُوا</span> <span class=\"word-token\" data-word=\"لَمْ يُسْرِفُوا\">لَمْ يُسْرِفُوا</span> وَ<span class=\"word-token\" data-word=\"لَمْ يَقْتُرُوا\">لَمْ يَقْتُرُوا</span> وَكَانَ بَيْنَ ذٰلِكَ <span class=\"word-token\" data-word=\"قَوَامًا\">قَوَامًا</span> ۝",
         "urdu": "اور وہ لوگ کہ جب خرچ کرتے ہیں تو نہ فضول خرچی کرتے ہیں اور نہ بخل و تنگی کرتے ہیں، بلکہ ان کا خرچ ان دونوں انتہاؤں کے درمیان اعتدال پر مبنی ہوتا ہے،"
       },
       {
         "label": "الآيَةُ 68 (آیت ۶۸ - حصہ اول)",
-        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"لَا يَدْعُونَ\">لَا يَدْعُونَ</span> مَعَ اللّٰهِ إِلٰهًا آخَرَ وَ<span class=\"word-token\" data-word=\"لَا يَقْتُلُونَ\">لَا يَقْتُلُونَ</span> النَّفْسَ الَّتِي <span class=\"word-token\" data-word=\"حَرَّمَ\">حَرَّمَ</span> اللّٰهُ إِلَّا بِالْحَقِّ وَ<span class=\"word-token\" data-word=\"لَا يَزْنُونَ\">لَا يَزْنُونَ</span>",
+        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"لَا يَدْعُونَ\">لَا يَدْعُونَ</span> مَعَ اللّٰهِ إِلٰهًا آخَرَ وَ<span class=\"word-token\" data-word=\"لَا يَقْتُلُونَ\">لَا يَقْتُلُونَ</span> النَّفْسَ الَّتِي <span class=\"word-token\" data-word=\"حَرَّمَ\">حَرَّمَ</span> اللّٰهُ إِلَّا بِالْحَقِّ وَ<span class=\"word-token\" data-word=\"لَا يَزْنُونَ\">لَا يَزْنُونَ</span> ۚ",
         "urdu": "اور وہ لوگ جو اللہ کے ساتھ کسی دوسرے معبود کو نہیں پکارتے، اور نہ کسی ایسی جان کو ناحق قتل کرتے ہیں جسے اللہ نے حرام قرار دیا ہے، اور نہ بدکاری (زنا) کا ارتکاب کرتے ہیں،"
       },
       {
         "label": "الآيَةُ 68 (آیت ۶۸ - حصہ دوم)",
-        "arabic": "وَمَنْ <span class=\"word-token\" data-word=\"يَفْعَلْ (مَنْ يَفْعَلْ)\">يَفْعَلْ</span> ذٰلِكَ <span class=\"word-token\" data-word=\"يَلْقَ\">يَلْقَ</span> <span class=\"word-token\" data-word=\"أَثَامًا\">أَثَامًا</span>",
+        "arabic": "وَمَنْ <span class=\"word-token\" data-word=\"يَفْعَلْ\">يَفْعَلْ</span> ذٰلِكَ <span class=\"word-token\" data-word=\"يَلْقَ\">يَلْقَ</span> <span class=\"word-token\" data-word=\"أَثَامًا\">أَثَامًا</span> ۝",
         "urdu": "اور جو شخص ان کبیرہ گناہوں کا ارتکاب کرے گا وہ سخت سزا اور ہلاکت میں جا پڑے گا،"
       },
       {
         "label": "الآيَةُ 69 (آیت ۶۹)",
-        "arabic": "<span class=\"word-token\" data-word=\"يُضَاعَفْ\">يُضَاعَفْ</span> لَهُ الْعَذَابُ يَوْمَ الْقِيَامَةِ وَ<span class=\"word-token\" data-word=\"يَخْلُدْ\">يَخْلُدْ</span> فِيهِ <span class=\"word-token\" data-word=\"مُهَانًا\">مُهَانًا</span>",
+        "arabic": "<span class=\"word-token\" data-word=\"يُضَاعَفْ\">يُضَاعَفْ</span> لَهُ الْعَذَابُ يَوْمَ الْقِيَامَةِ وَ<span class=\"word-token\" data-word=\"يَخْلُدْ\">يَخْلُدْ</span> فِيهِ <span class=\"word-token\" data-word=\"مُهَانًا\">مُهَانًا</span> ۝",
         "urdu": "قیامت کے دن اس کا عذاب دوگنا کر دیا جائے گا اور وہ اس میں ذلیل و خوار ہو کر ہمیشہ پڑا رہے گا،"
       },
       {
         "label": "الآيَةُ 70 (آیت ۷۰)",
-        "arabic": "إِلَّا مَنْ <span class=\"word-token\" data-word=\"تَابَ\">تَابَ</span> وَ<span class=\"word-token\" data-word=\"آمَنَ\">آمَنَ</span> وَ<span class=\"word-token\" data-word=\"عَمِلَ\">عَمِلَ</span> <span class=\"word-token\" data-word=\"عَمَلًا\">عَمَلًا</span> <span class=\"word-token\" data-word=\"صَالِحًا\">صَالِحًا</span> فَأُولٰئِكَ <span class=\"word-token\" data-word=\"يُبَدِّلُ\">يُبَدِّلُ</span> اللّٰهُ <span class=\"word-token\" data-word=\"سَيِّئَاتِهِمْ - سَیِّئَاتِ\">سَيِّئَاتِهِمْ</span> <span class=\"word-token\" data-word=\"حَسَنَاتٍ\">حَسَنَاتٍ</span> ۗ وَكَانَ اللّٰهُ <span class=\"word-token\" data-word=\"غَفُورًا\">غَفُورًا</span> <span class=\"word-token\" data-word=\"رَحِيمًا\">رَحِيمًا</span>",
+        "arabic": "إِلَّا مَنْ <span class=\"word-token\" data-word=\"تَابَ\">تَابَ</span> وَ<span class=\"word-token\" data-word=\"آمَنَ\">آمَنَ</span> وَ<span class=\"word-token\" data-word=\"عَمِلَ\">عَمِلَ</span> <span class=\"word-token\" data-word=\"عَمَلًا\">عَمَلًا</span> <span class=\"word-token\" data-word=\"صَالِحًا\">صَالِحًا</span> فَأُولٰئِكَ <span class=\"word-token\" data-word=\"يُبَدِّلُ\">يُبَدِّلُ</span> اللّٰهُ <span class=\"word-token\" data-word=\"سَيِّئَاتِهِمْ\">سَيِّئَاتِهِمْ</span> <span class=\"word-token\" data-word=\"حَسَنَاتٍ\">حَسَنَاتٍ</span> ۗ وَكَانَ اللّٰهُ <span class=\"word-token\" data-word=\"غَفُورًا\">غَفُورًا</span> <span class=\"word-token\" data-word=\"رَحِيمًا\">رَحِيمًا</span> ۝",
         "urdu": "سوائے اس شخص کے جس نے سچی توبہ کی، ایمان لایا اور نیک عمل کیے، تو یہی وہ خوش نصیب لوگ ہیں جن کے گناہوں کو اللہ نیکیوں سے بدل دے گا، اور اللہ بہت بخشنے والا، نہایت مہربان ہے،"
       },
       {
         "label": "الآيَةُ 71 (آیت ۷۱)",
-        "arabic": "وَمَنْ تَابَ وَعَمِلَ صَالِحًا فَإِنَّهُ <span class=\"word-token\" data-word=\"يَتُوبُ\">يَتُوبُ</span> إِلَى اللّٰهِ <span class=\"word-token\" data-word=\"مَتَابًا\">مَتَابًا</span>",
+        "arabic": "وَمَنْ تَابَ وَعَمِلَ صَالِحًا فَإِنَّهُ <span class=\"word-token\" data-word=\"يَتُوبُ\">يَتُوبُ</span> إِلَى اللّٰهِ <span class=\"word-token\" data-word=\"مَتَابًا\">مَتَابًا</span> ۝",
         "urdu": "اور جو شخص توبہ کرے اور نیک عمل بجا لائے تو بیشک وہ سچے دل سے اللہ تعالیٰ کی طرف کامل رجوع کرتا ہے،"
       },
       {
         "label": "الآيَةُ 72 (آیت ۷۲)",
-        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"لَا يَشْهَدُونَ\">لَا يَشْهَدُونَ</span> <span class=\"word-token\" data-word=\"الزُّورَ\">الزُّورَ</span> وَإِذَا <span class=\"word-token\" data-word=\"مَرُّوا\">مَرُّوا</span> بِاللَّغْوِ مَرُّوا <span class=\"word-token\" data-word=\"كِرَامًا\">كِرَامًا</span>",
+        "arabic": "وَالَّذِينَ <span class=\"word-token\" data-word=\"لَا يَشْهَدُونَ\">لَا يَشْهَدُونَ</span> <span class=\"word-token\" data-word=\"الزُّورَ\">الزُّورَ</span> وَإِذَا <span class=\"word-token\" data-word=\"مَرُّوا\">مَرُّوا</span> بِاللَّغْوِ مَرُّوا <span class=\"word-token\" data-word=\"كِرَامًا\">كِرَامًا</span> ۝",
         "urdu": "اور وہ لوگ جو جھوٹی گواہی اور باطل مجالس میں شریک نہیں ہوتے، اور جب کسی بیہودہ و لغو بات کے پاس سے گزرتے ہیں تو شریفانہ و باوقار انداز میں دامن بچا کر گزر جاتے ہیں،"
       },
       {
         "label": "الآيَةُ 73 (آیت ۷۳)",
-        "arabic": "وَالَّذِينَ إِذَا <span class=\"word-token\" data-word=\"ذُكِّرُوا\">ذُكِّرُوا</span> بِآيَاتِ رَبِّهِمْ <span class=\"word-token\" data-word=\"لَمْ يَخِرُّوا\">لَمْ يَخِرُّوا</span> عَلَيْهَا <span class=\"word-token\" data-word=\"صُمًّا\">صُمًّا</span> وَ<span class=\"word-token\" data-word=\"عُمْيَانًا\">عُمْيَانًا</span>",
-        "urdu": "اور وہ باہوش لوگ کہ جب انہیں ان کے رب کی آیات کے ذریعے نصیحت کی جاتی ہے تو وہ ان پر اندھے اور بہرے ہو کر نہیں گرتے (بلکہ دل کے کانوں اور بصیرت سے سنتے اور سمجھتے ہیں)،"
+        "arabic": "وَالَّذِينَ إِذَا <span class=\"word-token\" data-word=\"ذُكِّرُوا\">ذُكِّرُوا</span> بِآيَاتِ رَبِّهِمْ <span class=\"word-token\" data-word=\"لَمْ يَخِرُّوا\">لَمْ يَخِرُّوا</span> عَلَيْهَا <span class=\"word-token\" data-word=\"صُمًّا\">صُمًّا</span> وَ<span class=\"word-token\" data-word=\"عُمْيَانًا\">عُمْيَانًا</span> ۝",
+        "urdu": "اور وہ لوگ کہ جب انہیں ان کے رب کی آیات سنا کر نصیحت کی جاتی ہے تو وہ بہروں اور اندھوں کی طرح غافل ہو کر ان پر نہیں گرتے (بلکہ دل و جان سے سنتے ہیں)،"
       },
       {
         "label": "الآيَةُ 74 (آیت ۷۴)",
-        "arabic": "وَالَّذِينَ يَقُولُونَ رَبَّنَا <span class=\"word-token\" data-word=\"هَبْ\">هَبْ</span> لَنَا مِنْ <span class=\"word-token\" data-word=\"أَزْوَاجِنَا\">أَزْوَاجِنَا</span> وَ<span class=\"word-token\" data-word=\"ذُرِّيَّاتِنَا\">ذُرِّيَّاتِنَا</span> <span class=\"word-token\" data-word=\"قُرَّةَ\">قُرَّةَ</span> <span class=\"word-token\" data-word=\"أَعْيُنٍ\">أَعْيُنٍ</span> وَ<span class=\"word-token\" data-word=\"اجْعَلْنَا\">اجْعَلْنَا</span> <span class=\"word-token\" data-word=\"الْمُتَّقِينَ\">لِلْمُتَّقِينَ</span> <span class=\"word-token\" data-word=\"إِمَامًا\">إِمَامًا</span>",
-        "urdu": "اور جو دعا کرتے ہیں کہ: اے ہمارے رب! ہمیں ہماری بیویوں اور ہماری اولاد کی طرف سے آنکھوں کی ٹھنڈک عطا فرما، اور ہمیں پرہیزگاروں کا پیشوا و امام بنا،"
+        "arabic": "وَالَّذِينَ يَقُولُونَ رَبَّنَا <span class=\"word-token\" data-word=\"هَبْ\">هَبْ</span> لَنَا مِنْ <span class=\"word-token\" data-word=\"أَزْوَاجِنَا\">أَزْوَاجِنَا</span> وَ <span class=\"word-token\" data-word=\"ذُرِّيَّاتِنَا\">ذُرِّيَّاتِنَا</span> <span class=\"word-token\" data-word=\"قُرَّةَ\">قُرَّةَ</span> <span class=\"word-token\" data-word=\"أَعْيُنٍ\">أَعْيُنٍ</span> وَ<span class=\"word-token\" data-word=\"اجْعَلْنَا\">اجْعَلْنَا</span> <span class=\"word-token\" data-word=\"الْمُتَّقِينَ\">لِلْمُتَّقِينَ</span> <span class=\"word-token\" data-word=\"إِمَامًا\">إِمَامًا</span> ۝",
+        "urdu": "اور وہ لوگ جو یہ دعا مانگتے ہیں کہ: اے ہمارے پروردگار! ہمیں ہماری بیویوں اور ہماری اولاد کی طرف سے آنکھوں کی ٹھنڈک عطا فرما، اور ہمیں پرہیزگاروں کا پیشوا و امام بنا!"
       },
       {
         "label": "الآيَةُ 75 (آیت ۷۵)",
-        "arabic": "أُولٰئِكَ <span class=\"word-token\" data-word=\"يُجْزَوْنَ\">يُجْزَوْنَ</span> <span class=\"word-token\" data-word=\"الْغُرْفَةَ\">الْغُرْفَةَ</span> بِمَا <span class=\"word-token\" data-word=\"صَبَرُوا\">صَبَرُوا</span> وَ<span class=\"word-token\" data-word=\"يُلَقَّوْنَ\">يُلَقَّوْنَ</span> فِيهَا <span class=\"word-token\" data-word=\"تَحِيَّةً\">تَحِيَّةً</span> وَسَلَامًا",
-        "urdu": "یہی وہ صابر و متقی لوگ ہیں جنہیں ان کے صبر و استقامت کے بدلے جنت کے بلند و بالا بالاخانے عطا کیے جائیں گے، اور وہاں ان کا استقبال سلامتی اور عزت افزائی کی دعاؤں سے کیا جائے گا،"
+        "arabic": "أُولٰئِكَ <span class=\"word-token\" data-word=\"يُجْزَوْنَ\">يُجْزَوْنَ</span> <span class=\"word-token\" data-word=\"الْغُرْفَةَ\">الْغُرْفَةَ</span> بِمَا <span class=\"word-token\" data-word=\"صَبَرُوا\">صَبَرُوا</span> وَ<span class=\"word-token\" data-word=\"يُلَقَّوْنَ\">يُلَقَّوْنَ</span> فِيهَا <span class=\"word-token\" data-word=\"تَحِيَّةً\">تَحِيَّةً</span> وَسَلَامًا ۝",
+        "urdu": "یہی وہ بلند کردار لوگ ہیں جنہیں ان کے صبر و استقامت کے صلے میں جنت کے اونچے محلات عطا کیے جائیں گے، اور وہاں فرشتے دعا اور سلامتی کے ساتھ ان کا شاندار استقبال کریں گے،"
       },
       {
         "label": "الآيَةُ 76 (آیت ۷۶)",
-        "arabic": "<span class=\"word-token\" data-word=\"خَالِدِينَ\">خَالِدِينَ</span> فِيهَا ۚ <span class=\"word-token\" data-word=\"حَسُنَتْ\">حَسُنَتْ</span> مُسْتَقَرًّا وَمُقَامًا",
-        "urdu": "وہ اس جنت میں ہمیشہ ہمیشہ رہیں گے، وہ ٹھہرنے اور مستقل قیام کے لیے کتنی ہی حسین و شاندار جگہ ہے!"
+        "arabic": "<span class=\"word-token\" data-word=\"خَالِدِينَ\">خَالِدِينَ</span> فِيهَا ۚ <span class=\"word-token\" data-word=\"حَسُنَتْ\">حَسُنَتْ</span> مُسْتَقَرًّا وَمُقَامًا ۝",
+        "urdu": "وہ ان نعمتوں بھرے محلات میں ہمیشہ ہمیشہ رہیں گے، اور وہ ٹھہرنے اور رہنے کے لحاظ سے کس قدر شاندار اور بہترین جگہ ہے!"
       },
       {
         "label": "الآيَةُ 77 (آیت ۷۷)",
-        "arabic": "<span class=\"word-token\" data-word=\"قُلْ\">قُلْ</span> <span class=\"word-token\" data-word=\"مَا یَعْبَؤْا\">مَا يَعْبَؤُا</span> بِكُمْ رَبِّي لَوْلَا <span class=\"word-token\" data-word=\"دُعَآؤُكُمْ\">دُعَاؤُكُمْ</span> ۖ فَقَدْ <span class=\"word-token\" data-word=\"كَذَّبْتُمْ\">كَذَّبْتُمْ</span> فَسَوْفَ <span class=\"word-token\" data-word=\"یَکُوْنُ\">يَكُونُ</span> <span class=\"word-token\" data-word=\"لِزَامًا\">لِزَامًا</span>",
-        "urdu": "آپ فرما دیجیے کہ: اگر تمہاری دعا و عبادت نہ ہو تو میرا رب تمہاری کوئی پروا نہیں کرتا! تم نے تو حق کو جھٹلا دیا ہے، سو اب یہ عذاب تمہارے لیے گلے کا طوق اور لازمی سزا بن کر رہے گا۔"
+        "arabic": "<span class=\"word-token\" data-word=\"قُلْ\">قُلْ</span> <span class=\"word-token\" data-word=\"مَا يَعْبَأُ\">مَا يَعْبَأُ</span> بِكُمْ رَبِّي لَوْلَا <span class=\"word-token\" data-word=\"دُعَاؤُكُمْ\">دُعَاؤُكُمْ</span> ۖ فَقَدْ <span class=\"word-token\" data-word=\"كَذَّبْتُمْ\">كَذَّبْتُمْ</span> فَسَوْفَ <span class=\"word-token\" data-word=\"يَكُونُ\">يَكُونُ</span> <span class=\"word-token\" data-word=\"لِزَامًا\">لِزَامًا</span> ۝",
+        "urdu": "(اے پیغمبر! منکرین سے) فرما دیجیے: اگر تمہارا اللہ کو پکارنا اور عبادت کرنا نہ ہو تو میرا رب تمہاری ذرہ برابر پروا نہیں کرتا! تم نے تو حق کو جھٹلا دیا ہے، لہٰذا اب وہ عذاب تمہارے گلے کا دائمی طوق بن کر رہے گا!"
       }
     ],
     "words": [
@@ -221,7 +221,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "اس نے ارادہ کیا / چاہا۔"
       },
       {
-        "w": "أَنْ يَذَّكَّرَ",
+        "w": "أَنْ يَذَّكَّرَ",
         "root": "ذ - ك - ر",
         "qism": "فعل",
         "bahas": "فعل مضارع معلوم (منصوب بِـ أَنْ )",
@@ -258,7 +258,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ بندگی گزار، عاجز اور مخلص بندے جنہیں اللہ تعالیٰ نے اپنی ذاتِ اقدس کی عظیم صفتِ رحمت «الرَّحْمٰنِ» کی طرف منسوب فرما کر خصوصی عزت اور شرف بخشا ہے۔ ۔"
       },
       {
-        "w": "الرَّحْمٰنِ",
+        "w": "الرَّحْمٰنِ",
         "root": "ر - ح - م",
         "qism": "اسم",
         "bahas": "اسم مبالغہ",
@@ -295,7 +295,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "عاجزی، تواضع اور وقار کے ساتھ (بغیر تکبر اور اترائے ہوئے چلنا)۔"
       },
       {
-        "w": "خَاطَبَهُمْ",
+        "w": "خَاطَبَهُمُ",
         "root": "خ - ط - ب",
         "qism": "فعل",
         "bahas": "فعل ماضی معلوم",
@@ -357,7 +357,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ رات بسر کرتے ہیں / رات گزارتے ہیں۔"
       },
       {
-        "w": "سُجَّدًا",
+        "w": "سُجَّدًا",
         "root": "س - ج - د",
         "qism": "اسم (مشتق)",
         "bahas": "اسم فاعل (مفرد: سَاجِدٌ)",
@@ -419,7 +419,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "سزا / دکھ / عذاب۔"
       },
       {
-        "w": "کَانَ",
+        "w": "كَانَ",
         "root": "ک - و - ن",
         "qism": "فعل",
         "bahas": "فعل ماضی معلوم (فعل ناقص)",
@@ -457,7 +457,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ (جہنم) بہت ہی بری ٹھہری۔"
       },
       {
-        "w": "مُسْتَقَرًّا",
+        "w": "مُسْتَقَرًّا",
         "root": "ق - ر - ر",
         "qism": "اسم (مشتق)",
         "bahas": "اسم ظرف مکان (یا مصدر میمی)",
@@ -558,7 +558,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ (کسی جان کو ناحق) قتل نہیں کرتےہیں"
       },
       {
-        "w": "حَرَّمَ",
+        "w": "حَرَّمَ",
         "root": "ح - ر - م",
         "qism": "فعل",
         "bahas": "فعل ماضی معلوم",
@@ -583,7 +583,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ زنا اور بدکاری کا ارتکاب نہیں کرتے۔"
       },
       {
-        "w": "يَفْعَلْ (مَنْ يَفْعَلْ)",
+        "w": "يَفْعَلْ",
         "root": "ف - ع - ل",
         "qism": "فعل",
         "bahas": "فعل مضارع معلوم (مجزوم در شرطِ مَنْ)",
@@ -721,7 +721,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "نیک عمل / درست و شائستہ کام۔"
       },
       {
-        "w": "يُبَدِّلُ",
+        "w": "يُبَدِّلُ",
         "root": "ب - د - ل",
         "qism": "فعل",
         "bahas": "فعل مضارع معلوم",
@@ -733,7 +733,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ تبدیل فرما دے گا / بدل دے گا۔"
       },
       {
-        "w": "سَيِّئَاتِهِمْ - سَیِّئَاتِ",
+        "w": "سَيِّئَاتِهِمْ",
         "root": "س - و - ء",
         "qism": "اسم",
         "bahas": "صفت مشبہ کی جمع مؤنث سالم (مفرد: سَيِّئَةٌ)",
@@ -820,7 +820,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ حاضر نہیں ہوتے / گواہی نہیں دیتے۔"
       },
       {
-        "w": "الزُّورَ",
+        "w": "الزُّورَ",
         "root": "ز - و - ر",
         "qism": "اسم",
         "bahas": "اسم مصدر",
@@ -832,7 +832,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "باطل اور جھوٹ / شرک و گناہ کی مجالس / جھوٹی گواہی۔"
       },
       {
-        "w": "مَرُّوا",
+        "w": "مَرُّوا",
         "root": "م - ر - ر",
         "qism": "فعل",
         "bahas": "فعل ماضی معلوم",
@@ -857,7 +857,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "بزرگانہ، شریفانہ انداز سے دامن بچاتے ہوئے اور درگزر کرتے ہوئے / بزرگ"
       },
       {
-        "w": "ذُكِّرُوا",
+        "w": "ذُكِّرُوا",
         "root": "ذ - ك - ر",
         "qism": "فعل",
         "bahas": "فعل ماضی مجہول",
@@ -869,7 +869,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "انہیں یاد دہانی کرائی گئی / نصیحت کی گئی۔"
       },
       {
-        "w": "لَمْ يَخِرُّوا",
+        "w": "لَمْ يَخِرُّوا",
         "root": "خ - ر - ر",
         "qism": "فعل",
         "bahas": "فعل نفی جحد بلم مضارع معلوم",
@@ -882,7 +882,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ نہیں گرتے (یعنی اندھوں اور بہروں کی طرح بے سمجھے نہیں پڑتے بلکہ دل اور عقل کی بیداری سے سنتے ہیں)۔"
       },
       {
-        "w": "صُمًّا",
+        "w": "صُمًّا",
         "root": "ص - م - م",
         "qism": "اسم (مشتق)",
         "bahas": "صفت مشبہ کی جمع مکسر (مفرد: أَصَمُّ)",
@@ -932,7 +932,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "بیویاں، شریکِ حیات، جوڑیاں (ہماری بیویاں / ہمارے رفقائے حیات)۔"
       },
       {
-        "w": "ذُرِّيَّاتِنَا",
+        "w": "ذُرِّيَّاتِنَا",
         "root": "ذ - ر - ر (اور بعض ائمہ کے نزدیک: ذ - ر - أ یا ذ - ر - و)",
         "qism": "اسم",
         "bahas": "اسم جامد",
@@ -945,7 +945,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "ہماری اولاد، ہماری نسلیں، ہمارے بال بچے۔"
       },
       {
-        "w": "قُرَّةَ",
+        "w": "قُرَّةَ",
         "root": "ق - ر - ر",
         "qism": "اسم",
         "bahas": "اسم مصدر",
@@ -982,7 +982,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "تو ہمیں بنا دے۔"
       },
       {
-        "w": "الْمُتَّقِينَ",
+        "w": "الْمُتَّقِينَ",
         "root": "و - ق - ي",
         "qism": "اسم",
         "bahas": "اسم فاعل",
@@ -1044,7 +1044,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "انہوں نے (طاعات اور مصائب پر) صبر و استقامت کا مظاہرہ کیا۔"
       },
       {
-        "w": "يُلَقَّوْنَ",
+        "w": "يُلَقَّوْنَ",
         "root": "ل - ق - ي",
         "qism": "فعل",
         "bahas": "فعل مضارع مجہول",
@@ -1057,7 +1057,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "ان کا شاندار استقبال کیا جائے گا / انہیں پیش کیا جائے گا۔"
       },
       {
-        "w": "تَحِيَّةً",
+        "w": "تَحِيَّةً",
         "root": "ح - ي - ي",
         "qism": "اسم",
         "bahas": "مصدر",
@@ -1107,7 +1107,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "(اے پیغمبر!) آپ فرما دیجیے / کہہ دیجیے۔"
       },
       {
-        "w": "مَا یَعْبَؤْا",
+        "w": "مَا يَعْبَأُ",
         "root": "ع - ب - أ",
         "qism": "فعل",
         "bahas": "فعل مضارع منفی معلوم",
@@ -1119,7 +1119,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "وہ پروا کرتا ہے / وقعت و وزن دیتا ہے۔"
       },
       {
-        "w": "دُعَآؤُكُمْ",
+        "w": "دُعَاؤُكُمْ",
         "root": "د - ع - و",
         "qism": "اسم",
         "bahas": "مصدر (مع ضمیر فاعل 'كُمْ')",
@@ -1132,7 +1132,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "تمہارا پکارنا / تمہاری عبادت و دعا (یعنی اگر تمہارا ایمان اور دعا نہ ہو تو اللہ کو تمہاری کوئی پروا نہیں)۔"
       },
       {
-        "w": "كَذَّبْتُمْ",
+        "w": "كَذَّبْتُمْ",
         "root": "ك - ذ - ب",
         "qism": "فعل",
         "bahas": "فعل ماضی معلوم (مع ضمیر 'تُمْ')",
@@ -1144,7 +1144,7 @@ export const CHAPTERS: Chapter[] = [
         "meaning": "تم نے جھٹلایا۔"
       },
       {
-        "w": "یَکُوْنُ",
+        "w": "يَكُونُ",
         "root": "ک - و - ن",
         "qism": "فعل",
         "bahas": "فعل مضارع معلوم (فعل ناقص)",
